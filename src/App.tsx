@@ -42,10 +42,10 @@ const AppShell: React.FC = () => {
 
   const toggleDrawer = (open: boolean) => () => setDrawerOpen(open);
 
-  const menuItems: Array<{ text: string; path: string; mode: VisibleMode; icon: React.ReactNode }> = [
+  const menuItems: Array<{ text: string; path: string; mode: VisibleMode; icon: React.ReactNode; hidden?: boolean }> = [
     { text: 'Top', path: '/', mode: 'both', icon: <HomeRoundedIcon /> },
     { text: 'スコアCSV/TSV読み込み', path: '/register', mode: 'both', icon: <UploadRoundedIcon /> },
-    { text: 'スコア手動登録', path: '/edit', mode: 'both', icon: <EditNoteRoundedIcon /> },
+    { text: 'スコア手動登録', path: '/edit', mode: 'both', icon: <EditNoteRoundedIcon />, hidden: true },
     { text: '更新差分', path: '/diff', mode: 'both', icon: <DifferenceRoundedIcon /> },
     { text: 'SP☆12難易度表', path: '/sp12', mode: 'SP', icon: <GridViewRoundedIcon /> },
     { text: 'SP☆11難易度表', path: '/sp11', mode: 'SP', icon: <GridViewRoundedIcon /> },
@@ -53,12 +53,12 @@ const AppShell: React.FC = () => {
     { text: 'CPI', path: '/cpi', mode: 'SP', icon: <GridViewRoundedIcon /> },
     { text: 'BPI', path: '/bpi', mode: 'both', icon: <GridViewRoundedIcon /> },
     { text: 'ereter.net', path: '/ereter', mode: 'DP', icon: <GridViewRoundedIcon /> },
-    { text: 'ノーツレーダー', path: '/radar', mode: 'both', icon: <RadarRoundedIcon /> },
+    { text: 'ノーツレーダー', path: '/radar', mode: 'both', icon: <RadarRoundedIcon />, hidden: true },
     { text: '楽曲一覧', path: '/songtable', mode: 'both', icon: <TableRowsIcon /> },
     { text: '設定', path: '/settings', mode: 'both', icon: <SettingsRoundedIcon /> },
   ];
 
-  const visibleMenu = menuItems.filter(item => item.mode === 'both' || item.mode === mode);
+  const visibleMenu = menuItems.filter(item => !item.hidden && (item.mode === 'both' || item.mode === mode));
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
