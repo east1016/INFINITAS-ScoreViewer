@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import {
   Box, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText,
-  Collapse, Button, IconButton, Typography
+  FormLabel, RadioGroup, FormControlLabel, Radio
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { FilterList, FilterListOff } from '@mui/icons-material';
 import { FilterState } from '../types/Types';
 import { simpleClearName } from '../constants/clearConstrains';
 import { difficultyDetailKeys } from '../constants/difficultyConstrains';
@@ -17,19 +15,12 @@ type Props = {
 
 const FilterPanel = ({ filters, onChange }: Props) => {
   const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down('sm')); // ← スマホ判定
+  const isXs = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [open, setOpen] = useState(false);
-  const [pendingFilters, setPendingFilters] = useState<FilterState>(filters);
-
-
-  const handleApply = () => onChange(pendingFilters);
-
-  // 共通スタイル（スマホでのサイズ感）
   const selectBaseSx = {
     '& .MuiSelect-select': {
       fontSize: isXs ? 13 : 14,
-      py: isXs ? 1 : 1.25, // 内側の縦パディングを少しだけ詰める
+      py: isXs ? 1 : 1.25,
     },
   } as const;
 
@@ -49,73 +40,67 @@ const FilterPanel = ({ filters, onChange }: Props) => {
 
   return (
     <Box sx={{ mb: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <IconButton onClick={() => setOpen(!open)} size={isXs ? 'small' : 'medium'}>
-          {open ? <FilterListOff fontSize={isXs ? 'small' : 'medium'} /> : <FilterList fontSize={isXs ? 'small' : 'medium'} />}
-        </IconButton>
-        <Typography
-          variant="button"
-          onClick={() => setOpen(!open)}
-          sx={{ cursor: 'pointer', fontSize: isXs ? 12 : 13 }}
+      {/* レベル */}
+      <FormControl component="fieldset" sx={{ mb: 2 }}>
+        <FormLabel component="legend" sx={{ fontSize: isXs ? 12 : 14 }}>レベル</FormLabel>
+        <RadioGroup
+          row
+          value={filters?.level ?? 12}
+          onChange={(e) => onChange({ ...filters, level: parseInt(e.target.value) })}
         >
-          {open ? 'フィルターを閉じる' : 'フィルターを開く'}
-        </Typography>
-      </Box>
+          {Array.from({ length: 12 }, (_, i) => 12 - i).map((lv) => (
+            <FormControlLabel
+              key={lv}
+              value={lv}
+              control={<Radio size={isXs ? 'small' : 'medium'} />}
+              label={`☆${lv}`}
+              sx={{ '& .MuiFormControlLabel-label': { fontSize: isXs ? 12 : 14 } }}
+            />
+          ))}
+        </RadioGroup>
+      </FormControl>
 
-      <Collapse in={open}>
-        {/* クリアランプ */}
-        <FormControl fullWidth sx={{ mb: 2 }} size={isXs ? 'small' : 'medium'}>
-          <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>クリアランプ</InputLabel>
-          <Select
-            multiple
-            value={pendingFilters?.cleartype || []}
-            onChange={(e) => setPendingFilters({ ...pendingFilters, cleartype: e.target.value as number[] })}
-            renderValue={(selected) => (selected as number[]).map((v) => simpleClearName[v]).join(', ')}
-            size={isXs ? 'small' : 'medium'}
-            MenuProps={menuProps}
-            sx={selectBaseSx}
-          >
-            {simpleClearName.map((label, index) => (
-              <MenuItem key={index} value={index}>
-                <Checkbox checked={pendingFilters?.cleartype?.includes(index) || false} />
-                <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      {/* クリアランプ */}
+      <FormControl fullWidth sx={{ mb: 2 }} size={isXs ? 'small' : 'medium'}>
+        <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>クリアランプ</InputLabel>
+        <Select
+          multiple
+          value={filters?.cleartype || []}
+          onChange={(e) => onChange({ ...filters, cleartype: e.target.value as number[] })}
+          renderValue={(selected) => (selected as number[]).map((v) => simpleClearName[v]).join(', ')}
+          size={isXs ? 'small' : 'medium'}
+          MenuProps={menuProps}
+          sx={selectBaseSx}
+        >
+          {simpleClearName.map((label, index) => (
+            <MenuItem key={index} value={index}>
+              <Checkbox checked={filters?.cleartype?.includes(index) || false} />
+              <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-        {/* 譜面難易度  */}
-        <FormControl fullWidth sx={{ mb: 2 }} size={isXs ? 'small' : 'medium'}>
-          <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>譜面難易度</InputLabel>
-          <Select
-            multiple
-            value={pendingFilters?.difficultyPattern || []}
-            onChange={(e) => setPendingFilters({ ...pendingFilters, difficultyPattern: e.target.value as number[] })}
-            renderValue={(selected) => (selected as number[]).map((v) => difficultyDetailKeys[v]).join(', ')}
-            size={isXs ? 'small' : 'medium'}
-            MenuProps={menuProps}
-            sx={selectBaseSx}
-          >
-            {difficultyDetailKeys.map((label, index) => (
-              <MenuItem key={index} value={index}>
-                <Checkbox checked={pendingFilters?.difficultyPattern?.includes(index) || false} />
-                <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <Box textAlign="right">
-          <Button
-            variant="contained"
-            size={isXs ? 'small' : 'medium'}
-            onClick={handleApply}
-            sx={{ fontSize: isXs ? 12 : 14, fontWeight: 700 }}
-          >
-            フィルターを適用
-          </Button>
-        </Box>
-      </Collapse>
+      {/* 譜面難易度  */}
+      <FormControl fullWidth sx={{ mb: 2 }} size={isXs ? 'small' : 'medium'}>
+        <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>譜面難易度</InputLabel>
+        <Select
+          multiple
+          value={filters?.difficultyPattern || []}
+          onChange={(e) => onChange({ ...filters, difficultyPattern: e.target.value as number[] })}
+          renderValue={(selected) => (selected as number[]).map((v) => difficultyDetailKeys[v]).join(', ')}
+          size={isXs ? 'small' : 'medium'}
+          MenuProps={menuProps}
+          sx={selectBaseSx}
+        >
+          {difficultyDetailKeys.map((label, index) => (
+            <MenuItem key={index} value={index}>
+              <Checkbox checked={filters?.difficultyPattern?.includes(index) || false} />
+              <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     </Box>
   );
 };
