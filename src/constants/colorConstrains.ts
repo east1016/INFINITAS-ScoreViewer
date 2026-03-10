@@ -19,10 +19,10 @@ export const raderCategoryColors: Record<string, string> = {
 };
 
 export const scoreColorMap: { [key: string]: string } = {
-    'AAA': '#4caf50',
-    'AA': '#ffeb3b',
-    'A': '#ff9800',
-    'MAX-': '#f44336',
+    'A': '#20B2AA',      // 緑青 (LightSeaGreen)
+    'AA': '#C0C0C0',     // 銀色
+    'AAA': '#FFD700',    // 金色
+    'MAX-': '#FF9966',   // FULLCOMBOと同じ色
     'B': '#2196f3',
     'C': '#2196f3',
     'D': '#2196f3',
