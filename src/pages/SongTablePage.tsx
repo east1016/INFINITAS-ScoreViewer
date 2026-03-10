@@ -15,6 +15,7 @@ import { useAppContext } from '../context/AppContext';
 import { ungzip } from 'pako';
 
 import { difficultyKey } from '../constants/difficultyConstrains';
+import { notesOverride } from '../constants/chartInfoConstrains';
 import { clearColorMap } from '../constants/colorConstrains';
 import { simpleClearName } from '../constants/clearConstrains';
 import { defaultMisscount } from '../constants/defaultValues';
@@ -219,10 +220,11 @@ const SongTablePage: React.FC = () => {
             const lv = c.level?.[mode.toLowerCase()]?.[diffIndex] ?? 0;
             if (!lv) continue;
 
-            const notes = c.notes?.[mode.toLowerCase()]?.[diffIndex] ?? 0;
-            const title = titleRes[id] ?? id;
-
             const key = `${id}_${diff}`;
+            // ノーツ数: chartInfoが0の場合はnotesOverrideからフォールバック
+            const chartNotes = c.notes?.[mode.toLowerCase()]?.[diffIndex] ?? 0;
+            const notes = chartNotes > 0 ? chartNotes : (notesOverride[key] ?? 0);
+            const title = titleRes[id] ?? id;
             const lamp = clearRes[key] ?? 0;
             const score = scoreRes[key] ?? 0;
             const rate = getPercentage(score, notes);
