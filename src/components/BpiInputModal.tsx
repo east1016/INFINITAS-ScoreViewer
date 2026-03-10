@@ -19,6 +19,13 @@ interface BpiInputModalProps {
     avg: number;
     updatedAt?: string;
   } | null;
+  officialData?: {
+    wr: number;
+    avg: number;
+    notes: number;
+    coef?: number;
+  } | null;
+  bpiVersionName?: string;
   onSave: () => void;
 }
 
@@ -29,6 +36,8 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
   onClose,
   songInfo,
   existingData,
+  officialData,
+  bpiVersionName,
   onSave
 }) => {
   const [wr, setWr] = useState<string>('');
@@ -142,6 +151,22 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
           )}
         </Box>
 
+        {officialData && (
+          <Box sx={{ mb: 2, p: 1.5, bgcolor: 'action.hover', borderRadius: 1 }}>
+            <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
+              {bpiVersionName ? `${bpiVersionName}定義ファイル` : '定義ファイルの値'}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 3 }}>
+              <Typography variant="body2">
+                皆伝平均: <strong>{officialData.avg}</strong>
+              </Typography>
+              <Typography variant="body2">
+                全国1位: <strong>{officialData.wr}</strong>
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
@@ -149,7 +174,7 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
         )}
 
         <TextField
-          label="皆伝平均スコア (AVG)"
+          label={officialData ? `皆伝平均スコア (AVG) [公式: ${officialData.avg}]` : "皆伝平均スコア (AVG)"}
           type="number"
           fullWidth
           value={avg}
@@ -159,7 +184,7 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
         />
 
         <TextField
-          label="全国1位スコア (WR)"
+          label={officialData ? `全国1位スコア (WR) [公式: ${officialData.wr}]` : "全国1位スコア (WR)"}
           type="number"
           fullWidth
           value={wr}

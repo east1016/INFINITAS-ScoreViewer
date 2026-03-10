@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   Container, Typography, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, FormControl, InputLabel, Select, MenuItem,
-  Box, Backdrop, CircularProgress, Button, ButtonGroup, IconButton
+  Box, Backdrop, CircularProgress, Button, ButtonGroup, IconButton,
+  Snackbar, Alert
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@mui/material/styles';
@@ -23,7 +24,7 @@ import { generateSearchText } from '../utils/titleUtils';
 import { isMatchSong } from '../utils/filterUtils';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { acInfDiffMap } from '../constants/titleConstrains';
-import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
+import { calculateBpi } from '../utils/bpiUtils';
 import LampAchieveProgress from '../components/LampAchieveProgress';
 import GradeAchieveProgress from '../components/GradeAchieveProgress';
 import { getLampAchiveCount, getGradeAchiveCount } from '../utils/lampUtils';
@@ -73,6 +74,13 @@ const SongTablePage: React.FC = () => {
   const [customBpiData, setCustomBpiData] = useState<any>({});
   const [bpiModalOpen, setBpiModalOpen] = useState(false);
   const [selectedSongForBpi, setSelectedSongForBpi] = useState<SongRow | null>(null);
+
+  // BPI version selection
+  const [versions, setVersions] = useState<string[]>([]);
+  const [selectedVersion, setSelectedVersion] = useState<number>(0);
+  const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false, message: '', severity: 'success',
+  });
 
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDir }>({
     key: 'grade',
@@ -124,12 +132,47 @@ const SongTablePage: React.FC = () => {
     return { SP: {}, DP: {} };
   }, []);
 
+  // Load BPI versions on mount
   useEffect(() => {
+    fetch('https://chinimuruhi.github.io/IIDX-Data-Table/bpi/versions.json')
+      .then((res) => res.json())
+      .then((arr: string[]) => {
+        setVersions(arr);
+        const saved = localStorage.getItem('bpiVersion');
+        if (saved !== null) {
+          const idx = parseInt(saved, 10);
+          if (!isNaN(idx) && idx >= 0 && arr[idx]) {
+            setSelectedVersion(idx);
+          } else {
+            // Default to latest (index 0)
+            setSelectedVersion(0);
+            localStorage.setItem('bpiVersion', '0');
+          }
+        } else {
+          // Default to latest (index 0)
+          setSelectedVersion(0);
+          localStorage.setItem('bpiVersion', '0');
+        }
+      })
+      .catch(() => {
+        setSnack({ open: true, message: 'バージョンリストの取得に失敗しました。', severity: 'error' });
+      });
+  }, []);
+
+  // Handle version change
+  const handleVersionChange = (newVersion: number) => {
+    setSelectedVersion(newVersion);
+    localStorage.setItem('bpiVersion', String(newVersion));
+    setSnack({ open: true, message: 'BPI定義ファイルを変更しました。', severity: 'success' });
+  };
+
+  useEffect(() => {
+    if (versions.length === 0) return; // Wait for versions to load
+
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const bpiVersionIndex = parseInt(localStorage.getItem('bpiVersion') ?? '-1') ?? -1
-        const bpiVersion = await resolveVersionByIndex(bpiVersionIndex);
+        const bpiVersion = versions[selectedVersion] || versions[0];
         const [
           titleRes,
           songInfoGz,
@@ -225,7 +268,7 @@ const SongTablePage: React.FC = () => {
     };
 
     fetchAll();
-  }, [mode, fetchCustomBpiData]);
+  }, [mode, fetchCustomBpiData, versions, selectedVersion]);
 
   // Open BPI input modal
   const handleOpenBpiModal = (song: SongRow) => {
@@ -351,6 +394,26 @@ const SongTablePage: React.FC = () => {
           </Backdrop>
 
           <FilterPanel filters={filters} onChange={setFilters} />
+
+          {selectedLevel >= 11 && versions.length > 0 && (
+            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+                BPI定義:
+              </Typography>
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <Select
+                  value={selectedVersion}
+                  onChange={(e) => handleVersionChange(Number(e.target.value))}
+                >
+                  {versions.map((v, i) => (
+                    <MenuItem key={i} value={i}>
+                      {v}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
 
           <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap', mb: 2 }}>
             <Box sx={{ flex: 1, minWidth: 250 }}>
@@ -621,8 +684,21 @@ const SongTablePage: React.FC = () => {
           mode: mode
         } : null}
         existingData={selectedSongForBpi ? customBpiData?.[mode]?.[`${selectedSongForBpi.id}_${selectedSongForBpi.difficulty}`] : null}
+        officialData={selectedSongForBpi ? bpiInfo?.[mode]?.[selectedSongForBpi.id]?.[selectedSongForBpi.difficulty] : null}
+        bpiVersionName={versions[selectedVersion]}
         onSave={handleBpiSave}
       />
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={snack.severity} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Page>
   );
 };
