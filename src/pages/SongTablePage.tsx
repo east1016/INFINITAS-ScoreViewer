@@ -23,6 +23,9 @@ import { isMatchSong } from '../utils/filterUtils';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { acInfDiffMap } from '../constants/titleConstrains';
 import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
+import LampAchieveProgress from '../components/LampAchieveProgress';
+import GradeAchieveProgress from '../components/GradeAchieveProgress';
+import { getLampAchiveCount, getGradeAchiveCount } from '../utils/lampUtils';
 
 type SongRow = {
   id: string;
@@ -199,6 +202,21 @@ const SongTablePage: React.FC = () => {
       });
   }, [songs, selectedLevel, filters, clearData, chartInfo, konamiInfInfo, unlockedData, songInfo]);
 
+  const totalCount = filtered.length;
+
+  const lampStats = useMemo(() => {
+    // getLampAchiveCount expects { id, difficulty } format
+    const lampData: Record<string, number> = {};
+    filtered.forEach(s => {
+      lampData[`${s.id}_${s.difficulty}`] = s.lamp;
+    });
+    return getLampAchiveCount(filtered, lampData);
+  }, [filtered]);
+
+  const gradeStats = useMemo(() => {
+    return getGradeAchiveCount(filtered);
+  }, [filtered]);
+
   // フィルター変更時にページを1に戻す
   useEffect(() => {
     setCurrentPage(1);
@@ -265,6 +283,15 @@ const SongTablePage: React.FC = () => {
           </Backdrop>
 
           <FilterPanel filters={filters} onChange={setFilters} />
+
+          <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap', mb: 2 }}>
+            <Box sx={{ flex: 1, minWidth: 250 }}>
+              <LampAchieveProgress stats={lampStats} totalCount={totalCount} />
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 250 }}>
+              <GradeAchieveProgress stats={gradeStats} totalCount={totalCount} />
+            </Box>
+          </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
             <Typography variant="body2" sx={{ minWidth: 120 }}>
