@@ -20,6 +20,7 @@ import { bpiGapColor, scoreColorMap } from '../constants/colorConstrains';
 import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
+import { renderTitleWithDifficulty } from '../utils/titleUtils';
 
 // BpiPageコンポーネント
 const BpiPage = () => {
@@ -402,7 +403,7 @@ const BpiPage = () => {
                             lineHeight: 1.35,
                           }}
                         >
-                          {displayTitle}
+                          {renderTitleWithDifficulty(title, song.difficulty)}
                         </Typography>
 
                         {/* BPI / 難易度 */}

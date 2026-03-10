@@ -9,6 +9,7 @@ import { clearColorMap } from '../constants/colorConstrains';
 import { difficultyKey } from '../constants/difficultyConstrains';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { isMatchSong } from '../utils/filterUtils';
+import { renderTitleWithDifficulty } from '../utils/titleUtils';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { Page, PageHeader } from '../components/Page';
@@ -161,7 +162,7 @@ const DpTablePage = () => {
                             lineHeight: 1.35,
                           }}
                         >
-                            {displayTitle}
+                            {renderTitleWithDifficulty(title, song.difficulty)}
                         </Typography>
 
                         <Typography variant="caption" display="block">
