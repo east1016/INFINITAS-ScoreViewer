@@ -16,7 +16,7 @@ import { ungzip } from 'pako';
 
 import { difficultyKey } from '../constants/difficultyConstrains';
 import { notesOverride } from '../constants/chartInfoConstrains';
-import { clearColorMap } from '../constants/colorConstrains';
+import { clearColorMap, scoreColorMapLight } from '../constants/colorConstrains';
 import { simpleClearName } from '../constants/clearConstrains';
 import { defaultMisscount } from '../constants/defaultValues';
 
@@ -505,10 +505,10 @@ const SongTablePage: React.FC = () => {
                   <MenuItem value="lv">Level</MenuItem>
                   <MenuItem value="title">Title</MenuItem>
                   <MenuItem value="cleartype">Lamp</MenuItem>
-                  {selectedLevel >= 11 && 
+                  <MenuItem value="grade">Grade</MenuItem>
+                  {selectedLevel >= 11 &&
                     <MenuItem value="bpi">BPI</MenuItem>
                   }
-                  <MenuItem value="grade">Grade</MenuItem>
                   <MenuItem value="score">Score</MenuItem>
                   <MenuItem value="bp">BP</MenuItem>
                 </Select>
@@ -525,8 +525,8 @@ const SongTablePage: React.FC = () => {
                 <col style={{ width: 70 }} />
                 <col style={{ width: '30%' }} />
                 <col style={{ width: 110 }} />
-                {selectedLevel >= 11 && <col style={{ width: 70 }} />}
                 <col style={{ width: 120 }} />
+                {selectedLevel >= 11 && <col style={{ width: 70 }} />}
                 <col style={{ width: 140 }} />
                 <col style={{ width: 80 }} />
                 {selectedLevel >= 11 && <col style={{ width: 50 }} />}
@@ -543,14 +543,14 @@ const SongTablePage: React.FC = () => {
                   <TableCell sx={{ cursor: 'pointer', textAlign: 'center', bgcolor: sortConfig.key === 'cleartype' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('cleartype')}>
                     Lamp {sortConfig.key === 'cleartype' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'grade' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('grade')}>
+                    Grade {sortConfig.key === 'grade' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                  </TableCell>
                   {selectedLevel >= 11 &&
                     <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'bpi' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('bpi')}>
                       BPI {sortConfig.key === 'bpi' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                     </TableCell>
                   }
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'grade' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('grade')}>
-                    Grade {sortConfig.key === 'grade' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
                   <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'score' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('score')}>
                     Score {sortConfig.key === 'score' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
@@ -578,6 +578,22 @@ const SongTablePage: React.FC = () => {
                           {simpleClearName[s.lamp] ?? '-'}
                         </Box>
                       </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {(() => {
+                          const grade = getGrade(s.rate);
+                          const detailGrade = getDetailGrade(s.score, s.notes);
+                          const isMaxMinus = detailGrade.startsWith('MAX-');
+                          const colorKey = isMaxMinus ? 'MAX-' : grade;
+                          if (['A', 'AA', 'AAA'].includes(grade)) {
+                            return (
+                              <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: scoreColorMapLight[colorKey], textAlign: 'center', minWidth: 60 }}>
+                                {grade} ({detailGrade})
+                              </Box>
+                            );
+                          }
+                          return <>{grade} ({detailGrade})</>;
+                        })()}
+                      </TableCell>
                       {selectedLevel >= 11 &&
                         <TableCell>
                           {!Number.isNaN(s.bpi) ? (
@@ -590,7 +606,6 @@ const SongTablePage: React.FC = () => {
                           ) : ''}
                         </TableCell>
                       }
-                      <TableCell>{getGrade(s.rate)} ({getDetailGrade(s.score, s.notes)})</TableCell>
                       <TableCell>{s.score} ({(s.rate * 100).toFixed(2)}%)</TableCell>
                       <TableCell>{s.bp == defaultMisscount ? '-' : s.bp}</TableCell>
                       {selectedLevel >= 11 && (
@@ -645,7 +660,20 @@ const SongTablePage: React.FC = () => {
                           }
 
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <span>{getGrade(s.rate)} ({getDetailGrade(s.score, s.notes)})</span>
+                            {(() => {
+                              const grade = getGrade(s.rate);
+                              const detailGrade = getDetailGrade(s.score, s.notes);
+                              const isMaxMinus = detailGrade.startsWith('MAX-');
+                              const colorKey = isMaxMinus ? 'MAX-' : grade;
+                              if (['A', 'AA', 'AAA'].includes(grade)) {
+                                return (
+                                  <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: scoreColorMapLight[colorKey] }}>
+                                    {grade} ({detailGrade})
+                                  </Box>
+                                );
+                              }
+                              return <span>{grade} ({detailGrade})</span>;
+                            })()}
                           </Box>
 
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
