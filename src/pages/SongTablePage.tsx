@@ -4,7 +4,6 @@ import {
   TableHead, TableRow, FormControl, InputLabel, Select, MenuItem,
   Box, Backdrop, CircularProgress, Button, ButtonGroup
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Page, PageHeader } from '../components/Page';
@@ -45,7 +44,6 @@ type SortDir = 'asc' | 'desc';
 
 const SongTablePage: React.FC = () => {
   const { mode, filters, setFilters } = useAppContext();
-  const navigate = useNavigate();
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -205,10 +203,6 @@ const SongTablePage: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [filters, sortConfig]);
-
-  const handleSelectSong = (songId: string, difficultyIndex: string) => {
-    navigate(`/edit/${songId}/${difficultyIndex}`);
-  };
 
   const sorted = useMemo(() => {
     const arr = [...filtered];
@@ -408,8 +402,6 @@ const SongTablePage: React.FC = () => {
                     <TableRow
                       sx={{ display: { xs: 'none', sm: 'table-row' } }}
                       hover
-                      onClick={() => handleSelectSong(s.id, String(s.diffIndex))}
-                      style={{ cursor: 'pointer' }}
                     >
                       <TableCell>⭐︎{s.level}</TableCell>
                       <TableCell>
@@ -432,8 +424,6 @@ const SongTablePage: React.FC = () => {
                     <TableRow
                       sx={{ display: { xs: 'table-row', sm: 'none' } }}
                       hover
-                      onClick={() => handleSelectSong(s.id, String(s.diffIndex))}
-                      style={{ cursor: 'pointer' }}
                     >
                       <TableCell colSpan={6} sx={{ py: 1.25 }}>
                         <Typography variant="body2" fontWeight={700} noWrap>
