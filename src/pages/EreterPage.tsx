@@ -4,7 +4,6 @@ import {
 } from '@mui/material';
 import FilterPanel from '../components/FilterPanel';
 import LampAchieveProgress from '../components/LampAchieveProgress';
-import { ungzip } from 'pako';
 import { useAppContext } from '../context/AppContext';
 import { clearColorMap } from '../constants/colorConstrains';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
@@ -13,7 +12,7 @@ import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
-import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
+import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 
 const EreterPage = () => {
   const { mode, filters, setFilters } = useAppContext();
@@ -33,12 +32,12 @@ const EreterPage = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [songRes, titleRes, chartRes, konamiInfInfoRes, songInfoGz] = await Promise.all([
+        const [songRes, titleRes, chartJson, konamiInfInfoRes, songInfoJson] = await Promise.all([
           fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/ereter/songs_dict.json'),
           fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
           fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
         ]);
 
         const local = JSON.parse(localStorage.getItem('data') || '{}');
@@ -47,8 +46,8 @@ const EreterPage = () => {
         setSongs(Object.entries(songRes).flatMap(([id, diffs]: any) =>
           Object.entries(diffs).map(([diff, data]: any) => ({ id, difficulty: diff, ...data }))));
         setTitleMap(titleRes);
-        setChartInfo(JSON.parse(new TextDecoder().decode(ungzip(chartRes))));
-        setSongInfo(JSON.parse(new TextDecoder().decode(ungzip(songInfoGz))));
+        setChartInfo(chartJson);
+        setSongInfo(songInfoJson);
         setKonamiInfInfo(konamiInfInfoRes);
         setClearData(clear);
         setMissData(misscount);

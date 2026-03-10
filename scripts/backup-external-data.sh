@@ -24,8 +24,9 @@ echo "Downloading external data for backup..."
 # textage 関連
 echo "Downloading textage data..."
 curl -sS -o "$BACKUP_DIR/textage/title.json" "$BASE_URL/textage/title.json"
-curl -sS -o "$BACKUP_DIR/textage/song-info.json.gz" "$BASE_URL/textage/song-info.json.gz"
-curl -sS -o "$BACKUP_DIR/textage/chart-info.json.gz" "$BASE_URL/textage/chart-info.json.gz"
+# .gzファイルは解凍して保存（Viteが自動解凍するため）
+curl -sS "$BASE_URL/textage/song-info.json.gz" | gunzip > "$BACKUP_DIR/textage/song-info.json"
+curl -sS "$BASE_URL/textage/chart-info.json.gz" | gunzip > "$BACKUP_DIR/textage/chart-info.json"
 curl -sS -o "$BACKUP_DIR/textage/reverse-normalized-title.json" "$BASE_URL/textage/reverse-normalized-title.json"
 
 # konami 関連
@@ -69,13 +70,13 @@ curl -sS -o "$BACKUP_DIR/manual/replace-characters.json" "$BASE_URL/manual/repla
 
 # radar 関連（SP/DP両方）
 echo "Downloading radar data..."
-curl -sS -o "$BACKUP_DIR/radar/sp-radar.json.gz" "$BASE_URL/radar/sp-radar.json.gz" 2>/dev/null || true
-curl -sS -o "$BACKUP_DIR/radar/dp-radar.json.gz" "$BASE_URL/radar/dp-radar.json.gz" 2>/dev/null || true
+curl -sS "$BASE_URL/radar/sp-radar.json.gz" 2>/dev/null | gunzip > "$BACKUP_DIR/radar/sp-radar.json" || true
+curl -sS "$BASE_URL/radar/dp-radar.json.gz" 2>/dev/null | gunzip > "$BACKUP_DIR/radar/dp-radar.json" || true
 
 # notes_radar 関連（RadarPage用）
 echo "Downloading notes_radar data..."
-curl -sS -o "$BACKUP_DIR/notes_radar/sp.json.gz" "$BASE_URL/notes_radar/sp.json.gz" 2>/dev/null || true
-curl -sS -o "$BACKUP_DIR/notes_radar/dp.json.gz" "$BASE_URL/notes_radar/dp.json.gz" 2>/dev/null || true
+curl -sS "$BASE_URL/notes_radar/sp.json.gz" 2>/dev/null | gunzip > "$BACKUP_DIR/notes_radar/sp.json" || true
+curl -sS "$BASE_URL/notes_radar/dp.json.gz" 2>/dev/null | gunzip > "$BACKUP_DIR/notes_radar/dp.json" || true
 
 echo ""
 echo "Backup completed!"

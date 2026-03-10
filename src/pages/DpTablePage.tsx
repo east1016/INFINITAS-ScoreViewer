@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo } from 'react';
 import {
   Container, Typography, Grid, Paper, Box, CircularProgress, Backdrop, Tabs, Tab
 } from '@mui/material';
-import { ungzip } from 'pako';
 import { useAppContext } from '../context/AppContext';
 import FilterPanel from '../components/FilterPanel';
 import LampAchieveProgress from '../components/LampAchieveProgress';
@@ -14,7 +13,7 @@ import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
-import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
+import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 
 const DpTablePage = () => {
   const { mode, filters, setFilters } = useAppContext();
@@ -34,11 +33,11 @@ const DpTablePage = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [songsRes, titleRes, chartInfoRes, songInfoRes, konamiInfInfoRes] = await Promise.all([
+        const [songsRes, titleRes, chartInfoJson, songInfoJson, konamiInfInfoRes] = await Promise.all([
           fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/difficulty/dp/songs_dict.json'),
           fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
           fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json')
         ]);
 
@@ -59,8 +58,8 @@ const DpTablePage = () => {
 
         setSongList(expandedSongs);
         setTitleMap(titleRes);
-        setChartInfo(JSON.parse(new TextDecoder().decode(ungzip(chartInfoRes))));
-        setSongInfo(JSON.parse(new TextDecoder().decode(ungzip(songInfoRes))));
+        setChartInfo(chartInfoJson);
+        setSongInfo(songInfoJson);
         setKonamiInfInfo(konamiInfInfoRes);
         setClearData(clear);
         setMissData(misscount);

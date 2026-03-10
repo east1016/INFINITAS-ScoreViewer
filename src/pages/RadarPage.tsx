@@ -3,7 +3,6 @@ import {
   Container, Typography, Box, Table, TableBody, TableCell, TableHead, TableRow, CircularProgress, Backdrop, Tabs, Tab
 } from '@mui/material';
 import { Radar, RadarChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { ungzip } from 'pako';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAppContext } from '../context/AppContext';
@@ -11,7 +10,7 @@ import { chartCategories } from '../constants/chartInfoConstrains';
 import { difficultyKey } from '../constants/difficultyConstrains';
 import SectionCard from '../components/SectionCard';
 import { Page, PageHeader } from '../components/Page';
-import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
+import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 
 
 const RadarPage = () => {
@@ -34,14 +33,11 @@ const RadarPage = () => {
           ? 'https://chinimuruhi.github.io/IIDX-Data-Table/notes_radar/sp.json.gz'
           : 'https://chinimuruhi.github.io/IIDX-Data-Table/notes_radar/dp.json.gz';
 
-        const [radarBuf, titleJson, chartInfoBuf] = await Promise.all([
-          fetchArrayBufferWithFallback(radarUrl),
+        const [radarJson, titleJson, chartJson] = await Promise.all([
+          fetchGzipJsonWithFallback<any>(radarUrl),
           fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz')
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz')
         ]);
-
-        const radarJson = JSON.parse(new TextDecoder().decode(ungzip(radarBuf)));
-        const chartJson = JSON.parse(new TextDecoder().decode(ungzip(chartInfoBuf)));
         const local = JSON.parse(localStorage.getItem('data') || '{}');
         const userData = local[mode] || {};
         const songRadarResults: any[] = [];

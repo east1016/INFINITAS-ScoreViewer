@@ -6,14 +6,13 @@ import FilterPanel from '../components/FilterPanel';
 import LampAchieveProgress from '../components/LampAchieveProgress';
 import SectionCard from '../components/SectionCard';
 import { Page, PageHeader } from '../components/Page';
-import { ungzip } from 'pako';
 import { useAppContext } from '../context/AppContext';
 import { clearColorMap } from '../constants/colorConstrains';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { isMatchSong } from '../utils/filterUtils';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
-import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
+import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 
 const Sp11TablePage = () => {
   const { mode, filters, setFilters } = useAppContext();
@@ -33,21 +32,21 @@ const Sp11TablePage = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [songsRes, diffRes, titleRes, konamiInfInfoRes, songInfoGz, chartGz] = await Promise.all([
+        const [songsRes, diffRes, titleRes, konamiInfInfoRes, songInfoJson, chartJson] = await Promise.all([
           fetchJsonWithFallback<any[]>('https://chinimuruhi.github.io/IIDX-Data-Table/difficulty/sp11/songs_list.json'),
           fetchJsonWithFallback<{ [key: string]: { [key: string]: string } }>('https://chinimuruhi.github.io/IIDX-Data-Table/difficulty/sp11/difficulty.json'),
           fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
           fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz')
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz')
         ]);
 
         setSongs(songsRes);
         setDifficultyLabels(diffRes);
         setTitleMap(titleRes);
         setKonamiInfInfo(konamiInfInfoRes);
-        setSongInfo(JSON.parse(new TextDecoder().decode(ungzip(songInfoGz))));
-        setChartInfo(JSON.parse(new TextDecoder().decode(ungzip(chartGz))));
+        setSongInfo(songInfoJson);
+        setChartInfo(chartJson);
 
         const local = JSON.parse(localStorage.getItem('data') || '{}');
         const { clear, misscount, unlocked } = convertDataToIdDiffKey(local, mode);
