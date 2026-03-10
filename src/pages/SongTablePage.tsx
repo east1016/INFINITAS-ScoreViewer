@@ -30,6 +30,8 @@ import LampAchieveProgress from '../components/LampAchieveProgress';
 import GradeAchieveProgress from '../components/GradeAchieveProgress';
 import { getLampAchiveCount, getGradeAchiveCount } from '../utils/lampUtils';
 import BpiInputModal from '../components/BpiInputModal';
+import RecommendModal from '../components/RecommendModal';
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 
 const BPI_SERVER_URL = 'http://localhost:3001';
 
@@ -75,6 +77,9 @@ const SongTablePage: React.FC = () => {
   const [customBpiData, setCustomBpiData] = useState<any>({});
   const [bpiModalOpen, setBpiModalOpen] = useState(false);
   const [selectedSongForBpi, setSelectedSongForBpi] = useState<SongRow | null>(null);
+
+  // Recommend modal
+  const [recommendModalOpen, setRecommendModalOpen] = useState(false);
 
   // BPI version selection
   const [versions, setVersions] = useState<string[]>([]);
@@ -479,18 +484,21 @@ const SongTablePage: React.FC = () => {
                 100件
               </Button>
               <Button
-                onClick={() => handleLimitChange(200)}
-                variant={displayLimit === 200 ? 'contained' : 'outlined'}
-              >
-                200件
-              </Button>
-              <Button
                 onClick={() => handleLimitChange(0)}
                 variant={displayLimit === 0 ? 'contained' : 'outlined'}
               >
                 全件
               </Button>
             </ButtonGroup>
+
+            <Button
+              variant="outlined"
+              startIcon={<TipsAndUpdatesIcon />}
+              onClick={() => setRecommendModalOpen(true)}
+              size="small"
+            >
+              リコメンド
+            </Button>
           </Box>
 
           {isXs && (
@@ -717,6 +725,12 @@ const SongTablePage: React.FC = () => {
         officialData={selectedSongForBpi ? bpiInfo?.[mode]?.[selectedSongForBpi.id]?.[selectedSongForBpi.difficulty] : null}
         bpiVersionName={versions[selectedVersion]}
         onSave={handleBpiSave}
+      />
+
+      <RecommendModal
+        open={recommendModalOpen}
+        onClose={() => setRecommendModalOpen(false)}
+        songs={songs}
       />
 
       <Snackbar
