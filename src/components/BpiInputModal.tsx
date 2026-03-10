@@ -149,21 +149,21 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
         )}
 
         <TextField
-          label="全国1位スコア (WR)"
-          type="number"
-          fullWidth
-          value={wr}
-          onChange={(e) => setWr(e.target.value)}
-          sx={{ mb: 2 }}
-          inputProps={{ max: maxScore, min: 0 }}
-        />
-
-        <TextField
           label="皆伝平均スコア (AVG)"
           type="number"
           fullWidth
           value={avg}
           onChange={(e) => setAvg(e.target.value)}
+          sx={{ mb: 2 }}
+          inputProps={{ max: maxScore, min: 0 }}
+        />
+
+        <TextField
+          label="全国1位スコア (WR)"
+          type="number"
+          fullWidth
+          value={wr}
+          onChange={(e) => setWr(e.target.value)}
           inputProps={{ max: maxScore, min: 0 }}
         />
       </DialogContent>
