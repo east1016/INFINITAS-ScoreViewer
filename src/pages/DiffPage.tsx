@@ -14,6 +14,8 @@ import {
   TableRow,
   CircularProgress,
   Button,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -45,6 +47,9 @@ const DiffPage = () => {
   const [isShared, setIsShared] = useState(false);
   const [isUrldataValid, setIsUrldataValid] = useState(true);
   const [bpiInfo, setBpiInfo] = useState<any>({});
+  const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false, message: '', severity: 'success',
+  });
 
   // ソート
   const [clearSortConfig, setClearSortConfig] = useState<{ key: string; direction: string }>({ key: 'lv', direction: 'desc' });
@@ -144,26 +149,37 @@ const DiffPage = () => {
     return sortedData(data, sortConfig.key, sortConfig.direction as 'asc' | 'desc');
   };
 
-  const handleShare = () => {
+  const handleCopyToClipboard = async () => {
     const data = { diff, user };
     const base64Data = compressDiffData(data);
-    const topUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+$/, '/');
-    const currentUrl = window.location;
+    const currentUrl = window.location.origin + window.location.pathname;
     const url = `${currentUrl}?data=${base64Data}`;
 
-    let tweetText = `${user.djname ? user.djname + 'さんの' : ''}更新差分\n`;
-    if (processed.clearUpdatesCount['SP'] > 0) tweetText += `ランプ更新(SP)： ${processed.clearUpdatesCount['SP']}件\n`;
-    if (processed.scoreUpdatesCount['SP'] > 0) tweetText += `スコア更新(SP)： ${processed.scoreUpdatesCount['SP']}件\n`;
-    if (processed.missUpdatesCount['SP'] > 0) tweetText += `BP更新(SP)： ${processed.missUpdatesCount['SP']}件\n`;
-    if (processed.clearUpdatesCount['DP'] > 0) tweetText += `ランプ更新(DP)： ${processed.clearUpdatesCount['DP']}件\n`;
-    if (processed.scoreUpdatesCount['DP'] > 0) tweetText += `スコア更新(DP)： ${processed.scoreUpdatesCount['DP']}件\n`;
-    if (processed.missUpdatesCount['DP'] > 0) tweetText += `BP更新(DP)： ${processed.missUpdatesCount['DP']}件\n`;
-    tweetText += '\n';
+    // 現在の日時を取得
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    const twitterUrl = (url.length >= urlLengthMax)
-      ? `https://x.com/intent/tweet?url=${encodeURIComponent(topUrl)}&hashtags=inf_sv&text=${encodeURIComponent(tweetText + '(更新データが多すぎるため共有URLの生成に失敗しました)\n\n')}`
-      : `https://x.com/intent/tweet?url=${encodeURIComponent(url)}&hashtags=inf_sv&text=${encodeURIComponent(tweetText)}\n`;
-    window.open(twitterUrl, '_blank');
+    let text = '更新差分\n';
+    if (processed.clearUpdatesCount['SP'] > 0) text += `ランプ更新(SP)： ${processed.clearUpdatesCount['SP']}件\n`;
+    if (processed.scoreUpdatesCount['SP'] > 0) text += `スコア更新(SP)： ${processed.scoreUpdatesCount['SP']}件\n`;
+    if (processed.missUpdatesCount['SP'] > 0) text += `BP更新(SP)： ${processed.missUpdatesCount['SP']}件\n`;
+    if (processed.clearUpdatesCount['DP'] > 0) text += `ランプ更新(DP)： ${processed.clearUpdatesCount['DP']}件\n`;
+    if (processed.scoreUpdatesCount['DP'] > 0) text += `スコア更新(DP)： ${processed.scoreUpdatesCount['DP']}件\n`;
+    if (processed.missUpdatesCount['DP'] > 0) text += `BP更新(DP)： ${processed.missUpdatesCount['DP']}件\n`;
+    text += '\n';
+
+    if (url.length >= urlLengthMax) {
+      text += `[${dateStr}](${window.location.origin + window.location.pathname})\n(更新データが多すぎるため共有URLの生成に失敗しました)`;
+    } else {
+      text += `[${dateStr}](${url})`;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setSnack({ open: true, message: 'クリップボードにコピーしました', severity: 'success' });
+    } catch {
+      setSnack({ open: true, message: 'コピーに失敗しました', severity: 'error' });
+    }
   };
 
   const processed = useMemo(() => {
@@ -264,20 +280,17 @@ const DiffPage = () => {
     </>
   ) : '更新差分';
 
-  // 𝕏でポスト（ヘッダー actions に設置：スマホはタイトルの下に表示）
+  // クリップボードにコピー（ヘッダー actions に設置：スマホはタイトルの下に表示）
   const headerActions = (!isShared && hasUpdates && isUrldataValid) ? (
     <Button
       variant="contained"
-      onClick={handleShare}
+      onClick={handleCopyToClipboard}
       size={isXs ? 'small' : 'medium'}
       sx={{
         fontWeight: 700,
-        bgcolor: 'common.black',
-        color: 'common.white',
-        '&:hover': { bgcolor: '#333' },
       }}
     >
-      𝕏でポスト
+      共有用テキストをコピー
     </Button>
   ) : null;
 
@@ -442,6 +455,17 @@ const DiffPage = () => {
           {!hasUpdates && isUrldataValid && <Typography variant="h6">更新がありません</Typography>}
         </Box>
       </SectionCard>
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={snack.severity} onClose={() => setSnack((s) => ({ ...s, open: false }))}>
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Page>
   );
 };
