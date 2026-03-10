@@ -64,8 +64,8 @@ const SongTablePage: React.FC = () => {
   const selectedLevel = filters.level ?? 12;
 
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDir }>({
-    key: 'title',
-    direction: 'asc',
+    key: 'grade',
+    direction: 'desc',
   });
   const [displayLimit, setDisplayLimit] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -363,32 +363,41 @@ const SongTablePage: React.FC = () => {
           )}
 
           <TableContainer sx={{ mb: 3 }}>
-            <Table size="small" sx={{ minWidth: 700, '& td, & th': { fontSize: { xs: 12, sm: 14 } } }}>
+            <Table size="small" sx={{ minWidth: 700, tableLayout: 'fixed', '& td, & th': { fontSize: { xs: 12, sm: 14 } } }}>
+              <colgroup>
+                <col style={{ width: 70 }} />
+                <col style={{ width: '35%' }} />
+                <col style={{ width: 100 }} />
+                {selectedLevel >= 11 && <col style={{ width: 70 }} />}
+                <col style={{ width: 120 }} />
+                <col style={{ width: 140 }} />
+                <col style={{ width: 80 }} />
+              </colgroup>
               {/* PC/Tablet: 通常ヘッダ */}
               <TableHead sx={{ display: { xs: 'none', sm: 'table-header-group' } }}>
                 <TableRow>
-                  <TableCell sx={{ cursor: 'pointer' }} onClick={() => handleSort('lv')}>
-                    ☆
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'lv' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('lv')}>
+                    ☆ {sortConfig.key === 'lv' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
-                  <TableCell sx={{ cursor: 'pointer' }} onClick={() => handleSort('title')}>
-                    Title
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'title' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('title')}>
+                    Title {sortConfig.key === 'title' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
-                  <TableCell sx={{ cursor: 'pointer', textAlign: 'center' }} onClick={() => handleSort('cleartype')}>
-                    Lamp
+                  <TableCell sx={{ cursor: 'pointer', textAlign: 'center', bgcolor: sortConfig.key === 'cleartype' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('cleartype')}>
+                    Lamp {sortConfig.key === 'cleartype' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
-                  {selectedLevel >= 11 && 
-                    <TableCell sx={{ cursor: 'pointer' }} onClick={() => handleSort('bpi')}>
-                      BPI
+                  {selectedLevel >= 11 &&
+                    <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'bpi' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('bpi')}>
+                      BPI {sortConfig.key === 'bpi' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                     </TableCell>
                   }
-                  <TableCell sx={{ cursor: 'pointer' }} onClick={() => handleSort('grade')}>
-                    Grade
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'grade' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('grade')}>
+                    Grade {sortConfig.key === 'grade' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
-                  <TableCell sx={{ cursor: 'pointer' }} onClick={() => handleSort('score')}>
-                    Score
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'score' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('score')}>
+                    Score {sortConfig.key === 'score' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
-                  <TableCell sx={{ cursor: 'pointer' }} onClick={() => handleSort('bp')}>
-                    BP
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'bp' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('bp')}>
+                    BP {sortConfig.key === 'bp' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
                 </TableRow>
               </TableHead>
