@@ -30,6 +30,14 @@ export const scoreColorMap: { [key: string]: string } = {
     'F': '#2196f3'
 };
 
+// 表用の薄い色（アルファ50%相当の色）
+export const scoreColorMapLight: { [key: string]: string } = {
+    'A': '#90D9D5',      // 緑青の薄い版
+    'AA': '#E0E0E0',     // 銀色の薄い版
+    'AAA': '#FFECB3',    // 金色の薄い版
+    'MAX-': '#FF9966',   // FULLCOMBOと完全に同じ色
+};
+
 // AtCoderカラー（公式色）
 // BPIベースの色分け: 目標BPIとの差分で判定
 // 差分 > +10: 赤（大幅超過）, +5〜+10: 橙, 0〜+5: 黄, -5〜0: 青, -10〜-5: 水色, < -10: 緑（目標から遠い）
