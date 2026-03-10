@@ -182,7 +182,7 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
 
         <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="body2" color="text.secondary">
-            候補: {candidates.length}曲 → {recommendations.length}曲選出
+            候補: {candidates.length}曲
           </Typography>
           <Button
             size="small"
