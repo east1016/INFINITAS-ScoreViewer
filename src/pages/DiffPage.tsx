@@ -27,8 +27,6 @@ import { getPercentage, getDetailGrade, getGrade } from '../utils/gradeUtils';
 import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
 import { acInfDiffMap } from '../constants/titleConstrains';
-import { useNavigate } from 'react-router-dom';
-import { difficultyKey } from '../constants/difficultyConstrains';
 import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
 
 const urlLengthMax = 4088;
@@ -52,7 +50,6 @@ const DiffPage = () => {
   const [clearSortConfig, setClearSortConfig] = useState<{ key: string; direction: string }>({ key: 'lv', direction: 'desc' });
   const [scoreSortConfig, setScoreSortConfig] = useState<{ key: string; direction: string }>({ key: 'lv', direction: 'desc' });
   const [missSortConfig, setMissSortConfig] = useState<{ key: string; direction: string }>({ key: 'lv', direction: 'desc' });
-  const navigate = useNavigate();
 
   const fetchData = useCallback(async () => {
     try {
@@ -284,12 +281,6 @@ const DiffPage = () => {
     </Button>
   ) : null;
 
-  const handleSelectSong = (songId: string, difficultyNumber: number) => {
-    if(!isShared){
-      navigate(`/edit/${songId}/${difficultyNumber}`);
-    }
-  };
-
   return (
     <Page>
       <PageHeader compact title={headerTitle} actions={headerActions} />
@@ -322,7 +313,7 @@ const DiffPage = () => {
                     {sortedDataWithState(processed.clearUpdates[mode], 'clear').map((row) => (
                       <React.Fragment key={`${row.id}_${row.difficulty}`}>
                         {/* PC/Tablet */}
-                        <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} onClick={() => handleSelectSong(row.id, difficultyKey.indexOf(row.difficulty))}>
+                        <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} >
                           <TableCell>☆{row.lv}</TableCell>
                           <TableCell>{row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''}</TableCell>
                           <TableCell sx={{ textAlign: 'center' }}><Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: row.colorBefore }}>{simpleClearName[row.before]}</Box></TableCell>
@@ -331,7 +322,7 @@ const DiffPage = () => {
                         </TableRow>
 
                         {/* Mobile */}
-                        <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} onClick={() => handleSelectSong(row.id, difficultyKey.indexOf(row.difficulty))}>
+                        <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} >
                           <TableCell colSpan={5} sx={{ py: 1.25 }}>
                             <Typography variant="body2" fontWeight={700} noWrap>
                               {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆{row.lv}
@@ -371,7 +362,7 @@ const DiffPage = () => {
                     {sortedDataWithState(processed.scoreUpdates[mode], 'score').map((row) => (
                       <React.Fragment key={`${row.id}_${row.difficulty}`}>
                         {/* PC/Tablet */}
-                        <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} onClick={() => handleSelectSong(row.id, difficultyKey.indexOf(row.difficulty))}>
+                        <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} >
                           <TableCell>☆{row.lv}</TableCell>
                           <TableCell>{row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''}</TableCell>
                           {processed.isContainBpi[mode] && <TableCell>{Number.isNaN(row.bpi) ? '' : row.bpi}</TableCell>}
@@ -381,7 +372,7 @@ const DiffPage = () => {
                         </TableRow>
 
                         {/* Mobile */}
-                        <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} onClick={() => handleSelectSong(row.id, difficultyKey.indexOf(row.difficulty))}>
+                        <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} >
                           <TableCell colSpan={5} sx={{ py: 1.25 }}>
                             <Typography variant="body2" fontWeight={700} noWrap>
                               {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆{row.lv}
@@ -420,7 +411,7 @@ const DiffPage = () => {
                     {sortedDataWithState(processed.missUpdates[mode], 'miss').map((row) => (
                       <React.Fragment key={`${row.id}_${row.difficulty}`}>
                         {/* PC/Tablet */}
-                        <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} onClick={() => handleSelectSong(row.id, difficultyKey.indexOf(row.difficulty))}>
+                        <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} >
                           <TableCell>☆{row.lv}</TableCell>
                           <TableCell>{row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''}</TableCell>
                           <TableCell sx={{ textAlign: 'center' }}>{row.afterMisscount}</TableCell>
@@ -428,7 +419,7 @@ const DiffPage = () => {
                         </TableRow>
 
                         {/* Mobile */}
-                        <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} onClick={() => handleSelectSong(row.id, difficultyKey.indexOf(row.difficulty))}>
+                        <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} >
                           <TableCell colSpan={4} sx={{ py: 1.25 }}>
                             <Typography variant="body2" fontWeight={700} noWrap>
                               {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆{row.lv}
