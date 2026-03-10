@@ -13,8 +13,6 @@ import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { isMatchSong } from '../utils/filterUtils';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
-import { useNavigate } from 'react-router-dom';
-import { difficultyKey } from '../constants/difficultyConstrains';
 
 const Sp11TablePage = () => {
   const { mode, filters, setFilters } = useAppContext();
@@ -29,7 +27,6 @@ const Sp11TablePage = () => {
   const [chartInfo, setChartInfo] = useState<any>({});
   const [songInfo, setSongInfo] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -150,7 +147,6 @@ const Sp11TablePage = () => {
                             wordBreak: 'break-word',
                             lineHeight: 1.35,
                           }}
-                          onClick={() => navigate(`/edit/${song.id}/${difficultyKey.indexOf(song.difficulty)}`)}
                         >
                           {displayTitle}
                         </Typography>
