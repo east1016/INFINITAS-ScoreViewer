@@ -30,20 +30,42 @@ export const scoreColorMap: { [key: string]: string } = {
     'F': '#2196f3'
 };
 
-export const bpiGapColor = (gap: number, isBg: boolean): string => {
-  let alpha = "1";
-  if (isBg) alpha = "0.5";
-  if (gap < -20) return "rgba(255, 49, 49, " + alpha + ")"; 
-  if (gap < -15) return "rgba(255, 78, 78, " + alpha + ")";
-  if (gap < -10) return "rgba(255, 140, 140, " + alpha + ")";
-  if (gap < -5) return "rgba(255, 180, 180, " + alpha + ")";
-  if (gap < 0) return "rgba(255, 233, 153, " + alpha + ")";
-  if (gap <= 5) return "rgba(234, 239, 249, " + alpha + ")";
-  if (gap <= 10) return "rgba(108, 155, 210, " + alpha + ")";
-  if (gap <= 15) return "rgba(24, 127, 196, " + alpha + ")";
-  if (gap <= 20) return "rgba(0, 104, 183, " + alpha + ")";
-  if (gap <= 30) return "rgba(0, 98, 172, " + alpha + ")";
-  if (gap <= 40) return "rgba(0, 82, 147, " + alpha + ")";
-  if (gap <= 50) return "rgba(0, 64, 119, " + alpha + ")";
-  return "rgba(0, 53, 103, " + alpha + ")";
+// AtCoderカラー（公式色）
+// BPIベースの色分け: 目標BPIとの差分で判定
+// 差分 > +10: 赤（大幅超過）, +5〜+10: 橙, 0〜+5: 黄, -5〜0: 青, -10〜-5: 水色, < -10: 緑（目標から遠い）
+const atcoderColors = {
+  red: '#FF0000',
+  orange: '#FF8000',
+  yellow: '#C0C000',
+  blue: '#0000FF',
+  cyan: '#00C0C0',
+  green: '#008000',
+};
+
+// bpiDiff = 現在のBPI - 目標BPI（正: 目標超過、負: 目標未達）
+export const bpiGapColor = (bpiDiff: number, isBg: boolean): string => {
+  const alpha = isBg ? '80' : 'FF'; // 16進数のアルファ値（80 = 50%）
+  let color: string;
+
+  if (bpiDiff > 10) {
+    // 目標を大幅超過: 赤
+    color = atcoderColors.red;
+  } else if (bpiDiff > 5) {
+    // 目標超過: 橙
+    color = atcoderColors.orange;
+  } else if (bpiDiff >= 0) {
+    // 目標達成〜わずかに超過: 黄
+    color = atcoderColors.yellow;
+  } else if (bpiDiff > -5) {
+    // 目標未達（近い）: 青
+    color = atcoderColors.blue;
+  } else if (bpiDiff > -10) {
+    // 目標から遠い: 水色
+    color = atcoderColors.cyan;
+  } else {
+    // 目標から最も遠い: 緑
+    color = atcoderColors.green;
+  }
+
+  return color + alpha;
 };
