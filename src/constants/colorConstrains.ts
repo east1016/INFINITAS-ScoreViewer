@@ -47,7 +47,7 @@ const atcoderColors = {
   yellow: '#C0C000',
   blue: '#0000FF',
   cyan: '#00C0C0',
-  green: '#008000',
+  green: '#006400',
 };
 
 // bpiDiff = 現在のBPI - 目標BPI（正: 目標超過、負: 目標未達）
