@@ -267,7 +267,7 @@ const BpiPage = () => {
             ))}
 
 
-          <FilterPanel filters={filters} onChange={setFilters} />
+          <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} />
 
           <Box
             sx={{
@@ -281,32 +281,6 @@ const BpiPage = () => {
               '&::-webkit-scrollbar': { display: 'none' }, // モバイルでスクロールバー非表示（任意）
             }}
           >
-            <ToggleButtonGroup
-              value={gradeType}
-              exclusive
-              onChange={(e, v) => v && setGradeType(v)}
-              size="small"                 // ← モバイルで少しコンパクト
-              sx={{
-                flexWrap: 'nowrap',        // ← 折り返さない
-                '& .MuiToggleButton-root': {
-                  px: { xs: 1.25, sm: 1.5 },
-                  py: { xs: 0.5, sm: 0.75 },
-                  fontSize: { xs: 12, sm: 13 },
-                  whiteSpace: 'nowrap',
-                },
-              }}
-            >
-              <ToggleButton value="aaa_bpi">
-                {/* xsは短縮表記、sm以上はフル */}
-                <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>AAA</Box>
-                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>AAA難易度表</Box>
-              </ToggleButton>
-              <ToggleButton value="max_minus_bpi">
-                <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>MAX-</Box>
-                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>MAX-難易度表</Box>
-              </ToggleButton>
-            </ToggleButtonGroup>
-
             <ToggleButtonGroup
               value={level}
               exclusive
@@ -322,8 +296,33 @@ const BpiPage = () => {
                 },
               }}
             >
-              <ToggleButton value={11}>☆11</ToggleButton>
               <ToggleButton value={12}>☆12</ToggleButton>
+              <ToggleButton value={11}>☆11</ToggleButton>
+            </ToggleButtonGroup>
+
+            <ToggleButtonGroup
+              value={gradeType}
+              exclusive
+              onChange={(e, v) => v && setGradeType(v)}
+              size="small"
+              sx={{
+                flexWrap: 'nowrap',
+                '& .MuiToggleButton-root': {
+                  px: { xs: 1.25, sm: 1.5 },
+                  py: { xs: 0.5, sm: 0.75 },
+                  fontSize: { xs: 12, sm: 13 },
+                  whiteSpace: 'nowrap',
+                },
+              }}
+            >
+              <ToggleButton value="aaa_bpi">
+                <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>AAA</Box>
+                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>AAA難易度表</Box>
+              </ToggleButton>
+              <ToggleButton value="max_minus_bpi">
+                <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>MAX-</Box>
+                <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>MAX-難易度表</Box>
+              </ToggleButton>
             </ToggleButtonGroup>
           </Box>
 

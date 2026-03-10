@@ -11,9 +11,10 @@ import { difficultyDetailKeys } from '../constants/difficultyConstrains';
 type Props = {
   filters: FilterState;
   onChange: (filters: FilterState) => void;
+  showLevelFilter?: boolean;
 };
 
-const FilterPanel = ({ filters, onChange }: Props) => {
+const FilterPanel = ({ filters, onChange, showLevelFilter = true }: Props) => {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -41,24 +42,26 @@ const FilterPanel = ({ filters, onChange }: Props) => {
   return (
     <Box sx={{ mb: 3 }}>
       {/* レベル */}
-      <FormControl component="fieldset" sx={{ mb: 2 }}>
-        <FormLabel component="legend" sx={{ fontSize: isXs ? 12 : 14 }}>レベル</FormLabel>
-        <RadioGroup
-          row
-          value={filters?.level ?? 12}
-          onChange={(e) => onChange({ ...filters, level: parseInt(e.target.value) })}
-        >
-          {Array.from({ length: 12 }, (_, i) => 12 - i).map((lv) => (
-            <FormControlLabel
-              key={lv}
-              value={lv}
-              control={<Radio size={isXs ? 'small' : 'medium'} />}
-              label={`☆${lv}`}
-              sx={{ '& .MuiFormControlLabel-label': { fontSize: isXs ? 12 : 14 } }}
-            />
-          ))}
-        </RadioGroup>
-      </FormControl>
+      {showLevelFilter && (
+        <FormControl component="fieldset" sx={{ mb: 2 }}>
+          <FormLabel component="legend" sx={{ fontSize: isXs ? 12 : 14 }}>レベル</FormLabel>
+          <RadioGroup
+            row
+            value={filters?.level ?? 12}
+            onChange={(e) => onChange({ ...filters, level: parseInt(e.target.value) })}
+          >
+            {Array.from({ length: 12 }, (_, i) => 12 - i).map((lv) => (
+              <FormControlLabel
+                key={lv}
+                value={lv}
+                control={<Radio size={isXs ? 'small' : 'medium'} />}
+                label={`☆${lv}`}
+                sx={{ '& .MuiFormControlLabel-label': { fontSize: isXs ? 12 : 14 } }}
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+      )}
 
       {/* クリアランプ */}
       <FormControl fullWidth sx={{ mb: 2 }} size={isXs ? 'small' : 'medium'}>
