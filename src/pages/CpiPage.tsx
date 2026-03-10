@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Container, Typography, Grid, Paper, Box, Tabs, Tab, CircularProgress, Backdrop
 } from '@mui/material';
-import { ungzip } from 'pako';
 import { useAppContext } from '../context/AppContext';
 import FilterPanel from '../components/FilterPanel';
 import LampAchieveProgress from '../components/LampAchieveProgress';
@@ -14,7 +13,7 @@ import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { isMatchSong } from '../utils/filterUtils';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
-import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
+import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 
 
 const CpiPage = () => {
@@ -38,21 +37,21 @@ const CpiPage = () => {
           cpiSongs,
           titleRes,
           konamiInfInfoRes,
-          chartGz,
-          songInfoGz
+          chartJson,
+          songInfoJson
         ] = await Promise.all([
           fetchJsonWithFallback<any[]>('https://chinimuruhi.github.io/IIDX-Data-Table/cpi/songs_list.json'),
           fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
           fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
-          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz')
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
+          fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz')
         ]);
 
         setSongs(cpiSongs);
         setTitleMap(titleRes);
         setKomaniInfInfo(konamiInfInfoRes);
-        setChartInfo(JSON.parse(new TextDecoder().decode(ungzip(chartGz))));
-        setSongInfo(JSON.parse(new TextDecoder().decode(ungzip(songInfoGz))));
+        setChartInfo(chartJson);
+        setSongInfo(songInfoJson);
 
         const local = JSON.parse(localStorage.getItem('data') || '{}');
         const { clear, misscount, unlocked } = convertDataToIdDiffKey(local, mode);

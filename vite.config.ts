@@ -12,6 +12,6 @@ export default defineConfig({
     'process.env.BASE_URL': JSON.stringify('/'),
   },
   server: {
-    port: 3000
-  }
+    port: 3000,
+  },
 });
