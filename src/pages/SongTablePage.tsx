@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Container, Typography, TextField, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent,
+  Container, Typography, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, FormControl, InputLabel, Select, MenuItem,
   Box, Backdrop, CircularProgress, Button
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -60,9 +60,8 @@ const SongTablePage: React.FC = () => {
   const [bpiInfo, setBpiInfo] = useState<any>({});
 
   const [songs, setSongs] = useState<SongRow[]>([]);
-  const [songSearch, setSongSearch] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState<number>(12);
   const [loading, setLoading] = useState(true);
+  const selectedLevel = filters.level ?? 12;
 
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDir }>({
     key: 'title',
@@ -184,10 +183,8 @@ const SongTablePage: React.FC = () => {
   }, [mode]);
 
   const filtered = useMemo(() => {
-    const query = generateSearchText(songSearch);
     return songs
       .filter(s => {
-        if (query && !s.normalizedTitle.includes(query)) return false;
         if (s.level !== selectedLevel) return false;
 
         const key = `${s.id}_${s.difficulty}`;
@@ -200,7 +197,7 @@ const SongTablePage: React.FC = () => {
 
         return isMatchSong(filters, lamp, s.difficulty, konami, chart, unlocked, version, label);
       });
-  }, [songs, songSearch, selectedLevel, filters, clearData, chartInfo, konamiInfInfo, unlockedData, songInfo]);
+  }, [songs, selectedLevel, filters, clearData, chartInfo, konamiInfInfo, unlockedData, songInfo]);
 
   const handleSelectSong = (songId: string, difficultyIndex: string) => {
     navigate(`/edit/${songId}/${difficultyIndex}`);
@@ -238,10 +235,6 @@ const SongTablePage: React.FC = () => {
     });
   }, [filtered, sortConfig]);
 
-  const handleLevelChange = (e: SelectChangeEvent<string>) => {
-    setSelectedLevel(Number(e.target.value));
-  };
-
   return (
     <Page>
       <PageHeader compact title="楽曲一覧" />
@@ -252,23 +245,6 @@ const SongTablePage: React.FC = () => {
           </Backdrop>
 
           <FilterPanel filters={filters} onChange={setFilters} />
-
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '2fr 1fr' }, gap: 2, my: 2 }}>
-            <TextField
-              label="曲名検索"
-              value={songSearch}
-              onChange={(e) => setSongSearch(e.target.value)}
-              fullWidth
-            />
-            <FormControl fullWidth>
-              <InputLabel>レベル（☆）</InputLabel>
-              <Select value={String(selectedLevel)} label="レベル（☆）" onChange={handleLevelChange}>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map(lv => (
-                  <MenuItem key={lv} value={lv}>⭐︎{lv}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
 
           {isXs && (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>

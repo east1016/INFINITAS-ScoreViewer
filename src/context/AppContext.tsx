@@ -19,6 +19,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [filters, setFilters] = useState<FilterState>({
     cleartype: [1, 2, 3, 4, 5, 6, 7],
     difficultyPattern: [0, 1, 2, 3, 4],
+    level: 12,
   });
 
   return (
