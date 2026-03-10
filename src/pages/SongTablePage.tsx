@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   Container, Typography, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, FormControl, InputLabel, Select, MenuItem,
-  Box, Backdrop, CircularProgress, Button, ButtonGroup
+  Box, Backdrop, CircularProgress, Button, ButtonGroup, IconButton
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Page, PageHeader } from '../components/Page';
@@ -26,6 +27,9 @@ import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
 import LampAchieveProgress from '../components/LampAchieveProgress';
 import GradeAchieveProgress from '../components/GradeAchieveProgress';
 import { getLampAchiveCount, getGradeAchiveCount } from '../utils/lampUtils';
+import BpiInputModal from '../components/BpiInputModal';
+
+const BPI_SERVER_URL = 'http://localhost:3001';
 
 type SongRow = {
   id: string;
@@ -39,6 +43,7 @@ type SongRow = {
   score: number,
   rate: number,
   bpi: number,
+  customBpi: number,  // カスタムBPI値（なければNaN）
   bp: number
 };
 
@@ -63,6 +68,11 @@ const SongTablePage: React.FC = () => {
   const [songs, setSongs] = useState<SongRow[]>([]);
   const [loading, setLoading] = useState(true);
   const selectedLevel = filters.level ?? 12;
+
+  // Custom BPI data
+  const [customBpiData, setCustomBpiData] = useState<any>({});
+  const [bpiModalOpen, setBpiModalOpen] = useState(false);
+  const [selectedSongForBpi, setSelectedSongForBpi] = useState<SongRow | null>(null);
 
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDir }>({
     key: 'grade',
@@ -99,6 +109,21 @@ const SongTablePage: React.FC = () => {
   const toggleSortDir = () =>
     setSortConfig((s) => ({ ...s, direction: s.direction === 'asc' ? 'desc' : 'asc' }));
 
+  // Fetch custom BPI data
+  const fetchCustomBpiData = useCallback(async () => {
+    try {
+      const res = await fetch(`${BPI_SERVER_URL}/api/bpi`);
+      if (res.ok) {
+        const data = await res.json();
+        setCustomBpiData(data);
+        return data;
+      }
+    } catch {
+      // Server not running, use empty data
+    }
+    return { SP: {}, DP: {} };
+  }, []);
+
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
@@ -112,6 +137,7 @@ const SongTablePage: React.FC = () => {
           konamiRes,
           bpiSpInfo,
           bpiDpInfo,
+          customBpi,
         ] = await Promise.all([
           fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json').then(r => r.json()),
           fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz').then(r => r.arrayBuffer()),
@@ -119,6 +145,7 @@ const SongTablePage: React.FC = () => {
           fetch('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json').then(r => r.json()),
           fetch(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/sp_dict.json`).then((res) => res.json()),
           fetch(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/dp_dict.json`).then((res) => res.json()),
+          fetchCustomBpiData(),
         ]);
 
         setSongInfo(JSON.parse(new TextDecoder().decode(ungzip(songInfoGz))));
@@ -157,9 +184,23 @@ const SongTablePage: React.FC = () => {
             const score = scoreRes[key] ?? 0;
             const rate = getPercentage(score, notes);
             const bp = missRes[key] ?? defaultMisscount;
+
+            // Calculate both remote and custom BPI
+            const customBpiEntry = customBpi?.[mode]?.[key];
             const bpiInfoEntry = bpiInfoRes?.[mode]?.[id]?.[diff];
-            let bpi = bpiInfoEntry && score ? calculateBpi(bpiInfoEntry.wr, bpiInfoEntry.avg, bpiInfoEntry.notes, score, bpiInfoEntry.coef) : NaN;
-            bpi = bpi ? bpi : NaN;
+
+            // Remote BPI (official data)
+            let bpi: number = NaN;
+            if (bpiInfoEntry && score) {
+              bpi = calculateBpi(bpiInfoEntry.wr, bpiInfoEntry.avg, bpiInfoEntry.notes, score, bpiInfoEntry.coef) ?? NaN;
+            }
+
+            // Custom BPI (user-defined)
+            let customBpiValue: number = NaN;
+            if (customBpiEntry && score) {
+              customBpiValue = calculateBpi(customBpiEntry.wr, customBpiEntry.avg, notes, score, -1) ?? NaN;
+            }
+
             list.push({
               id,
               difficulty: diff,
@@ -172,7 +213,8 @@ const SongTablePage: React.FC = () => {
               score,
               rate,
               bp,
-              bpi
+              bpi,
+              customBpi: customBpiValue
             });
           }
         }
@@ -183,7 +225,30 @@ const SongTablePage: React.FC = () => {
     };
 
     fetchAll();
-  }, [mode]);
+  }, [mode, fetchCustomBpiData]);
+
+  // Open BPI input modal
+  const handleOpenBpiModal = (song: SongRow) => {
+    setSelectedSongForBpi(song);
+    setBpiModalOpen(true);
+  };
+
+  // Handle BPI save - reload data
+  const handleBpiSave = async () => {
+    const newCustomBpi = await fetchCustomBpiData();
+    // Recalculate custom BPI for all songs
+    setSongs(prevSongs => prevSongs.map(s => {
+      const key = `${s.id}_${s.difficulty}`;
+      const customBpiEntry = newCustomBpi?.[mode]?.[key];
+
+      let customBpiValue: number = NaN;
+      if (customBpiEntry && s.score) {
+        customBpiValue = calculateBpi(customBpiEntry.wr, customBpiEntry.avg, s.notes, s.score, -1) ?? NaN;
+      }
+
+      return { ...s, customBpi: customBpiValue };
+    }));
+  };
 
   const filtered = useMemo(() => {
     return songs
@@ -244,12 +309,15 @@ const SongTablePage: React.FC = () => {
         case 'bp': 
           return cmpNum(a.bp, b.bp);
         case 'bpi': {
-          const aIsNaN = Number.isNaN(a.bpi);
-          const bIsNaN = Number.isNaN(b.bpi);
+          // 公式BPIを優先、なければcustomBpiを使用
+          const aVal = !Number.isNaN(a.bpi) ? a.bpi : a.customBpi;
+          const bVal = !Number.isNaN(b.bpi) ? b.bpi : b.customBpi;
+          const aIsNaN = Number.isNaN(aVal);
+          const bIsNaN = Number.isNaN(bVal);
           if (aIsNaN && bIsNaN) return 0;
           if (aIsNaN) return 1;
           if (bIsNaN) return -1;
-          return cmpNum(a.bpi, b.bpi);
+          return cmpNum(aVal, bVal);
         }
         default:
           return 0;
@@ -390,12 +458,13 @@ const SongTablePage: React.FC = () => {
             <Table size="small" sx={{ minWidth: 700, tableLayout: 'fixed', '& td, & th': { fontSize: { xs: 12, sm: 14 } } }}>
               <colgroup>
                 <col style={{ width: 70 }} />
-                <col style={{ width: '35%' }} />
+                <col style={{ width: '30%' }} />
                 <col style={{ width: 110 }} />
                 {selectedLevel >= 11 && <col style={{ width: 70 }} />}
                 <col style={{ width: 120 }} />
                 <col style={{ width: 140 }} />
                 <col style={{ width: 80 }} />
+                {selectedLevel >= 11 && <col style={{ width: 50 }} />}
               </colgroup>
               {/* PC/Tablet: 通常ヘッダ */}
               <TableHead sx={{ display: { xs: 'none', sm: 'table-header-group' } }}>
@@ -423,6 +492,7 @@ const SongTablePage: React.FC = () => {
                   <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'bp' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('bp')}>
                     BP {sortConfig.key === 'bp' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
+                  {selectedLevel >= 11 && <TableCell></TableCell>}
                 </TableRow>
               </TableHead>
 
@@ -443,12 +513,32 @@ const SongTablePage: React.FC = () => {
                           {simpleClearName[s.lamp] ?? '-'}
                         </Box>
                       </TableCell>
-                      {selectedLevel >= 11 && 
-                        <TableCell>{Number.isNaN(s.bpi) ? '': s.bpi}</TableCell>
+                      {selectedLevel >= 11 &&
+                        <TableCell>
+                          {!Number.isNaN(s.bpi) ? (
+                            <>
+                              {s.bpi}
+                              {!Number.isNaN(s.customBpi) && ` (${s.customBpi} *)`}
+                            </>
+                          ) : !Number.isNaN(s.customBpi) ? (
+                            `${s.customBpi} *`
+                          ) : ''}
+                        </TableCell>
                       }
                       <TableCell>{getGrade(s.rate)} ({getDetailGrade(s.score, s.notes)})</TableCell>
                       <TableCell>{s.score} ({(s.rate * 100).toFixed(2)}%)</TableCell>
                       <TableCell>{s.bp == defaultMisscount ? '-' : s.bp}</TableCell>
+                      {selectedLevel >= 11 && (
+                        <TableCell sx={{ p: 0.5 }}>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleOpenBpiModal(s)}
+                            title="BPI情報を入力"
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      )}
                     </TableRow>
 
                     <TableRow
@@ -476,9 +566,16 @@ const SongTablePage: React.FC = () => {
                               {simpleClearName[s.lamp] ?? '-'}
                             </Box>
                           </Box>
-                          {!Number.isNaN(s.bpi) &&
+                          {(!Number.isNaN(s.bpi) || !Number.isNaN(s.customBpi)) &&
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <span>BPI{s.bpi}</span>
+                              <span>
+                                BPI {!Number.isNaN(s.bpi) ? (
+                                  <>
+                                    {s.bpi}
+                                    {!Number.isNaN(s.customBpi) && ` (${s.customBpi} *)`}
+                                  </>
+                                ) : `${s.customBpi} *`}
+                              </span>
                             </Box>
                           }
 
@@ -512,6 +609,20 @@ const SongTablePage: React.FC = () => {
 
         </Container>
       </SectionCard>
+
+      <BpiInputModal
+        open={bpiModalOpen}
+        onClose={() => setBpiModalOpen(false)}
+        songInfo={selectedSongForBpi ? {
+          id: selectedSongForBpi.id,
+          title: selectedSongForBpi.title,
+          difficulty: selectedSongForBpi.difficulty,
+          notes: selectedSongForBpi.notes,
+          mode: mode
+        } : null}
+        existingData={selectedSongForBpi ? customBpiData?.[mode]?.[`${selectedSongForBpi.id}_${selectedSongForBpi.difficulty}`] : null}
+        onSave={handleBpiSave}
+      />
     </Page>
   );
 };
