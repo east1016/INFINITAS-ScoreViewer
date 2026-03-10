@@ -206,7 +206,7 @@ const CpiPage = () => {
           */}
 
           <LampAchieveProgress stats={stats} totalCount={totalCount} />
-          <FilterPanel filters={filters} onChange={setFilters} />
+          <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} />
 
           <Tabs value={activeTab} variant="scrollable" onChange={(_, v) => setActiveTab(v)} sx={{ mb: 3 }}>
             {Object.keys(cpiClearMap).map(type => (
