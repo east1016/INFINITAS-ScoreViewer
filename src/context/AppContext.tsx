@@ -16,7 +16,10 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [mode, setMode] = useState<'SP' | 'DP'>('SP');
-  const [filters, setFilters] = useState<FilterState>({});
+  const [filters, setFilters] = useState<FilterState>({
+    cleartype: [1, 2, 3, 4, 5, 6, 7],
+    difficultyPattern: [0, 1, 2, 3, 4],
+  });
 
   return (
     <AppContext.Provider value={{ mode, setMode, filters, setFilters }}>
