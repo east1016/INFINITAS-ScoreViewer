@@ -3,6 +3,7 @@ import {
   Box,
   Typography,
   Grid,
+  Paper,
   ToggleButtonGroup,
   ToggleButton,
   CircularProgress,
@@ -227,10 +228,16 @@ const BpiPage = () => {
 
   const getTitleFontSize = (text: string) => {
     const len = text.length;
-    if (len >= 25) return { xs: 6, sm: 13, md: 13 };
-    if (len >= 15) return { xs: 8, sm: 14, md: 14 };
-    return { xs: 10, sm: 14, md: 14 };
+    if (len >= 25) return { xs: 8, sm: 13, md: 13 };
+    if (len >= 15) return { xs: 10, sm: 14, md: 14 };
+    return { xs: 12, sm: 14, md: 14 };
   };
+
+  const metaTextSx = {
+    fontSize: { xs: 10, sm: 12, md: 12 },
+    lineHeight: 1.3,
+    color: 'text.secondary',
+  } as const;
 
   return (
     <Page>
@@ -370,7 +377,7 @@ const BpiPage = () => {
                 </Box>
               </Typography>
 
-              {/* xs=3カラム、sm/md=12カラム。xsは各アイテムxs=1で3列化 */}
+              {/* xs=3カラム、sm/md=12カラム */}
               <Grid
                 container
                 spacing={{ xs: 1, sm: 2 }}
@@ -383,15 +390,11 @@ const BpiPage = () => {
 
                   // BPI差分 = 現在のBPI - 目標BPI（その曲の難易度表BPI）
                   const bpiDiff = song.bpi - song[gradeType];
-                  const boxSx =
-                    song.score === 0
-                      ? { p: { xs: 1, sm: 1 }, border: '1px solid #ccc', borderRadius: 2, backgroundColor: 'white' }
-                      : { p: { xs: 1, sm: 1 }, border: `3px solid ${bpiGapColor(bpiDiff, false)}`, borderRadius: 2, backgroundColor: bpiGapColor(bpiDiff, true) };
+                  const bg = song.score === 0 ? '#FFFFFF' : bpiGapColor(bpiDiff, true);
 
                   return (
-                    <Grid item xs={1} sm={6} md={4} key={key} sx={{ minWidth: 0 }}>
-                      <Box sx={boxSx}>
-                        {/* タイトル：長さでフォント自動調整＆折り返し */}
+                    <Grid item xs={1} sm={4} md={2} key={key} sx={{ minWidth: 0 }}>
+                      <Paper elevation={3} sx={{ p: { xs: 1, sm: 1.2 }, height: '100%', backgroundColor: bg }}>
                         <Typography
                           variant="body2"
                           fontWeight="bold"
@@ -406,58 +409,16 @@ const BpiPage = () => {
                           {renderTitleWithDifficulty(title, song.difficulty)}
                         </Typography>
 
-                        {/* BPI / 難易度 */}
-                        <Typography
-                          variant="body2"
-                          sx={{ fontSize: { xs: 9, sm: 13, md: 14 } }}
-                        >
-                          <Box component="span" fontWeight="bold">BPI {song.bpi}</Box>
-                          {' / '}
-                          {song[gradeType].toFixed(2)}
+                        <Typography variant="caption" display="block" sx={metaTextSx}>
+                          BPI: {song.bpi} / {song[gradeType].toFixed(2)}
                         </Typography>
-
-                        {/* Grade 行：スマホは短縮＆小さめ、タブレット以上は従来表示 */}
-                        <Typography
-                          sx={{
-                            display: { xs: 'none', sm: 'block' },
-                            fontSize: { sm: 13, md: 14 },
-                            lineHeight: 1.3,
-                          }}
-                        >
-                          Grade: {song.grade} ({song.detailGrade})
-                        </Typography>
-                        <Typography
-                          sx={{
-                            display: { xs: 'block', sm: 'none' },
-                            fontSize: 9,
-                            lineHeight: 1.3,
-                            color: 'text.secondary',
-                          }}
-                        >
+                        <Typography variant="caption" display="block" sx={metaTextSx}>
                           {song.grade} ({song.detailGrade})
                         </Typography>
-
-                        {/* EX Score 行：スマホは短縮＆小数桁を減らす */}
-                        <Typography
-                          sx={{
-                            display: { xs: 'none', sm: 'block' },
-                            fontSize: { sm: 13, md: 14 },
-                            lineHeight: 1.3,
-                          }}
-                        >
-                          EX Score: {song.score} ({(song.percentage * 100).toFixed(2)}%)
-                        </Typography>
-                        <Typography
-                          sx={{
-                            display: { xs: 'block', sm: 'none' },
-                            fontSize: 9,
-                            lineHeight: 1.3,
-                            color: 'text.secondary',
-                          }}
-                        >
+                        <Typography variant="caption" display="block" sx={metaTextSx}>
                           {song.score} ({(song.percentage * 100).toFixed(1)}%)
                         </Typography>
-                      </Box>
+                      </Paper>
                     </Grid>
                   );
                 })}
