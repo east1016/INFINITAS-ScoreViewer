@@ -7,12 +7,9 @@ import { ungzip } from 'pako';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAppContext } from '../context/AppContext';
-import { raderCategoryColors } from '../constants/colorConstrains';
 import { chartCategories } from '../constants/chartInfoConstrains';
-import { difficultyKey } from '../constants/difficultyConstrains';
 import SectionCard from '../components/SectionCard';
 import { Page, PageHeader } from '../components/Page';
-import { useNavigate } from 'react-router-dom';
 
 
 const RadarPage = () => {
@@ -26,7 +23,6 @@ const RadarPage = () => {
   const [topAverages, setTopAverages] = useState<Record<string, number>>({});
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRadar = async () => {
@@ -192,7 +188,7 @@ const RadarPage = () => {
                       return (
                         <React.Fragment key={key}>
                           {/* PC/タブレット向け：従来の4列 */}
-                          <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} onClick={() => navigate(`/edit/${s.id}/${difficultyKey.indexOf(s.difficulty)}`)}>
+                          <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }}>
                             <TableCell>{titleMap[s.id] || s.id} [{s.diff}]</TableCell>
                             <TableCell>{level ? `☆${level}` : '-'}</TableCell>
                             <TableCell>{radarVal.toFixed(2)} / {attrVal.toFixed(2)}</TableCell>
@@ -200,7 +196,7 @@ const RadarPage = () => {
                           </TableRow>
 
                           {/* スマホ向け：1セルに畳む */}
-                          <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} onClick={() => navigate(`/edit/${s.id}/${difficultyKey.indexOf(s.difficulty)}`)}>
+                          <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }}>
                             <TableCell colSpan={4} sx={{ py: 1.25 }}>
                               <Typography variant="body2" fontWeight={700} noWrap>
                                 {titleMap[s.id] || s.id} [{s.diff}]

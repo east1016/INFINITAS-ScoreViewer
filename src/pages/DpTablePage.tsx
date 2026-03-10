@@ -14,7 +14,6 @@ import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
-import { useNavigate } from 'react-router-dom';
 
 const DpTablePage = () => {
   const { mode, filters, setFilters } = useAppContext();
@@ -29,7 +28,6 @@ const DpTablePage = () => {
   const [loading, setLoading] = useState(true);
   const [activeRange, setActiveRange] = useState<number>(12);
   const [tabRanges, setTabRanges] = useState<number[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -145,7 +143,6 @@ const DpTablePage = () => {
                   const title = titleMap[song.id] || song.id;
                   const diffLabel = `[${song.difficulty}]`;
                   const displayTitle = `${title} ${diffLabel}`;
-                  const detailLink = `https://zasa.sakura.ne.jp/dp/music.php?id=${song.snj_id}`;
                   const index = difficultyKey.indexOf(song.difficulty);
                   const officialLevel = chartInfo[song.id]?.level?.dp?.[index];
 
@@ -163,7 +160,6 @@ const DpTablePage = () => {
                             wordBreak: 'break-word',
                             lineHeight: 1.35,
                           }}
-                          onClick={() => navigate(`/edit/${song.id}/${difficultyKey.indexOf(song.difficulty)}`)}
                         >
                             {displayTitle}
                         </Typography>

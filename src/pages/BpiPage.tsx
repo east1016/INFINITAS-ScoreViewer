@@ -19,9 +19,7 @@ import { getPercentage, getDetailGrade, getGrade } from '../utils/gradeUtils';
 import { isMatchSong } from '../utils/filterUtils';
 import { bpiGapColor, scoreColorMap } from '../constants/colorConstrains';
 import { Page, PageHeader } from '../components/Page';
-import { useNavigate } from 'react-router-dom';
 import SectionCard from '../components/SectionCard';
-import { difficultyKey } from '../constants/difficultyConstrains';
 
 // BpiPageコンポーネント
 const BpiPage = () => {
@@ -38,7 +36,6 @@ const BpiPage = () => {
   const [songInfo, setSongInfo] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [bpiVersion, setBpiVersion] = useState<string>('');
-  const navigate = useNavigate();
 
 
   // データ取得
@@ -379,7 +376,6 @@ const BpiPage = () => {
                             wordBreak: 'break-word',
                             lineHeight: 1.35,
                           }}
-                          onClick={() => navigate(`/edit/${song.id}/${difficultyKey.indexOf(song.difficulty)}`)}
                         >
                           {displayTitle}
                         </Typography>

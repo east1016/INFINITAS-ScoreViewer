@@ -14,8 +14,6 @@ import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { isMatchSong } from '../utils/filterUtils';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
-import { useNavigate } from 'react-router-dom';
-import { difficultyKey } from '../constants/difficultyConstrains';
 
 
 const CpiPage = () => {
@@ -30,7 +28,6 @@ const CpiPage = () => {
   const [clearData, setClearData] = useState<{ [key: string]: number }>({});
   const [missData, setMissData] = useState<{ [key: string]: number }>({});
   const [unlockedData, setUnlockedData] = useState<{ [key: string]: boolean }>({});
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -255,7 +252,6 @@ const CpiPage = () => {
                               wordBreak: 'break-word',
                               lineHeight: 1.35,
                             }}
-                            onClick={() => navigate(`/edit/${song.id}/${difficultyKey.indexOf(song.difficulty)}`)}
                           >
                             {displayTitle}
                           </Typography>
