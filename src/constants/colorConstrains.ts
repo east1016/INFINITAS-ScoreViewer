@@ -5,7 +5,7 @@ export const clearColorMap: { [key: number]: string } = {
   3: '#99FF99',
   4: '#99CCFF',
   5: '#FF6666',
-  6: '#FFFF99',
+  6: '#FFD700',
   7: '#FF9966'
 };
 
