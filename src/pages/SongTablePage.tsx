@@ -32,6 +32,7 @@ import { getLampAchiveCount, getGradeAchiveCount } from '../utils/lampUtils';
 import BpiInputModal from '../components/BpiInputModal';
 import RecommendModal from '../components/RecommendModal';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
 
 const BPI_SERVER_URL = 'http://localhost:3001';
 
@@ -140,8 +141,7 @@ const SongTablePage: React.FC = () => {
 
   // Load BPI versions on mount
   useEffect(() => {
-    fetch('https://chinimuruhi.github.io/IIDX-Data-Table/bpi/versions.json')
-      .then((res) => res.json())
+    fetchJsonWithFallback<string[]>('https://chinimuruhi.github.io/IIDX-Data-Table/bpi/versions.json')
       .then((arr: string[]) => {
         setVersions(arr);
         const saved = localStorage.getItem('bpiVersion');
@@ -188,12 +188,12 @@ const SongTablePage: React.FC = () => {
           bpiDpInfo,
           customBpi,
         ] = await Promise.all([
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json').then(r => r.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz').then(r => r.arrayBuffer()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz').then(r => r.arrayBuffer()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json').then(r => r.json()),
-          fetch(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/sp_dict.json`).then((res) => res.json()),
-          fetch(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/dp_dict.json`).then((res) => res.json()),
+          fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
+          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
+          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
+          fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json'),
+          fetchJsonWithFallback<any>(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/sp_dict.json`),
+          fetchJsonWithFallback<any>(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/dp_dict.json`),
           fetchCustomBpiData(),
         ]);
 

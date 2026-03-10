@@ -1,11 +1,8 @@
+import { fetchJsonWithFallback } from './fetchWithFallback';
+
 // bpiURLの生成
 export async function resolveVersionByIndex(index: number): Promise<string> {
-  const response = await fetch('https://chinimuruhi.github.io/IIDX-Data-Table/bpi/versions.json');
-  if (!response.ok) {
-    throw new Error(`Failed to fetch versions.json: ${response.status}`);
-  }
-
-  const versions: string[] = await response.json();
+  const versions = await fetchJsonWithFallback<string[]>('https://chinimuruhi.github.io/IIDX-Data-Table/bpi/versions.json');
 
   if (!Array.isArray(versions) || versions.length === 0) {
     throw new Error("versions.json が空または不正です");
