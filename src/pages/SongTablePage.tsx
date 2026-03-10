@@ -517,11 +517,11 @@ const SongTablePage: React.FC = () => {
                         <TableCell>
                           {!Number.isNaN(s.bpi) ? (
                             <>
-                              {s.bpi}
-                              {!Number.isNaN(s.customBpi) && ` (${s.customBpi} *)`}
+                              {s.bpi.toFixed(2)}
+                              {!Number.isNaN(s.customBpi) && ` (${s.customBpi.toFixed(2)} *)`}
                             </>
                           ) : !Number.isNaN(s.customBpi) ? (
-                            `${s.customBpi} *`
+                            `${s.customBpi.toFixed(2)} *`
                           ) : ''}
                         </TableCell>
                       }
@@ -571,10 +571,10 @@ const SongTablePage: React.FC = () => {
                               <span>
                                 BPI {!Number.isNaN(s.bpi) ? (
                                   <>
-                                    {s.bpi}
-                                    {!Number.isNaN(s.customBpi) && ` (${s.customBpi} *)`}
+                                    {s.bpi.toFixed(2)}
+                                    {!Number.isNaN(s.customBpi) && ` (${s.customBpi.toFixed(2)} *)`}
                                   </>
-                                ) : `${s.customBpi} *`}
+                                ) : `${s.customBpi.toFixed(2)} *`}
                               </span>
                             </Box>
                           }

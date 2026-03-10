@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useState } from 'react';
 import {
   Container, Typography, Button, Box, FormControl, InputLabel, Select, MenuItem,
-  SelectChangeEvent, Alert, Dialog, DialogTitle, DialogContent, DialogActions, TextField
+  SelectChangeEvent, Alert, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { parseOfficialCsv, parseRefluxTsv, parseIDCCsv, parseInbCsv, mergeWithCSVEntries } from '../utils/scoreDataUtils';
@@ -15,23 +14,12 @@ import SectionCard from '../components/SectionCard';
 const CsvLoaderPage = () => {
   const navigate = useNavigate();
   const { mode, setMode } = useAppContext();
-  const [format, setFormat] = useState<'official' | 'reflux' | 'idc' | 'inb'>('idc');
+  const [format] = useState<'official' | 'reflux' | 'idc' | 'inb'>('reflux');
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [reportDialogOpen, setReportDialogOpen] = useState<boolean>(false);
   const [failedTitles, setFailedTitles] = useState<string[]>([]);
-  const [djName, setDjName] = useState<string>('');
-  const [isDjNameEmpty, setIsDjNameEmpty] = useState<boolean>(true);
-
-  // 保存されているDJNameを取得
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user') || '{}') || {};
-    if (storedUser.djname) {
-      setDjName(storedUser.djname);
-      setIsDjNameEmpty(false);
-    }
-  }, []);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -88,7 +76,8 @@ const CsvLoaderPage = () => {
       localStorage.setItem('timestamps', JSON.stringify(timestamps));
 
       const lastUpdated = getCurrentFormattedDate();
-      localStorage.setItem('user', JSON.stringify({ djname: djName, lastupdated: lastUpdated }));
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}') || {};
+      localStorage.setItem('user', JSON.stringify({ ...storedUser, lastupdated: lastUpdated }));
     } catch (e: any) {
       setError(`読み込み失敗: ${e}`);
     }
@@ -143,32 +132,15 @@ const CsvLoaderPage = () => {
       <SectionCard>
         <Container sx={{ mt: 4 }}>
 
-          {isDjNameEmpty && (
-            <>
-              <TextField
-                label="DJ Name"
-                value={djName}
-                onChange={(e) => setDjName(e.target.value)}
-                inputProps={{ maxLength: 20 }}
-                fullWidth
-                sx={{ mb: 2 }}
-              />
-            </>
-          )}
-
           <Box sx={{ mb: 2 }}>
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl fullWidth sx={{ mb: 2 }} disabled>
               <InputLabel id="format-label">形式</InputLabel>
               <Select
                 labelId="format-label"
                 value={format}
                 label="形式"
-                onChange={(e: SelectChangeEvent) => setFormat(e.target.value as any)}
               >
-                <MenuItem value="idc">INFINITAS打鍵カウンタCSV</MenuItem>
-                <MenuItem value="inb">INFINITASリザルト手帳CSV</MenuItem>
                 <MenuItem value="reflux">Reflux TSV</MenuItem>
-                <MenuItem value="official">KONAMI 公式スコアCSV</MenuItem>
               </Select>
             </FormControl>
 
@@ -240,9 +212,6 @@ const CsvLoaderPage = () => {
                 <Typography variant="body2" sx={{ mb: 2 }}>
                   文字コードはUTF-8を想定しております。TSVファイルの手動修正を行う場合は文字コードにご注意ください。
                 </Typography>
-                <Alert severity="warning">
-                  読み込み形式としては対応しておりますが、Refluxの使用を推奨するものではありません。使用は自己責任でお願いいたします。
-                </Alert>
               </>
             )}
           </Box>
@@ -251,12 +220,6 @@ const CsvLoaderPage = () => {
             ファイルを選択
             <input type="file" hidden onChange={handleFileUpload} />
           </Button>
-
-          <Box sx={{ mt: 1.5 }}>
-            <Button component={RouterLink} to="/edit" size="small">
-              手動入力はこちら
-            </Button>
-          </Box>
 
           {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
           {warnings.length > 0 && (
