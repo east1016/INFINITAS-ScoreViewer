@@ -26,6 +26,7 @@ const BpiPage = () => {
   const { mode, filters, setFilters } = useAppContext();
   const [gradeType, setGradeType] = useState<'aaa_bpi' | 'max_minus_bpi'>('aaa_bpi');
   const [level, setLevel] = useState<11 | 12>(12);
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const [songs, setSongs] = useState<any[]>([]);
   const [titleMap, setTitleMap] = useState<{ [key: string]: string }>({});
   const [clearData, setClearData] = useState<{ [key: string]: number }>({});
@@ -87,7 +88,7 @@ const BpiPage = () => {
   };
 
   // BPIを10刻みのセクションでグループ化
-  const groupByBpiRange = (songs: any[]) => {
+  const groupByBpiRange = (songs: any[], order: 'desc' | 'asc') => {
     const sections: { [key: string]: any[] } = {};
 
     songs.forEach((song) => {
@@ -100,13 +101,17 @@ const BpiPage = () => {
       sections[range].push(song);
     });
 
-    // セクション内でBPIが高い順に並べ替え
+    // セクション内でソート
     Object.keys(sections).forEach((range) => {
-      sections[range] = sections[range].sort((a, b) => b[gradeType] - a[gradeType]);
+      sections[range] = sections[range].sort((a, b) =>
+        order === 'desc' ? b[gradeType] - a[gradeType] : a[gradeType] - b[gradeType]
+      );
     });
 
-    // BPI範囲を大きい順に並べ替え
-    const sortedRanges = Object.keys(sections).sort((a, b) => parseInt(b) - parseInt(a));
+    // BPI範囲をソート
+    const sortedRanges = Object.keys(sections).sort((a, b) =>
+      order === 'desc' ? parseInt(b) - parseInt(a) : parseInt(a) - parseInt(b)
+    );
 
     return { sortedRanges, sections };
   };
@@ -155,8 +160,8 @@ const BpiPage = () => {
   }, [songs, scoreData, level, gradeType, filters, konamiInfInfo, chartInfo]);
 
   const { sortedRanges, sections } = useMemo(() => {
-    return groupByBpiRange(filteredSongs);
-  }, [filteredSongs]);
+    return groupByBpiRange(filteredSongs, sortOrder);
+  }, [filteredSongs, sortOrder]);
 
   const totalBpi = useMemo(() => {
     const calculateLevelBpi = (level: number) => {
@@ -324,6 +329,25 @@ const BpiPage = () => {
                 <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>MAX-難易度表</Box>
               </ToggleButton>
             </ToggleButtonGroup>
+
+            <ToggleButtonGroup
+              value={sortOrder}
+              exclusive
+              onChange={(e, v) => v && setSortOrder(v)}
+              size="small"
+              sx={{
+                flexWrap: 'nowrap',
+                '& .MuiToggleButton-root': {
+                  px: { xs: 1.25, sm: 1.5 },
+                  py: { xs: 0.5, sm: 0.75 },
+                  fontSize: { xs: 12, sm: 13 },
+                  whiteSpace: 'nowrap',
+                },
+              }}
+            >
+              <ToggleButton value="desc">降順</ToggleButton>
+              <ToggleButton value="asc">昇順</ToggleButton>
+            </ToggleButtonGroup>
           </Box>
 
           {/* BPIセクションを表示 */}
@@ -356,10 +380,12 @@ const BpiPage = () => {
                   const title = titleMap[song.id];
                   const displayTitle = `${title}[${song.difficulty}]`;
 
+                  // BPI差分 = 現在のBPI - 目標BPI（その曲の難易度表BPI）
+                  const bpiDiff = song.bpi - song[gradeType];
                   const boxSx =
                     song.score === 0
                       ? { p: { xs: 1, sm: 1 }, border: '1px solid #ccc', borderRadius: 2, backgroundColor: 'white' }
-                      : { p: { xs: 1, sm: 1 }, border: `3px solid ${bpiGapColor(song.gap, false)}`, borderRadius: 2, backgroundColor: bpiGapColor(song.gap, true) };
+                      : { p: { xs: 1, sm: 1 }, border: `3px solid ${bpiGapColor(bpiDiff, false)}`, borderRadius: 2, backgroundColor: bpiGapColor(bpiDiff, true) };
 
                   return (
                     <Grid item xs={1} sm={6} md={4} key={key} sx={{ minWidth: 0 }}>
@@ -379,13 +405,14 @@ const BpiPage = () => {
                           {displayTitle}
                         </Typography>
 
-                        {/* 難易度値 */}
+                        {/* BPI / 難易度 */}
                         <Typography
                           variant="body2"
-                          fontWeight="bold"
                           sx={{ fontSize: { xs: 9, sm: 13, md: 14 } }}
                         >
-                          難{song[gradeType].toFixed(2)}
+                          <Box component="span" fontWeight="bold">BPI {song.bpi}</Box>
+                          {' / '}
+                          {song[gradeType].toFixed(2)}
                         </Typography>
 
                         {/* Grade 行：スマホは短縮＆小さめ、タブレット以上は従来表示 */}
@@ -417,7 +444,7 @@ const BpiPage = () => {
                             lineHeight: 1.3,
                           }}
                         >
-                          EX Score: {song.score} ({(song.percentage * 100).toFixed(2)}%, BPI{song.bpi})
+                          EX Score: {song.score} ({(song.percentage * 100).toFixed(2)}%)
                         </Typography>
                         <Typography
                           sx={{
@@ -428,16 +455,6 @@ const BpiPage = () => {
                           }}
                         >
                           {song.score} ({(song.percentage * 100).toFixed(1)}%)
-                        </Typography>
-                        <Typography
-                          sx={{
-                            display: { xs: 'block', sm: 'none' },
-                            fontSize: 9,
-                            lineHeight: 1.3,
-                            color: 'text.secondary',
-                          }}
-                        >
-                          BPI{song.bpi}
                         </Typography>
                       </Box>
                     </Grid>
