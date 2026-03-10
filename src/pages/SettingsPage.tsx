@@ -53,7 +53,7 @@ const SettingsPage: React.FC = () => {
   const [driveImportDialogOpen, setDriveImportDialogOpen] = useState(false);
 
   const [versions, setVersions] = useState<string[]>([]);
-  const [selectedVersion, setSelectedVersion] = useState<number>(-1);
+  const [selectedVersion, setSelectedVersion] = useState<number>(0);
 
   useEffect(() => {
     try {
@@ -76,14 +76,18 @@ const SettingsPage: React.FC = () => {
       setVersions(arr);
       const saved = localStorage.getItem('bpiVersion');
       if (saved !== null) {
-        if (saved === '-1') {
-          setSelectedVersion(-1);
+        const idx = parseInt(saved, 10);
+        if (!isNaN(idx) && idx >= 0 && arr[idx]) {
+          setSelectedVersion(idx);
         } else {
-          const idx = parseInt(saved, 10);
-          if (!isNaN(idx) && arr[idx]) {
-            setSelectedVersion(idx);
-          }
+          // Default to latest (index 0)
+          setSelectedVersion(0);
+          localStorage.setItem('bpiVersion', '0');
         }
+      } else {
+        // Default to latest (index 0)
+        setSelectedVersion(0);
+        localStorage.setItem('bpiVersion', '0');
       }
     })
     .catch(() => {
@@ -107,12 +111,8 @@ const SettingsPage: React.FC = () => {
 
   // BPI Version
   const handleSaveVersion = () => {
-  try {
-      if (selectedVersion === -1) {
-        localStorage.setItem('bpiVersion', '-1');
-      } else {
-        localStorage.setItem('bpiVersion', String(selectedVersion));
-      }
+    try {
+      localStorage.setItem('bpiVersion', String(selectedVersion));
       setSnack({ open: true, message: 'バージョン設定を保存しました。', severity: 'success' });
     } catch {
       setSnack({ open: true, message: 'バージョン設定の保存に失敗しました。', severity: 'error' });
@@ -538,7 +538,6 @@ const SettingsPage: React.FC = () => {
                   label="バージョン"
                   onChange={(e) => setSelectedVersion(Number(e.target.value))}
                 >
-                  <MenuItem value="-1">常に最新を使用する</MenuItem>
                   {versions.map((v, i) => (
                     <MenuItem key={i} value={i}>
                       {v}
