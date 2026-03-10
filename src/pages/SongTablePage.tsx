@@ -531,8 +531,8 @@ const SongTablePage: React.FC = () => {
                 <col style={{ width: 70 }} />
                 <col style={{ width: '30%' }} />
                 <col style={{ width: 110 }} />
-                <col style={{ width: 120 }} />
-                {selectedLevel >= 11 && <col style={{ width: 70 }} />}
+                <col style={{ width: 110 }} />
+                {selectedLevel >= 11 && <col style={{ width: 80 }} />}
                 <col style={{ width: 140 }} />
                 <col style={{ width: 80 }} />
                 {selectedLevel >= 11 && <col style={{ width: 50 }} />}
