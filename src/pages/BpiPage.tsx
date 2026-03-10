@@ -20,6 +20,7 @@ import { isMatchSong } from '../utils/filterUtils';
 import { bpiGapColor, scoreColorMap } from '../constants/colorConstrains';
 import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
+import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
 
 // BpiPageコンポーネント
 const BpiPage = () => {
@@ -55,11 +56,11 @@ const BpiPage = () => {
           chartGz,
           songInfoGz
         ] = await Promise.all([
-          fetch(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersionRes}/${mode.toLowerCase()}_list.json`).then((res) => res.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json').then((res) => res.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json').then((res) => res.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz').then((res) => res.arrayBuffer()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz').then(res => res.arrayBuffer())
+          fetchJsonWithFallback<any[]>(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersionRes}/${mode.toLowerCase()}_list.json`),
+          fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
+          fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json'),
+          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
+          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz')
         ]);
 
         setSongs(songsRes);

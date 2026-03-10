@@ -25,6 +25,7 @@ import SectionCard from '../components/SectionCard';
 import { Page, PageHeader } from '../components/Page';
 import { mergeWithJSONData } from '../utils/scoreDataUtils';
 import { CLIENT_ID, DRIVE_SCOPE, DRIVE_FILE_NAME, DRIVE_FOLDER_NAME } from '../constants/driveConstrains';
+import { fetchJsonWithFallback } from '../utils/fetchWithFallback';
 
 declare global {
   interface Window { google?: any; }
@@ -70,8 +71,7 @@ const SettingsPage: React.FC = () => {
         setGoogleReady(false);
         setSnack({ open: true, message: 'Google連携の初期化に失敗しました。', severity: 'error' });
       });
-    fetch('https://chinimuruhi.github.io/IIDX-Data-Table/bpi/versions.json')
-    .then((res) => res.json())
+    fetchJsonWithFallback<string[]>('https://chinimuruhi.github.io/IIDX-Data-Table/bpi/versions.json')
     .then((arr: string[]) => {
       setVersions(arr);
       const saved = localStorage.getItem('bpiVersion');

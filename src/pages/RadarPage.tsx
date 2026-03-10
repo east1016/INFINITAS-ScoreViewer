@@ -8,8 +8,10 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAppContext } from '../context/AppContext';
 import { chartCategories } from '../constants/chartInfoConstrains';
+import { difficultyKey } from '../constants/difficultyConstrains';
 import SectionCard from '../components/SectionCard';
 import { Page, PageHeader } from '../components/Page';
+import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
 
 
 const RadarPage = () => {
@@ -33,9 +35,9 @@ const RadarPage = () => {
           : 'https://chinimuruhi.github.io/IIDX-Data-Table/notes_radar/dp.json.gz';
 
         const [radarBuf, titleJson, chartInfoBuf] = await Promise.all([
-          fetch(radarUrl).then(res => res.arrayBuffer()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json').then(res => res.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz').then(res => res.arrayBuffer())
+          fetchArrayBufferWithFallback(radarUrl),
+          fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
+          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz')
         ]);
 
         const radarJson = JSON.parse(new TextDecoder().decode(ungzip(radarBuf)));

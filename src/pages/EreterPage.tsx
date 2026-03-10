@@ -13,6 +13,7 @@ import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
+import { fetchJsonWithFallback, fetchArrayBufferWithFallback } from '../utils/fetchWithFallback';
 
 const EreterPage = () => {
   const { mode, filters, setFilters } = useAppContext();
@@ -33,11 +34,11 @@ const EreterPage = () => {
       setLoading(true);
       try {
         const [songRes, titleRes, chartRes, konamiInfInfoRes, songInfoGz] = await Promise.all([
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/ereter/songs_dict.json').then(res => res.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json').then(res => res.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz').then(res => res.arrayBuffer()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json').then(res => res.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz').then(res => res.arrayBuffer()),
+          fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/ereter/songs_dict.json'),
+          fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
+          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
+          fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json'),
+          fetchArrayBufferWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
         ]);
 
         const local = JSON.parse(localStorage.getItem('data') || '{}');
