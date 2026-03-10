@@ -24,7 +24,7 @@ const Sp11TablePage = () => {
   const [clearData, setClearData] = useState<{ [key: string]: number }>({});
   const [missData, setMissData] = useState<{ [key: string]: number }>({});
   const [unlockedData, setUnlockedData] = useState<{ [key: string]: boolean }>({});
-  const [activeTab, setActiveTab] = useState<'normal' | 'hard'>('normal');
+  const [activeTab, setActiveTab] = useState<'normal' | 'hard'>('hard');
   const [konamiInfInfo, setKonamiInfInfo] = useState<any>({});
   const [chartInfo, setChartInfo] = useState<any>({});
   const [songInfo, setSongInfo] = useState<any>({});
@@ -112,8 +112,8 @@ const Sp11TablePage = () => {
           <FilterPanel filters={filters} onChange={setFilters} />
 
           <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} sx={{ mb: 3 }}>
-            <Tab label="CLEAR難易度" value="normal" />
             <Tab label="HARD難易度" value="hard" />
+            <Tab label="CLEAR難易度" value="normal" />
           </Tabs>
 
           {groupedSongs.map(group => (

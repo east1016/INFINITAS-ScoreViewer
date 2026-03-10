@@ -364,7 +364,7 @@ const SongTablePage: React.FC = () => {
               <colgroup>
                 <col style={{ width: 70 }} />
                 <col style={{ width: '35%' }} />
-                <col style={{ width: 100 }} />
+                <col style={{ width: 110 }} />
                 {selectedLevel >= 11 && <col style={{ width: 70 }} />}
                 <col style={{ width: 120 }} />
                 <col style={{ width: 140 }} />
@@ -412,7 +412,7 @@ const SongTablePage: React.FC = () => {
                         {acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : ''}
                       </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
-                        <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: clearColorMap[s.lamp] }}>
+                        <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: clearColorMap[s.lamp], textAlign: 'center', minWidth: 80 }}>
                           {simpleClearName[s.lamp] ?? '-'}
                         </Box>
                       </TableCell>
