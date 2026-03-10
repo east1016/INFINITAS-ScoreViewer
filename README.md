@@ -1,6 +1,22 @@
 # INFINITAS-ScoreViewer
 https://chinimuruhi.github.io/INFINITAS-ScoreViewer/
 
+## ローカル環境での起動方法
+
+```bash
+npm install
+```
+
+2つのターミナルで以下を実行:
+
+```bash
+# ターミナル1: 開発サーバー
+npm run dev
+
+# ターミナル2: BPIサーバー
+npm run bpi-server
+```
+
 ## 外部データのバックアップ
 
 本アプリケーションは外部サイト (chinimuruhi.github.io/IIDX-Data-Table) からデータを取得しています。
