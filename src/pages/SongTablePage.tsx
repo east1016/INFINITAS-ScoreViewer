@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   Container, Typography, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, FormControl, InputLabel, Select, MenuItem,
-  Box, Backdrop, CircularProgress, Button
+  Box, Backdrop, CircularProgress, Button, ButtonGroup
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
@@ -67,6 +67,8 @@ const SongTablePage: React.FC = () => {
     key: 'title',
     direction: 'asc',
   });
+  const [displayLimit, setDisplayLimit] = useState<number>(50);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const handleSort = (key: SortKey) => {
     setSortConfig((prev) =>
@@ -199,6 +201,11 @@ const SongTablePage: React.FC = () => {
       });
   }, [songs, selectedLevel, filters, clearData, chartInfo, konamiInfInfo, unlockedData, songInfo]);
 
+  // フィルター変更時にページを1に戻す
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, sortConfig]);
+
   const handleSelectSong = (songId: string, difficultyIndex: string) => {
     navigate(`/edit/${songId}/${difficultyIndex}`);
   };
@@ -235,6 +242,22 @@ const SongTablePage: React.FC = () => {
     });
   }, [filtered, sortConfig]);
 
+  const totalPages = useMemo(() => {
+    if (displayLimit === 0) return 1;
+    return Math.ceil(sorted.length / displayLimit);
+  }, [sorted.length, displayLimit]);
+
+  const displayed = useMemo(() => {
+    if (displayLimit === 0) return sorted;
+    const start = (currentPage - 1) * displayLimit;
+    return sorted.slice(start, start + displayLimit);
+  }, [sorted, displayLimit, currentPage]);
+
+  const handleLimitChange = (limit: number) => {
+    setDisplayLimit(limit);
+    setCurrentPage(1);
+  };
+
   return (
     <Page>
       <PageHeader compact title="楽曲一覧" />
@@ -245,6 +268,73 @@ const SongTablePage: React.FC = () => {
           </Backdrop>
 
           <FilterPanel filters={filters} onChange={setFilters} />
+
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+            <Typography variant="body2" sx={{ minWidth: 120 }}>
+              全{sorted.length}件中 {displayLimit === 0 ? `1-${sorted.length}` : `${(currentPage - 1) * displayLimit + 1}-${Math.min(currentPage * displayLimit, sorted.length)}`}件
+            </Typography>
+
+            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+              {displayLimit !== 0 && totalPages > 1 && (
+                <ButtonGroup size="small" variant="outlined">
+                  <Button
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                  >
+                    {'<<'}
+                  </Button>
+                  <Button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    {'<'}
+                  </Button>
+                  <Button sx={{ minWidth: 80, pointerEvents: 'none' }}>
+                    {currentPage} / {totalPages}
+                  </Button>
+                  <Button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    {'>'}
+                  </Button>
+                  <Button
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                  >
+                    {'>>'}
+                  </Button>
+                </ButtonGroup>
+              )}
+            </Box>
+
+            <ButtonGroup size="small" variant="outlined">
+              <Button
+                onClick={() => handleLimitChange(50)}
+                variant={displayLimit === 50 ? 'contained' : 'outlined'}
+              >
+                50件
+              </Button>
+              <Button
+                onClick={() => handleLimitChange(100)}
+                variant={displayLimit === 100 ? 'contained' : 'outlined'}
+              >
+                100件
+              </Button>
+              <Button
+                onClick={() => handleLimitChange(200)}
+                variant={displayLimit === 200 ? 'contained' : 'outlined'}
+              >
+                200件
+              </Button>
+              <Button
+                onClick={() => handleLimitChange(0)}
+                variant={displayLimit === 0 ? 'contained' : 'outlined'}
+              >
+                全件
+              </Button>
+            </ButtonGroup>
+          </Box>
 
           {isXs && (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
@@ -304,7 +394,7 @@ const SongTablePage: React.FC = () => {
               </TableHead>
 
               <TableBody>
-                {sorted.map((s) => (
+                {displayed.map((s) => (
                   <React.Fragment key={`${s.id}_${s.difficulty}`}>
                     <TableRow
                       sx={{ display: { xs: 'none', sm: 'table-row' } }}
