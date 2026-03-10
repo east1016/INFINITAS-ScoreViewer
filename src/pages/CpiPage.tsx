@@ -11,6 +11,7 @@ import { clearColorMap } from '../constants/colorConstrains';
 import { cpiClearMap } from '../constants/clearConstrains';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { isMatchSong } from '../utils/filterUtils';
+import { renderTitleWithDifficulty } from '../utils/titleUtils';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
@@ -253,7 +254,7 @@ const CpiPage = () => {
                               lineHeight: 1.35,
                             }}
                           >
-                            {displayTitle}
+                            {renderTitleWithDifficulty(title, song.difficulty)}
                           </Typography>
 
                           {cpiValue !== -2 && (

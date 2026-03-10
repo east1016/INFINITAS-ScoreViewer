@@ -10,6 +10,7 @@ import { useAppContext } from '../context/AppContext';
 import { clearColorMap } from '../constants/colorConstrains';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { isMatchSong } from '../utils/filterUtils';
+import { renderTitleWithDifficulty } from '../utils/titleUtils';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
@@ -148,7 +149,7 @@ const Sp11TablePage = () => {
                             lineHeight: 1.35,
                           }}
                         >
-                          {displayTitle}
+                          {renderTitleWithDifficulty(title, song.difficulty)}
                         </Typography>
                         <Typography variant="caption" display="block">
                           MISS: {missData[key] == null || missData[key] === defaultMisscount ? '-' : missData[key]}

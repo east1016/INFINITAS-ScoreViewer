@@ -20,7 +20,7 @@ import { simpleClearName } from '../constants/clearConstrains';
 import { defaultMisscount } from '../constants/defaultValues';
 
 import { getPercentage, getDetailGrade, getGrade } from '../utils/gradeUtils';
-import { generateSearchText } from '../utils/titleUtils';
+import { generateSearchText, renderTitleWithDifficulty } from '../utils/titleUtils';
 import { isMatchSong } from '../utils/filterUtils';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { acInfDiffMap } from '../constants/titleConstrains';
@@ -576,8 +576,7 @@ const SongTablePage: React.FC = () => {
                     >
                       <TableCell>⭐︎{s.level}</TableCell>
                       <TableCell>
-                        {s.title} [{s.difficulty}]
-                        {acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : ''}
+                        {renderTitleWithDifficulty(s.title, s.difficulty, acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : undefined)}
                       </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
                         <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: clearColorMap[s.lamp], textAlign: 'center', minWidth: 80 }}>
@@ -633,7 +632,7 @@ const SongTablePage: React.FC = () => {
                     >
                       <TableCell colSpan={6} sx={{ py: 1.25 }}>
                         <Typography variant="body2" fontWeight={700} noWrap>
-                          {s.title} [{s.difficulty}] {acInfDiffMap[Number(s.id)] ? '(INFINITAS)' : ''}
+                          {renderTitleWithDifficulty(s.title, s.difficulty, acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : undefined)}
                         </Typography>
 
                         <Box
