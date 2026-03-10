@@ -226,9 +226,12 @@ const SongTablePage: React.FC = () => {
         case 'bp': 
           return cmpNum(a.bp, b.bp);
         case 'bpi': {
-          const aBpi = Number.isNaN(a.bpi) ? -99 : a.bpi;
-          const bBpi = Number.isNaN(b.bpi) ? -99 : b.bpi;
-          return cmpNum(aBpi, bBpi);
+          const aIsNaN = Number.isNaN(a.bpi);
+          const bIsNaN = Number.isNaN(b.bpi);
+          if (aIsNaN && bIsNaN) return 0;
+          if (aIsNaN) return 1;
+          if (bIsNaN) return -1;
+          return cmpNum(a.bpi, b.bpi);
         }
         default:
           return 0;
