@@ -14,7 +14,7 @@ import FilterPanel from '../components/FilterPanel';
 import { useAppContext } from '../context/AppContext';
 
 import { difficultyKey } from '../constants/difficultyConstrains';
-import { notesOverride } from '../constants/chartInfoConstrains';
+import { notesOverride, levelOverride } from '../constants/chartInfoConstrains';
 import { clearColorMap, scoreColorMapLight } from '../constants/colorConstrains';
 import { simpleClearName } from '../constants/clearConstrains';
 import { defaultMisscount } from '../constants/defaultValues';
@@ -220,10 +220,12 @@ const SongTablePage: React.FC = () => {
 
           for (const diff of difficultyKey) {
             const diffIndex = difficultyKey.indexOf(diff);
-            const lv = c.level?.[mode.toLowerCase()]?.[diffIndex] ?? 0;
+            const key = `${id}_${diff}`;
+            // レベル: chartInfoが0の場合はlevelOverrideからフォールバック
+            const chartLevel = c.level?.[mode.toLowerCase()]?.[diffIndex] ?? 0;
+            const lv = chartLevel > 0 ? chartLevel : (levelOverride[key] ?? 0);
             if (!lv) continue;
 
-            const key = `${id}_${diff}`;
             // ノーツ数: chartInfoが0の場合はnotesOverrideからフォールバック
             const chartNotes = c.notes?.[mode.toLowerCase()]?.[diffIndex] ?? 0;
             const notes = chartNotes > 0 ? chartNotes : (notesOverride[key] ?? 0);
