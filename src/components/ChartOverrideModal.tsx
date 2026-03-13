@@ -4,7 +4,7 @@ import {
   Button, TextField, Box, Typography, Alert
 } from '@mui/material';
 
-interface BpiInputModalProps {
+interface ChartOverrideModalProps {
   open: boolean;
   onClose: () => void;
   songInfo: {
@@ -12,70 +12,57 @@ interface BpiInputModalProps {
     title: string;
     difficulty: string;
     notes: number;
-    mode: 'SP' | 'DP';
+    level: number | string;
   } | null;
   existingData?: {
-    wr: number;
-    avg: number;
-    updatedAt?: string;
-  } | null;
-  officialData?: {
-    wr: number;
-    avg: number;
     notes: number;
-    coef?: number;
+    level?: number;
+    title: string;
   } | null;
-  bpiVersionName?: string;
   onSave: () => void;
 }
 
-const BPI_SERVER_URL = 'http://localhost:3001';
+const CHART_SERVER_URL = 'http://localhost:3001';
 
-const BpiInputModal: React.FC<BpiInputModalProps> = ({
+const ChartOverrideModal: React.FC<ChartOverrideModalProps> = ({
   open,
   onClose,
   songInfo,
   existingData,
-  officialData,
-  bpiVersionName,
   onSave
 }) => {
-  const [wr, setWr] = useState<string>('');
-  const [avg, setAvg] = useState<string>('');
+  const [notes, setNotes] = useState<string>('');
+  const [level, setLevel] = useState<string>('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (existingData) {
-      setWr(existingData.wr.toString());
-      setAvg(existingData.avg.toString());
+      setNotes(existingData.notes.toString());
+      setLevel(existingData.level?.toString() || '');
+    } else if (songInfo) {
+      setNotes(songInfo.notes > 0 ? songInfo.notes.toString() : '');
+      setLevel(songInfo.level !== 'N/A' ? songInfo.level.toString() : '');
     } else {
-      setWr('');
-      setAvg('');
+      setNotes('');
+      setLevel('');
     }
     setError(null);
-  }, [existingData, open]);
+  }, [existingData, songInfo, open]);
 
   if (!songInfo) return null;
 
-  const maxScore = songInfo.notes * 2;
-
   const handleSave = async () => {
-    const wrNum = parseInt(wr);
-    const avgNum = parseInt(avg);
+    const notesNum = parseInt(notes);
+    const levelNum = level ? parseInt(level) : undefined;
 
-    if (isNaN(wrNum) || isNaN(avgNum)) {
-      setError('数値を入力してください');
+    if (isNaN(notesNum) || notesNum <= 0) {
+      setError('有効なノーツ数を入力してください');
       return;
     }
 
-    if (wrNum > maxScore || avgNum > maxScore) {
-      setError(`最大スコア(${maxScore})を超えています`);
-      return;
-    }
-
-    if (wrNum < avgNum) {
-      setError('全国1位は皆伝平均以上である必要があります');
+    if (levelNum !== undefined && (isNaN(levelNum) || levelNum < 1 || levelNum > 12)) {
+      setError('レベルは1〜12の範囲で入力してください');
       return;
     }
 
@@ -83,16 +70,15 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
     setError(null);
 
     try {
-      const response = await fetch(`${BPI_SERVER_URL}/api/bpi`, {
+      const response = await fetch(`${CHART_SERVER_URL}/api/chart-override`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          mode: songInfo.mode,
           id: songInfo.id,
           difficulty: songInfo.difficulty,
           title: songInfo.title,
-          wr: wrNum,
-          avg: avgNum
+          notes: notesNum,
+          level: levelNum
         })
       });
 
@@ -110,15 +96,14 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
   };
 
   const handleDelete = async () => {
-    if (!confirm('このBPIデータを削除しますか？')) return;
+    if (!confirm('この補正データを削除しますか？')) return;
 
     setSaving(true);
     try {
-      await fetch(`${BPI_SERVER_URL}/api/bpi`, {
+      await fetch(`${CHART_SERVER_URL}/api/chart-override`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          mode: songInfo.mode,
           id: songInfo.id,
           difficulty: songInfo.difficulty
         })
@@ -135,7 +120,7 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        BPI情報入力
+        譜面情報補正
       </DialogTitle>
       <DialogContent>
         <Box sx={{ mb: 2 }}>
@@ -143,30 +128,9 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
             {songInfo.title} [{songInfo.difficulty}]
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {songInfo.mode} / Notes: {songInfo.notes} / 最大スコア: {maxScore}
+            現在の値 - Notes: {songInfo.notes > 0 ? songInfo.notes : '未登録'} / Level: {songInfo.level !== 'N/A' ? `☆${songInfo.level}` : '未登録'}
           </Typography>
-          {existingData?.updatedAt && (
-            <Typography variant="caption" color="text.secondary">
-              最終更新: {existingData.updatedAt}
-            </Typography>
-          )}
         </Box>
-
-        {officialData && (
-          <Box sx={{ mb: 2, p: 1.5, bgcolor: 'action.hover', borderRadius: 1 }}>
-            <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
-              {bpiVersionName ? `${bpiVersionName}定義ファイル` : '定義ファイルの値'}
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 3 }}>
-              <Typography variant="body2">
-                皆伝平均: <strong>{officialData.avg}</strong>
-              </Typography>
-              <Typography variant="body2">
-                全国1位: <strong>{officialData.wr}</strong>
-              </Typography>
-            </Box>
-          </Box>
-        )}
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -175,22 +139,24 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
         )}
 
         <TextField
-          label={officialData ? `皆伝平均スコア (AVG) [公式: ${officialData.avg}]` : "皆伝平均スコア (AVG)"}
+          label="ノーツ数"
           type="number"
           fullWidth
-          value={avg}
-          onChange={(e) => setAvg(e.target.value)}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
           sx={{ mb: 2 }}
-          inputProps={{ max: maxScore, min: 0 }}
+          inputProps={{ min: 1 }}
+          helperText="スコア計算に必要なノーツ数"
         />
 
         <TextField
-          label={officialData ? `全国1位スコア (WR) [公式: ${officialData.wr}]` : "全国1位スコア (WR)"}
+          label="レベル (☆)"
           type="number"
           fullWidth
-          value={wr}
-          onChange={(e) => setWr(e.target.value)}
-          inputProps={{ max: maxScore, min: 0 }}
+          value={level}
+          onChange={(e) => setLevel(e.target.value)}
+          inputProps={{ min: 1, max: 12 }}
+          helperText="1〜12の範囲（空欄可）"
         />
       </DialogContent>
       <DialogActions>
@@ -211,4 +177,4 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
   );
 };
 
-export default BpiInputModal;
+export default ChartOverrideModal;
