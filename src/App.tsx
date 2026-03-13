@@ -19,8 +19,7 @@ import { useAppContext } from './context/AppContext';
 
 import CsvLoaderPage from './pages/CsvLoaderPage';
 import DiffPage from './pages/DiffPage';
-import Sp12TablePage from './pages/Sp12TablePage';
-import Sp11TablePage from './pages/Sp11TablePage';
+import SpTablePage from './pages/SpTablePage';
 import DpTablePage from './pages/DpTablePage';
 import CpiPage from './pages/CpiPage';
 import BpiPage from './pages/BpiPage';
@@ -48,8 +47,7 @@ const AppShell: React.FC = () => {
     { text: 'スコア手動登録', path: '/edit', mode: 'both', icon: <EditNoteRoundedIcon />, hidden: true },
     { text: '更新差分', path: '/diff', mode: 'both', icon: <DifferenceRoundedIcon /> },
     { text: '楽曲一覧', path: '/songtable', mode: 'both', icon: <TableRowsIcon /> },
-    { text: 'SP☆12難易度表', path: '/sp12', mode: 'SP', icon: <GridViewRoundedIcon /> },
-    { text: 'SP☆11難易度表', path: '/sp11', mode: 'SP', icon: <GridViewRoundedIcon /> },
+    { text: 'SP難易度表', path: '/tierlist', mode: 'SP', icon: <GridViewRoundedIcon /> },
     { text: 'DP非公式難易度表', path: '/dp', mode: 'DP', icon: <GridViewRoundedIcon /> },
     { text: 'CPI', path: '/cpi', mode: 'SP', icon: <GridViewRoundedIcon /> },
     { text: 'BPI', path: '/bpi', mode: 'both', icon: <GridViewRoundedIcon /> },
@@ -218,18 +216,10 @@ const AppShell: React.FC = () => {
           <Route path="/register" element={<CsvLoaderPage />} />
           <Route path="/diff" element={<DiffPage />} />
           <Route
-            path="/sp12"
+            path="/tierlist"
             element={
               mode === 'SP'
-                ? <Sp12TablePage />
-                : <Typography>このページはSPモードでのみ利用可能です。</Typography>
-            }
-          />
-          <Route
-            path="/sp11"
-            element={
-              mode === 'SP'
-                ? <Sp11TablePage />
+                ? <SpTablePage />
                 : <Typography>このページはSPモードでのみ利用可能です。</Typography>
             }
           />
