@@ -16,7 +16,10 @@ import {
   Button,
   Snackbar,
   Alert,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ungzip } from 'pako';
@@ -30,6 +33,8 @@ import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
 import { acInfDiffMap } from '../constants/titleConstrains';
 import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
+import { notesOverride, levelOverride, chartOverrideData } from '../constants/chartInfoConstrains';
+import ChartOverrideModal from '../components/ChartOverrideModal';
 
 const urlLengthMax = 4088;
 
@@ -50,6 +55,16 @@ const DiffPage = () => {
   const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false, message: '', severity: 'success',
   });
+
+  // 譜面補正モーダル
+  const [overrideModalOpen, setOverrideModalOpen] = useState(false);
+  const [selectedSongForOverride, setSelectedSongForOverride] = useState<{
+    id: string;
+    title: string;
+    difficulty: string;
+    notes: number;
+    level: number | string;
+  } | null>(null);
 
   // ソート
   const [clearSortConfig, setClearSortConfig] = useState<{ key: string; direction: string }>({ key: 'lv', direction: 'desc' });
@@ -197,8 +212,11 @@ const DiffPage = () => {
           for (const difficulty in diff[m][id]) {
             const entry = diff[m][id][difficulty];
             const idx = ['B', 'N', 'H', 'A', 'L'].indexOf(difficulty);
-            const lv = chartInfo[id]?.level?.[m.toLowerCase()]?.[idx] ?? 'N/A';
-            const notes = chartInfo[id]?.notes?.[m.toLowerCase()]?.[idx] ?? 0;
+            const overrideKey = `${id}_${difficulty}`;
+            const lvRaw = chartInfo[id]?.level?.[m.toLowerCase()]?.[idx] ?? 'N/A';
+            const lv = levelOverride[overrideKey] ?? lvRaw;
+            const notesRaw = chartInfo[id]?.notes?.[m.toLowerCase()]?.[idx] ?? 0;
+            const notes = notesOverride[overrideKey] ?? notesRaw;
             const title = titleMap[id] || id;
 
             if (entry?.cleartype?.new !== entry?.cleartype?.old && entry?.cleartype?.new > 1) {
@@ -372,34 +390,62 @@ const DiffPage = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {sortedDataWithState(processed.scoreUpdates[mode], 'score').map((row) => (
+                    {sortedDataWithState(processed.scoreUpdates[mode], 'score').map((row) => {
+                      const isInvalid = row.notes === 0 || row.lv === 'N/A';
+                      const handleEditClick = () => {
+                        setSelectedSongForOverride({
+                          id: row.id,
+                          title: row.title,
+                          difficulty: row.difficulty,
+                          notes: row.notes,
+                          level: row.lv
+                        });
+                        setOverrideModalOpen(true);
+                      };
+                      return (
                       <React.Fragment key={`${row.id}_${row.difficulty}`}>
                         {/* PC/Tablet */}
                         <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} >
                           <TableCell>☆{row.lv}</TableCell>
-                          <TableCell>{row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''}</TableCell>
+                          <TableCell>
+                            {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''}
+                            {isInvalid && (
+                              <Tooltip title="譜面情報を補正">
+                                <IconButton size="small" onClick={handleEditClick} sx={{ ml: 0.5 }}>
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </TableCell>
                           {processed.isContainBpi[mode] && <TableCell>{Number.isNaN(row.bpi) ? '' : row.bpi}</TableCell>}
-                          <TableCell>{getGrade(row.afterRate)} ({getDetailGrade(row.afterScore, row.notes)})</TableCell>
-                          <TableCell>{row.afterScore} ({(row.afterRate * 100).toFixed(2)}%)</TableCell>
+                          <TableCell>{isInvalid ? 'invalidScore' : `${getGrade(row.afterRate)} (${getDetailGrade(row.afterScore, row.notes)})`}</TableCell>
+                          <TableCell>{isInvalid ? row.afterScore : `${row.afterScore} (${(row.afterRate * 100).toFixed(2)}%)`}</TableCell>
                           <TableCell>+{row.diff}</TableCell>
                         </TableRow>
 
                         {/* Mobile */}
                         <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} >
                           <TableCell colSpan={5} sx={{ py: 1.25 }}>
-                            <Typography variant="body2" fontWeight={700} noWrap>
-                              {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆{row.lv}
-                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                              <Typography variant="body2" fontWeight={700} noWrap sx={{ flex: 1 }}>
+                                {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆{row.lv}
+                              </Typography>
+                              {isInvalid && (
+                                <IconButton size="small" onClick={handleEditClick}>
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              )}
+                            </Box>
                             <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 1.25, color: 'text.secondary', fontSize: 12 }}>
                               {!Number.isNaN(row.bpi) && <span>BPI: {row.bpi}</span>}
-                              <span>{getGrade(row.afterRate)} ({getDetailGrade(row.afterScore, row.notes)})</span>
-                              <span>{row.afterScore} ({(row.afterRate * 100).toFixed(1)}%)</span>
+                              <span>{isInvalid ? 'invalidScore' : `${getGrade(row.afterRate)} (${getDetailGrade(row.afterScore, row.notes)})`}</span>
+                              <span>{isInvalid ? row.afterScore : `${row.afterScore} (${(row.afterRate * 100).toFixed(1)}%)`}</span>
                               <span>Diff: +{row.diff}</span>
                             </Box>
                           </TableCell>
                         </TableRow>
                       </React.Fragment>
-                    ))}
+                    );})}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -466,6 +512,16 @@ const DiffPage = () => {
           {snack.message}
         </Alert>
       </Snackbar>
+
+      <ChartOverrideModal
+        open={overrideModalOpen}
+        onClose={() => setOverrideModalOpen(false)}
+        songInfo={selectedSongForOverride}
+        existingData={selectedSongForOverride ? chartOverrideData[`${selectedSongForOverride.id}_${selectedSongForOverride.difficulty}`] : null}
+        onSave={() => {
+          setSnack({ open: true, message: '保存しました。', severity: 'success' });
+        }}
+      />
     </Page>
   );
 };

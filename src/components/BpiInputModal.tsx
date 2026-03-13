@@ -90,6 +90,7 @@ const BpiInputModal: React.FC<BpiInputModalProps> = ({
           mode: songInfo.mode,
           id: songInfo.id,
           difficulty: songInfo.difficulty,
+          title: songInfo.title,
           wr: wrNum,
           avg: avgNum
         })
