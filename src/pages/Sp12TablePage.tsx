@@ -13,6 +13,7 @@ import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
+import { renderTitleWithDifficulty } from '../utils/titleUtils';
 
 const Sp12TablePage = () => {
   const { mode, filters, setFilters } = useAppContext();
@@ -112,7 +113,7 @@ const Sp12TablePage = () => {
           </Backdrop>
 
           <LampAchieveProgress stats={stats} totalCount={totalCount} />
-          <FilterPanel filters={filters} onChange={setFilters} />
+          <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} />
 
           <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} sx={{ mb: 3 }}>
             <Tab label="HARD難易度" value="hard" />
@@ -158,7 +159,7 @@ const Sp12TablePage = () => {
                             lineHeight: 1.35,
                           }}
                         >
-                          {title} {diffLabel}
+                          {renderTitleWithDifficulty(title, song.difficulty)}
                         </Typography>
                         <Typography variant="caption" display="block">
                           MISS: {missData[key] == null || missData[key] === defaultMisscount ? '-' : missData[key]}

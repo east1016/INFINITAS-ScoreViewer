@@ -1,6 +1,6 @@
 import {
   Box, FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText,
-  FormLabel, RadioGroup, FormControlLabel, Radio
+  FormLabel, RadioGroup, FormControlLabel, Radio, Grid
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -63,47 +63,53 @@ const FilterPanel = ({ filters, onChange, showLevelFilter = true }: Props) => {
         </FormControl>
       )}
 
-      {/* クリアランプ */}
-      <FormControl fullWidth sx={{ mb: 2 }} size={isXs ? 'small' : 'medium'}>
-        <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>クリアランプ</InputLabel>
-        <Select
-          multiple
-          value={filters?.cleartype || []}
-          onChange={(e) => onChange({ ...filters, cleartype: e.target.value as number[] })}
-          renderValue={(selected) => (selected as number[]).map((v) => simpleClearName[v]).join(', ')}
-          size={isXs ? 'small' : 'medium'}
-          MenuProps={menuProps}
-          sx={selectBaseSx}
-        >
-          {simpleClearName.map((label, index) => (
-            <MenuItem key={index} value={index}>
-              <Checkbox checked={filters?.cleartype?.includes(index) || false} />
-              <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Grid container spacing={2}>
+        {/* クリアランプ */}
+        <Grid item xs={12} sm={showLevelFilter ? 12 : 6}>
+          <FormControl fullWidth size={isXs ? 'small' : 'medium'}>
+            <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>クリアランプ</InputLabel>
+            <Select
+              multiple
+              value={filters?.cleartype || []}
+              onChange={(e) => onChange({ ...filters, cleartype: e.target.value as number[] })}
+              renderValue={(selected) => (selected as number[]).map((v) => simpleClearName[v]).join(', ')}
+              size={isXs ? 'small' : 'medium'}
+              MenuProps={menuProps}
+              sx={selectBaseSx}
+            >
+              {simpleClearName.map((label, index) => (
+                <MenuItem key={index} value={index}>
+                  <Checkbox checked={filters?.cleartype?.includes(index) || false} />
+                  <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
 
-      {/* 譜面難易度  */}
-      <FormControl fullWidth sx={{ mb: 2 }} size={isXs ? 'small' : 'medium'}>
-        <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>譜面難易度</InputLabel>
-        <Select
-          multiple
-          value={filters?.difficultyPattern || []}
-          onChange={(e) => onChange({ ...filters, difficultyPattern: e.target.value as number[] })}
-          renderValue={(selected) => (selected as number[]).map((v) => difficultyDetailKeys[v]).join(', ')}
-          size={isXs ? 'small' : 'medium'}
-          MenuProps={menuProps}
-          sx={selectBaseSx}
-        >
-          {difficultyDetailKeys.map((label, index) => (
-            <MenuItem key={index} value={index}>
-              <Checkbox checked={filters?.difficultyPattern?.includes(index) || false} />
-              <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+        {/* 譜面難易度  */}
+        <Grid item xs={12} sm={showLevelFilter ? 12 : 6}>
+          <FormControl fullWidth size={isXs ? 'small' : 'medium'}>
+            <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>譜面難易度</InputLabel>
+            <Select
+              multiple
+              value={filters?.difficultyPattern || []}
+              onChange={(e) => onChange({ ...filters, difficultyPattern: e.target.value as number[] })}
+              renderValue={(selected) => (selected as number[]).map((v) => difficultyDetailKeys[v]).join(', ')}
+              size={isXs ? 'small' : 'medium'}
+              MenuProps={menuProps}
+              sx={selectBaseSx}
+            >
+              {difficultyDetailKeys.map((label, index) => (
+                <MenuItem key={index} value={index}>
+                  <Checkbox checked={filters?.difficultyPattern?.includes(index) || false} />
+                  <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

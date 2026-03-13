@@ -107,7 +107,7 @@ const Sp11TablePage = () => {
           </Backdrop>
 
           <LampAchieveProgress stats={stats} totalCount={totalCount} />
-          <FilterPanel filters={filters} onChange={setFilters} />
+          <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} />
 
           <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} sx={{ mb: 3 }}>
             <Tab label="HARD難易度" value="hard" />
