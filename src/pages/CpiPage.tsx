@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Container, Typography, Grid, Paper, Box, Tabs, Tab, CircularProgress, Backdrop
+  Container, Typography, Grid, Paper, Box, CircularProgress, Backdrop,
+  ToggleButtonGroup, ToggleButton
 } from '@mui/material';
 import { useAppContext } from '../context/AppContext';
 import FilterPanel from '../components/FilterPanel';
@@ -21,7 +22,7 @@ const CpiPage = () => {
   const { mode, filters, setFilters } = useAppContext();
   const [songs, setSongs] = useState<any[]>([]);
   const [titleMap, setTitleMap] = useState<{ [key: string]: string }>({});
-  const [activeTab, setActiveTab] = useState<(keyof typeof cpiClearMap)[number]>('easy');
+  const [activeTab, setActiveTab] = useState<(keyof typeof cpiClearMap)[number]>('hard');
   const [loading, setLoading] = useState(true);
   const [konamiInfInfo, setKomaniInfInfo] = useState<any>({});
   const [chartInfo, setChartInfo] = useState<any>({});
@@ -208,11 +209,40 @@ const CpiPage = () => {
           <LampAchieveProgress stats={stats} totalCount={totalCount} />
           <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} />
 
-          <Tabs value={activeTab} variant="scrollable" onChange={(_, v) => setActiveTab(v)} sx={{ mb: 3 }}>
-            {Object.keys(cpiClearMap).map(type => (
-              <Tab key={type} label={type.toUpperCase()} value={type} />
-            ))}
-          </Tabs>
+          <Box
+            sx={{
+              my: 2,
+              display: 'flex',
+              gap: 1,
+              overflowX: 'auto',
+              px: 1,
+              pb: 0.5,
+              WebkitOverflowScrolling: 'touch',
+              '&::-webkit-scrollbar': { display: 'none' },
+            }}
+          >
+            <ToggleButtonGroup
+              value={activeTab}
+              exclusive
+              onChange={(_, v) => v && setActiveTab(v)}
+              size="small"
+              sx={{
+                flexWrap: 'nowrap',
+                '& .MuiToggleButton-root': {
+                  px: { xs: 1.25, sm: 1.5 },
+                  py: { xs: 0.5, sm: 0.75 },
+                  fontSize: { xs: 12, sm: 13 },
+                  whiteSpace: 'nowrap',
+                },
+              }}
+            >
+              {Object.keys(cpiClearMap).map(type => (
+                <ToggleButton key={type} value={type}>
+                  {type.toUpperCase()}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Box>
 
           {sortedBuckets.map(group => (
             <Box key={group.label} sx={{ mb: 4 }}>
