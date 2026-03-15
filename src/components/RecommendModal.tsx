@@ -2,9 +2,10 @@ import React, { useState, useMemo } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, Box, Typography, ToggleButtonGroup, ToggleButton,
-  List, ListItem, ListItemText, Chip
+  List, ListItem, ListItemText, Chip, IconButton, Tooltip
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import BlockIcon from '@mui/icons-material/Block';
 import { getGrade, getDetailGrade } from '../utils/gradeUtils';
 import { clearColorMap, scoreColorMapLight } from '../constants/colorConstrains';
 import { simpleClearName } from '../constants/clearConstrains';
@@ -52,12 +53,15 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
   const [level, setLevel] = useState<number>(12);
   const [target, setTarget] = useState<Target>('MAX-');
   const [refreshKey, setRefreshKey] = useState(0);
+  const [bannedSongs, setBannedSongs] = useState<Set<string>>(new Set()); // 抽選時に適用されるBAN
+  const [pendingBans, setPendingBans] = useState<Set<string>>(new Set()); // 表示用の一時的なBAN（グレーアウト）
 
   // 目標に応じた候補を抽出
   const candidates = useMemo(() => {
     return songs.filter(s => {
       if (s.level !== level) return false;
       if (s.lamp === 0) return false; // NO PLAYは対象外
+      if (bannedSongs.has(`${s.id}_${s.difficulty}`)) return false; // BANされた曲は除外
       const grade = getGrade(s.rate);
       const detailGrade = getDetailGrade(s.score, s.notes);
 
@@ -75,7 +79,7 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
       }
       return false;
     });
-  }, [songs, level, target]);
+  }, [songs, level, target, bannedSongs]);
 
   // 重み付き抽選で5曲選択（refreshKeyが変わると再選択）
   const recommendations = useMemo(() => {
@@ -133,7 +137,26 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
   }, [candidates, refreshKey, target]);
 
   const handleRefresh = () => {
+    // 再抽選時にpendingBansをbannedSongsに適用
+    setBannedSongs(prev => new Set([...prev, ...pendingBans]));
+    setPendingBans(new Set());
     setRefreshKey(prev => prev + 1);
+  };
+
+  const handleBan = (songId: string, difficulty: string) => {
+    const key = `${songId}_${difficulty}`;
+    setPendingBans(prev => new Set(prev).add(key));
+  };
+
+  const handleClearBans = () => {
+    setBannedSongs(new Set());
+    setPendingBans(new Set());
+  };
+
+  const handleClose = () => {
+    setBannedSongs(new Set()); // モーダルを閉じる時にBANをクリア
+    setPendingBans(new Set());
+    onClose();
   };
 
   // 各グレードの閾値
@@ -142,7 +165,7 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
   const maxThreshold = 17 / 18; // MAX-閾値（AAA+の上限）
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>
         リコメンド
       </DialogTitle>
@@ -182,16 +205,26 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
 
         <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="body2" color="text.secondary">
-            候補: {candidates.length}曲
+            候補: {candidates.length}曲{(bannedSongs.size > 0 || pendingBans.size > 0) && ` (除外: ${bannedSongs.size + pendingBans.size}曲)`}
           </Typography>
-          <Button
-            size="small"
-            startIcon={<RefreshIcon />}
-            onClick={handleRefresh}
-            disabled={candidates.length === 0}
-          >
-            再抽選
-          </Button>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            {(bannedSongs.size > 0 || pendingBans.size > 0) && (
+              <Button
+                size="small"
+                onClick={handleClearBans}
+              >
+                除外解除
+              </Button>
+            )}
+            <Button
+              size="small"
+              startIcon={<RefreshIcon />}
+              onClick={handleRefresh}
+              disabled={candidates.length === 0}
+            >
+              再抽選
+            </Button>
+          </Box>
         </Box>
 
         <Box sx={{ height: 430, overflow: 'auto' }}>
@@ -204,6 +237,8 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
               {recommendations.map((song) => {
               const grade = getGrade(song.rate);
               const detailGrade = getDetailGrade(song.score, song.notes);
+              const songKey = `${song.id}_${song.difficulty}`;
+              const isBanned = pendingBans.has(songKey);
 
               // 目標に応じたギャップ計算（BPIの場合は不要）
               const threshold = target === 'AA' ? aaThreshold : target === 'AAA' ? aaaThreshold : maxThreshold;
@@ -212,19 +247,21 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
 
               return (
                 <ListItem
-                  key={`${song.id}_${song.difficulty}`}
+                  key={songKey}
                   sx={{
                     border: '1px solid',
                     borderColor: 'divider',
                     borderRadius: 1,
                     mb: 1,
                     flexDirection: 'column',
-                    alignItems: 'flex-start'
+                    alignItems: 'flex-start',
+                    opacity: isBanned ? 0.4 : 1,
+                    transition: 'opacity 0.2s'
                   }}
                 >
                   <ListItemText
                     primary={
-                      <Typography variant="body1" fontWeight="bold">
+                      <Typography variant="body1" fontWeight="bold" sx={{ lineHeight: 1.2 }}>
                         {song.title} [{song.difficulty}]
                       </Typography>
                     }
@@ -260,6 +297,16 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
                             variant="outlined"
                           />
                         )}
+                        <span>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleBan(song.id, song.difficulty)}
+                            disabled={isBanned}
+                            sx={{ p: 0.5 }}
+                          >
+                            <BlockIcon fontSize="small" />
+                          </IconButton>
+                        </span>
                       </Box>
                     }
                   />
@@ -271,7 +318,7 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>閉じる</Button>
+        <Button onClick={handleClose}>閉じる</Button>
       </DialogActions>
     </Dialog>
   );
