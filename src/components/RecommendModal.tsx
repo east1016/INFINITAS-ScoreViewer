@@ -10,6 +10,15 @@ import { getGrade, getDetailGrade } from '../utils/gradeUtils';
 import { clearColorMap, scoreColorMapLight } from '../constants/colorConstrains';
 import { simpleClearName } from '../constants/clearConstrains';
 
+// 難易度ごとの色定義
+const difficultyColors: Record<string, string> = {
+  A: '#ff0000', // ANOTHER: 赤
+  L: '#a855f7', // LEGGENDARIA: 紫
+  H: '#d4a800', // HYPER: 黄色
+  N: '#0000ff', // NORMAL: 青
+  B: '#32cd32', // BEGINNER: 黄緑
+};
+
 type SongRow = {
   id: string;
   difficulty: string;
@@ -261,9 +270,24 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
                 >
                   <ListItemText
                     primary={
-                      <Typography variant="body1" fontWeight="bold" sx={{ lineHeight: 1.2 }}>
-                        {song.title} [{song.difficulty}]
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, lineHeight: 1.2 }}>
+                        <Box
+                          component="span"
+                          sx={{
+                            color: '#fff',
+                            backgroundColor: difficultyColors[song.difficulty] || 'grey',
+                            fontWeight: 'bold',
+                            px: 0.5,
+                            borderRadius: '3px',
+                            fontSize: '0.85em'
+                          }}
+                        >
+                          {song.difficulty}
+                        </Box>
+                        <Typography variant="body1" fontWeight="bold" component="span">
+                          {song.title}
+                        </Typography>
+                      </Box>
                     }
                     secondary={
                       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 0.5 }}>
