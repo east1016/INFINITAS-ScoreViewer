@@ -35,6 +35,7 @@ import { acInfDiffMap } from '../constants/titleConstrains';
 import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
 import { notesOverride, levelOverride, chartOverrideData } from '../constants/chartInfoConstrains';
 import ChartOverrideModal from '../components/ChartOverrideModal';
+import { renderTitleWithDifficulty } from '../utils/titleUtils';
 
 const urlLengthMax = 4088;
 
@@ -346,7 +347,7 @@ const DiffPage = () => {
                         {/* PC/Tablet */}
                         <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} >
                           <TableCell>☆{row.lv}</TableCell>
-                          <TableCell>{row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''}</TableCell>
+                          <TableCell>{renderTitleWithDifficulty(row.title, row.difficulty, acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': '')}</TableCell>
                           <TableCell sx={{ textAlign: 'center' }}><Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: row.colorBefore }}>{simpleClearName[row.before]}</Box></TableCell>
                           <TableCell sx={{ px: 0, textAlign: 'center' }}>→</TableCell>
                           <TableCell sx={{ textAlign: 'center' }}><Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: row.colorAfter }}>{simpleClearName[row.after]}</Box></TableCell>
@@ -356,7 +357,7 @@ const DiffPage = () => {
                         <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} >
                           <TableCell colSpan={5} sx={{ py: 1.25 }}>
                             <Typography variant="body2" fontWeight={700} noWrap>
-                              {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆{row.lv}
+                              {renderTitleWithDifficulty(row.title, row.difficulty, `${acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆${row.lv}`)}
                             </Typography>
                             <Box sx={{ mt: 0.5, display: 'flex', alignItems: 'center', gap: 1, fontSize: 12 }}>
                               <Box sx={{ px: 1, borderRadius: 1, bgcolor: row.colorBefore }}>{simpleClearName[row.before]}</Box>
@@ -408,7 +409,7 @@ const DiffPage = () => {
                         <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} >
                           <TableCell>☆{row.lv}</TableCell>
                           <TableCell>
-                            {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''}
+                            {renderTitleWithDifficulty(row.title, row.difficulty, acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': '')}
                             {isInvalid && (
                               <Tooltip title="譜面情報を補正">
                                 <IconButton size="small" onClick={handleEditClick} sx={{ ml: 0.5 }}>
@@ -428,7 +429,7 @@ const DiffPage = () => {
                           <TableCell colSpan={5} sx={{ py: 1.25 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               <Typography variant="body2" fontWeight={700} noWrap sx={{ flex: 1 }}>
-                                {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆{row.lv}
+                                {renderTitleWithDifficulty(row.title, row.difficulty, `${acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆${row.lv}`)}
                               </Typography>
                               {isInvalid && (
                                 <IconButton size="small" onClick={handleEditClick}>
@@ -472,7 +473,7 @@ const DiffPage = () => {
                         {/* PC/Tablet */}
                         <TableRow sx={{ display: { xs: 'none', sm: 'table-row' } }} >
                           <TableCell>☆{row.lv}</TableCell>
-                          <TableCell>{row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''}</TableCell>
+                          <TableCell>{renderTitleWithDifficulty(row.title, row.difficulty, acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': '')}</TableCell>
                           <TableCell sx={{ textAlign: 'center' }}>{row.afterMisscount}</TableCell>
                           <TableCell sx={{ textAlign: 'center' }}>{row.diff !== defaultMisscount ? row.diff : ''}</TableCell>
                         </TableRow>
@@ -481,7 +482,7 @@ const DiffPage = () => {
                         <TableRow sx={{ display: { xs: 'table-row', sm: 'none' } }} >
                           <TableCell colSpan={4} sx={{ py: 1.25 }}>
                             <Typography variant="body2" fontWeight={700} noWrap>
-                              {row.title} [{row.difficulty}]{acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆{row.lv}
+                              {renderTitleWithDifficulty(row.title, row.difficulty, `${acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆${row.lv}`)}
                             </Typography>
                             <Box sx={{ mt: 0.5, display: 'flex', gap: 1.25, color: 'text.secondary', fontSize: 12 }}>
                               <span>BP: {row.afterMisscount}</span>
