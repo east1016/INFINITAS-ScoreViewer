@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation 
 import {
   Container, CssBaseline, AppBar, Toolbar, Typography, IconButton,
   Drawer, List, ListItemButton, ListItemText, ListItemIcon, ToggleButton,
-  ToggleButtonGroup, Box, Divider, Tooltip
+  ToggleButtonGroup, Box, Divider
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
@@ -172,31 +172,30 @@ const AppShell: React.FC = () => {
             {visibleMenu.map(item => {
               const selected = location.pathname === item.path;
               return (
-                <Tooltip key={item.path} title={item.text} placement="right" arrow>
-                  <ListItemButton
-                    component={Link}
-                    to={item.path}
-                    selected={selected}
-                    onClick={toggleDrawer(false)}
-                    sx={{
-                      borderRadius: 2,
-                      mx: 1,
-                      mb: .5,
-                      '&.Mui-selected': {
-                        bgcolor: 'action.selected',
-                        boxShadow: 'inset 0 0 0 1px rgba(99,102,241,.25)',
-                      },
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.text}
-                      primaryTypographyProps={{ fontWeight: selected ? 800 : 600 }}
-                    />
-                  </ListItemButton>
-                </Tooltip>
+                <ListItemButton
+                  key={item.path}
+                  component={Link}
+                  to={item.path}
+                  selected={selected}
+                  onClick={toggleDrawer(false)}
+                  sx={{
+                    borderRadius: 2,
+                    mx: 1,
+                    mb: .5,
+                    '&.Mui-selected': {
+                      bgcolor: 'action.selected',
+                      boxShadow: 'inset 0 0 0 1px rgba(99,102,241,.25)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{ fontWeight: selected ? 800 : 600 }}
+                  />
+                </ListItemButton>
               );
             })}
           </List>
