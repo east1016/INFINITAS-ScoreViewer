@@ -33,7 +33,7 @@ import RecommendModal from '../components/RecommendModal';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 
-const BPI_SERVER_URL = 'http://localhost:3001';
+const BPI_SERVER_URL = '';
 
 type SongRow = {
   id: string;
@@ -633,9 +633,20 @@ const SongTablePage: React.FC = () => {
                       hover
                     >
                       <TableCell colSpan={6} sx={{ py: 1.25 }}>
-                        <Typography variant="body2" fontWeight={700} noWrap>
-                          {renderTitleWithDifficulty(s.title, s.difficulty, acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : undefined)}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Typography variant="body2" fontWeight={700} noWrap sx={{ flex: 1 }}>
+                            {renderTitleWithDifficulty(s.title, s.difficulty, acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : undefined)}
+                          </Typography>
+                          {selectedLevel >= 11 && (
+                            <IconButton
+                              size="small"
+                              onClick={() => handleOpenBpiModal(s)}
+                              title="BPI情報を入力"
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                        </Box>
 
                         <Box
                           sx={{

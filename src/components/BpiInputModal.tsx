@@ -29,7 +29,7 @@ interface BpiInputModalProps {
   onSave: () => void;
 }
 
-const BPI_SERVER_URL = 'http://localhost:3001';
+const BPI_SERVER_URL = '';
 
 const BpiInputModal: React.FC<BpiInputModalProps> = ({
   open,

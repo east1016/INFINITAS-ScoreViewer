@@ -22,7 +22,7 @@ interface ChartOverrideModalProps {
   onSave: () => void;
 }
 
-const CHART_SERVER_URL = 'http://localhost:3001';
+const CHART_SERVER_URL = '';
 
 const ChartOverrideModal: React.FC<ChartOverrideModalProps> = ({
   open,
