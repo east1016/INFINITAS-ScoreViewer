@@ -25,7 +25,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { ungzip } from 'pako';
 import { compressDiffData, decompressDiffData } from '../utils/encodeUtils';
 import { useAppContext } from '../context/AppContext';
-import { clearColorMap } from '../constants/colorConstrains';
+import { clearColorMap, scoreColorMapLight } from '../constants/colorConstrains';
 import { simpleClearName } from '../constants/clearConstrains';
 import { defaultMisscount } from '../constants/defaultValues';
 import { getPercentage, getDetailGrade, getGrade } from '../utils/gradeUtils';
@@ -38,6 +38,7 @@ import ChartOverrideModal from '../components/ChartOverrideModal';
 import { renderTitleWithDifficulty } from '../utils/titleUtils';
 
 const urlLengthMax = 4088;
+const BPI_SERVER_URL = '';
 
 const DiffPage = () => {
   const { mode, setMode } = useAppContext();
@@ -53,6 +54,7 @@ const DiffPage = () => {
   const [isShared, setIsShared] = useState(false);
   const [isUrldataValid, setIsUrldataValid] = useState(true);
   const [bpiInfo, setBpiInfo] = useState<any>({});
+  const [customBpiData, setCustomBpiData] = useState<any>({});
   const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false, message: '', severity: 'success',
   });
@@ -76,6 +78,18 @@ const DiffPage = () => {
     try {
       const bpiVersionIndex = parseInt(localStorage.getItem('bpiVersion') ?? '-1') ?? -1
       const bpiVersion = await resolveVersionByIndex(bpiVersionIndex);
+
+      // Fetch custom BPI data
+      let customBpi: any = { SP: {}, DP: {} };
+      try {
+        const res = await fetch(`${BPI_SERVER_URL}/api/bpi`);
+        if (res.ok) {
+          customBpi = await res.json();
+        }
+      } catch {
+        // Server not running, use empty data
+      }
+
       const [
           titleRes,
           chartGz,
@@ -93,6 +107,7 @@ const DiffPage = () => {
         'SP': bpiSpInfo,
         'DP': bpiDpInfo
       });
+      setCustomBpiData(customBpi);
 
       const urlParams = new URLSearchParams(window.location.search);
       const data = urlParams.get('data');
@@ -151,8 +166,10 @@ const DiffPage = () => {
       if (key === 'grade') return cmp(a.afterRate, b.afterRate);
       if (key === 'score') return cmp(a.afterScore, b.afterScore);
       if (key === 'bpi'){
-        const aBpi = Number.isNaN(a.bpi) ? -99 : a.bpi;
-        const bBpi = Number.isNaN(b.bpi) ? -99 : b.bpi;
+        const aVal = !Number.isNaN(a.bpi) ? a.bpi : a.customBpi;
+        const bVal = !Number.isNaN(b.bpi) ? b.bpi : b.customBpi;
+        const aBpi = Number.isNaN(aVal) ? -99 : aVal;
+        const bBpi = Number.isNaN(bVal) ? -99 : bVal;
         return cmp(aBpi, bBpi);
       } 
       if (key === 'bp') return cmp(a.afterMisscount, b.afterMisscount);
@@ -237,13 +254,23 @@ const DiffPage = () => {
               if (excludeNewSongs && entry?.cleartype?.old === 0) continue;
               const pBefore = getPercentage(entry.score.old, notes);
               const pAfter = getPercentage(entry.score.new, notes);
+
+              // Calculate official BPI
               const bpiInfoEntry = bpiInfo?.[m]?.[id]?.[difficulty];
               const bpi = bpiInfoEntry ? calculateBpi(bpiInfoEntry.wr, bpiInfoEntry.avg, bpiInfoEntry.notes, entry.score.new, bpiInfoEntry.coef) : NaN;
               if(!Number.isNaN(bpi)){
                 isContainBpi[m] = true;
               }
+
+              // Calculate custom BPI
+              const customBpiEntry = customBpiData?.[m]?.[`${id}_${difficulty}`];
+              const customBpi = customBpiEntry && entry.score.new ? calculateBpi(customBpiEntry.wr, customBpiEntry.avg, notes, entry.score.new, -1) : NaN;
+              if(!Number.isNaN(customBpi)){
+                isContainBpi[m] = true;
+              }
+
               scoreUpdates[m].push({
-                id, title, difficulty, lv, notes, bpi,
+                id, title, difficulty, lv, notes, bpi, customBpi,
                 beforeScore: entry.score.old,
                 afterScore: entry.score.new,
                 beforeRate: pBefore,
@@ -281,7 +308,7 @@ const DiffPage = () => {
       },
       clearUpdatesCount, scoreUpdatesCount, missUpdatesCount, isContainBpi
     };
-  }, [diff, chartInfo, titleMap, excludeNewSongs]);
+  }, [diff, chartInfo, titleMap, excludeNewSongs, bpiInfo, customBpiData]);
 
   const hasUpdates = processed.clearUpdates[mode].length > 0 || processed.scoreUpdates[mode].length > 0 || processed.missUpdates[mode].length > 0;
 
@@ -385,9 +412,10 @@ const DiffPage = () => {
                       <TableCell sx={{ cursor: 'pointer' }} onClick={() => handleSort('score', 'lv')}>☆</TableCell>
                       <TableCell onClick={() => handleSort('score', 'title')}>Title</TableCell>
                       {processed.isContainBpi[mode] && <TableCell onClick={() => handleSort('score', 'bpi')}>BPI</TableCell>}
-                      <TableCell onClick={() => handleSort('score', 'grade')}>Grade</TableCell>
-                      <TableCell onClick={() => handleSort('score', 'score')}>Score</TableCell>
-                      <TableCell onClick={() => handleSort('score', 'diff')}>Diff</TableCell>
+                      <TableCell sx={{ textAlign: 'center' }}>Before</TableCell>
+                      <TableCell sx={{ width: 20, px: 0 }} />
+                      <TableCell sx={{ textAlign: 'center' }} onClick={() => handleSort('score', 'grade')}>After</TableCell>
+                      <TableCell sx={{ textAlign: 'center' }} onClick={() => handleSort('score', 'diff')}>Diff</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -418,10 +446,52 @@ const DiffPage = () => {
                               </Tooltip>
                             )}
                           </TableCell>
-                          {processed.isContainBpi[mode] && <TableCell>{Number.isNaN(row.bpi) ? '' : row.bpi}</TableCell>}
-                          <TableCell>{isInvalid ? 'invalidScore' : `${getGrade(row.afterRate)} (${getDetailGrade(row.afterScore, row.notes)})`}</TableCell>
-                          <TableCell>{isInvalid ? row.afterScore : `${row.afterScore} (${(row.afterRate * 100).toFixed(2)}%)`}</TableCell>
-                          <TableCell>+{row.diff}</TableCell>
+                          {processed.isContainBpi[mode] && (
+                            <TableCell>
+                              {!Number.isNaN(row.bpi) ? (
+                                <>
+                                  {row.bpi.toFixed(2)}
+                                  {!Number.isNaN(row.customBpi) && ` (${row.customBpi.toFixed(2)} *)`}
+                                </>
+                              ) : !Number.isNaN(row.customBpi) ? (
+                                `${row.customBpi.toFixed(2)} *`
+                              ) : ''}
+                            </TableCell>
+                          )}
+                          <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+                            {isInvalid ? 'invalidScore' : (() => {
+                              const grade = getGrade(row.beforeRate);
+                              const detailGrade = getDetailGrade(row.beforeScore, row.notes);
+                              const isMaxMinus = detailGrade.startsWith('MAX-');
+                              const colorKey = isMaxMinus ? 'MAX-' : grade;
+                              if (['A', 'AA', 'AAA'].includes(grade)) {
+                                return (
+                                  <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: scoreColorMapLight[colorKey], textAlign: 'center', minWidth: 60 }}>
+                                    {grade} ({detailGrade})
+                                  </Box>
+                                );
+                              }
+                              return <>{grade} ({detailGrade})</>;
+                            })()}
+                          </TableCell>
+                          <TableCell sx={{ width: 20, px: 0, textAlign: 'center' }}>→</TableCell>
+                          <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
+                            {isInvalid ? 'invalidScore' : (() => {
+                              const grade = getGrade(row.afterRate);
+                              const detailGrade = getDetailGrade(row.afterScore, row.notes);
+                              const isMaxMinus = detailGrade.startsWith('MAX-');
+                              const colorKey = isMaxMinus ? 'MAX-' : grade;
+                              if (['A', 'AA', 'AAA'].includes(grade)) {
+                                return (
+                                  <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: scoreColorMapLight[colorKey], textAlign: 'center', minWidth: 60 }}>
+                                    {grade} ({detailGrade})
+                                  </Box>
+                                );
+                              }
+                              return <>{grade} ({detailGrade})</>;
+                            })()}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: 'center' }}>+{row.diff}</TableCell>
                         </TableRow>
 
                         {/* Mobile */}
@@ -437,11 +507,53 @@ const DiffPage = () => {
                                 </IconButton>
                               )}
                             </Box>
-                            <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 1.25, color: 'text.secondary', fontSize: 12 }}>
-                              {!Number.isNaN(row.bpi) && <span>BPI: {row.bpi}</span>}
-                              <span>{isInvalid ? 'invalidScore' : `${getGrade(row.afterRate)} (${getDetailGrade(row.afterScore, row.notes)})`}</span>
-                              <span>{isInvalid ? row.afterScore : `${row.afterScore} (${(row.afterRate * 100).toFixed(1)}%)`}</span>
-                              <span>Diff: +{row.diff}</span>
+                            <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', color: 'text.secondary', fontSize: 11 }}>
+                              {(!Number.isNaN(row.bpi) || !Number.isNaN(row.customBpi)) && (
+                                <Box>
+                                  BPI: {!Number.isNaN(row.bpi) ? (
+                                    <>
+                                      {row.bpi.toFixed(2)}
+                                      {!Number.isNaN(row.customBpi) && ` (${row.customBpi.toFixed(2)} *)`}
+                                    </>
+                                  ) : `${row.customBpi.toFixed(2)} *`}
+                                </Box>
+                              )}
+                              {isInvalid ? (
+                                <Box>invalidScore</Box>
+                              ) : (
+                                <>
+                                  {(() => {
+                                    const grade = getGrade(row.beforeRate);
+                                    const detailGrade = getDetailGrade(row.beforeScore, row.notes);
+                                    const isMaxMinus = detailGrade.startsWith('MAX-');
+                                    const colorKey = isMaxMinus ? 'MAX-' : grade;
+                                    if (['A', 'AA', 'AAA'].includes(grade)) {
+                                      return (
+                                        <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: scoreColorMapLight[colorKey] }}>
+                                          {grade} ({detailGrade})
+                                        </Box>
+                                      );
+                                    }
+                                    return <Box>{grade} ({detailGrade})</Box>;
+                                  })()}
+                                  <Box sx={{ px: 0.5 }}>→</Box>
+                                  {(() => {
+                                    const grade = getGrade(row.afterRate);
+                                    const detailGrade = getDetailGrade(row.afterScore, row.notes);
+                                    const isMaxMinus = detailGrade.startsWith('MAX-');
+                                    const colorKey = isMaxMinus ? 'MAX-' : grade;
+                                    if (['A', 'AA', 'AAA'].includes(grade)) {
+                                      return (
+                                        <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: scoreColorMapLight[colorKey] }}>
+                                          {grade} ({detailGrade})
+                                        </Box>
+                                      );
+                                    }
+                                    return <Box>{grade} ({detailGrade})</Box>;
+                                  })()}
+                                </>
+                              )}
+                              <Box>Diff: +{row.diff}</Box>
                             </Box>
                           </TableCell>
                         </TableRow>
