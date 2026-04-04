@@ -366,3 +366,109 @@ export const convertDataToIdDiffKey = (data: any, mode: 'SP' | 'DP') => {
 
   return { score, clear, misscount, unlocked }
 }
+
+// クリアタイプの数値を公式CSVの文字列に変換
+const clearTypeToOfficialString = (clearType: number): string => {
+  const clearTypeMap: Record<number, string> = {
+    0: "NO PLAY",
+    1: "FAILED",
+    2: "ASSIST CLEAR",
+    3: "EASY CLEAR",
+    4: "CLEAR",
+    5: "HARD CLEAR",
+    6: "EX HARD CLEAR",
+    7: "FULLCOMBO CLEAR"
+  };
+  return clearTypeMap[clearType] || "NO PLAY";
+}
+
+// 公式CSV形式でエクスポート
+export async function exportToOfficialCsv(mode: 'SP' | 'DP', titleMap: Record<string, string>, timestamps: any): Promise<string> {
+  const data = JSON.parse(localStorage.getItem('data') || '{}');
+
+  if (!data[mode]) {
+    return '';
+  }
+
+  // INFINITAS専用譜面のIDリスト（acInfDiffMapのキー）
+  const infinitasOnlyIds = new Set(Object.keys(acInfDiffMap).map(id => String(id)));
+
+  // ヘッダー行
+  const headers = [
+    'バージョン',
+    'タイトル',
+    '最終プレー日時',
+    ...difficultyDetailKeys.flatMap(diff => [
+      `${diff} 難易度`,
+      `${diff} スコア`,
+      `${diff} クリアタイプ`,
+      `${diff} ミスカウント`,
+      `${diff} DJ LEVEL`
+    ])
+  ];
+
+  const rows: string[][] = [headers];
+
+  // データ行を生成
+  for (const songId in data[mode]) {
+    // INFINITAS専用譜面を除外
+    if (infinitasOnlyIds.has(songId)) {
+      continue;
+    }
+
+    const songData = data[mode][songId];
+    const title = titleMap[songId] || `Unknown Song (ID: ${songId})`;
+
+    // 最終プレー日時を取得
+    let lastPlay = '';
+    if (timestamps?.[mode]?.[songId]) {
+      const songTimestamps = timestamps[mode][songId];
+      for (const diff in songTimestamps) {
+        const diffLastPlay = songTimestamps[diff]?.lastplay || '';
+        if (diffLastPlay && (!lastPlay || diffLastPlay > lastPlay)) {
+          lastPlay = diffLastPlay;
+        }
+      }
+    }
+
+    const row: string[] = [
+      '', // バージョン（空）
+      title,
+      lastPlay
+    ];
+
+    // 各難易度のデータを追加
+    for (let i = 0; i < difficultyKey.length; i++) {
+      const diff = difficultyKey[i];
+      const diffData = songData[diff];
+
+      if (diffData) {
+        row.push(
+          '', // 難易度（空）
+          String(diffData.score || 0),
+          clearTypeToOfficialString(diffData.cleartype || 0),
+          String(diffData.misscount === defaultMisscount ? '' : diffData.misscount),
+          '' // DJ LEVEL（空）
+        );
+      } else {
+        row.push('', '0', 'NO PLAY', '', '');
+      }
+    }
+
+    rows.push(row);
+  }
+
+  // CSV文字列を生成（BOM付きUTF-8）
+  const csvContent = rows.map(row =>
+    row.map(cell => {
+      // セル内に改行、カンマ、ダブルクォートがある場合はエスケープ
+      if (cell.includes(',') || cell.includes('"') || cell.includes('\n')) {
+        return `"${cell.replace(/"/g, '""')}"`;
+      }
+      return cell;
+    }).join(',')
+  ).join('\n');
+
+  // BOMを追加
+  return '\ufeff' + csvContent;
+}
