@@ -23,7 +23,7 @@ import { getCurrentFormattedDate, getCurrentFormattedTime } from '../utils/dateU
 import { appKeys } from '../constants/localStrageConstrains';
 import SectionCard from '../components/SectionCard';
 import { Page, PageHeader } from '../components/Page';
-import { mergeWithJSONData } from '../utils/scoreDataUtils';
+import { mergeWithJSONData, exportToOfficialCsv } from '../utils/scoreDataUtils';
 import { CLIENT_ID, DRIVE_SCOPE, DRIVE_FILE_NAME, DRIVE_FOLDER_NAME } from '../constants/driveConstrains';
 import { fetchJsonWithFallback } from '../utils/fetchWithFallback';
 
@@ -55,6 +55,8 @@ const SettingsPage: React.FC = () => {
 
   const [versions, setVersions] = useState<string[]>([]);
   const [selectedVersion, setSelectedVersion] = useState<number>(0);
+
+  const [exportingCsv, setExportingCsv] = useState(false);
 
   useEffect(() => {
     try {
@@ -134,6 +136,42 @@ const SettingsPage: React.FC = () => {
       setSnack({ open: true, message: 'エクスポートしました。', severity: 'success' });
     } catch {
       setSnack({ open: true, message: 'エクスポートに失敗しました。', severity: 'error' });
+    }
+  };
+
+  // 公式CSV Export
+  const handleExportOfficialCsv = async (mode: 'SP' | 'DP') => {
+    setExportingCsv(true);
+    try {
+      // 楽曲タイトルマップを取得
+      const titleMapUrl = 'https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json';
+      const titleMapResponse = await fetch(titleMapUrl);
+      if (!titleMapResponse.ok) {
+        throw new Error('楽曲データの取得に失敗しました');
+      }
+      const titleMap = await titleMapResponse.json();
+
+      const timestamps = JSON.parse(localStorage.getItem('timestamps') || '{}');
+      const csvContent = await exportToOfficialCsv(mode, titleMap, timestamps);
+
+      if (!csvContent) {
+        setSnack({ open: true, message: `${mode}のデータが存在しません。`, severity: 'warning' });
+        return;
+      }
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+      const a = document.createElement('a');
+      const ymd = getCurrentFormattedTime();
+      a.href = URL.createObjectURL(blob);
+      a.download = `iidx-score-${mode}-${ymd}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setSnack({ open: true, message: `${mode}の公式CSV形式でエクスポートしました。`, severity: 'success' });
+    } catch (e: any) {
+      setSnack({ open: true, message: `エクスポートに失敗しました: ${e.message || e}`, severity: 'error' });
+    } finally {
+      setExportingCsv(false);
     }
   };
 
@@ -557,8 +595,29 @@ const SettingsPage: React.FC = () => {
 
             <Typography variant="subtitle1" sx={{ mb: 1 }}>エクスポート</Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 3 }}>
-              <Button variant="outlined" onClick={handleExport}>ダウンロード</Button>
+              <Button variant="outlined" onClick={handleExport}>JSONダウンロード</Button>
               <Button variant="contained" onClick={() => setDriveExportDialogOpen(true)}>Google Driveへ保存</Button>
+            </Stack>
+
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>公式CSV形式エクスポート</Typography>
+            <Typography variant="body2" sx={{ mb: 1, color: 'text.secondary' }}>
+              beatmania IIDX 公式サイトと同じCSV形式でダウンロードします（UTF-8 with BOM）
+            </Typography>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 3 }}>
+              <Button
+                variant="outlined"
+                onClick={() => handleExportOfficialCsv('SP')}
+                disabled={exportingCsv}
+              >
+                SP CSV
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => handleExportOfficialCsv('DP')}
+                disabled={exportingCsv}
+              >
+                DP CSV
+              </Button>
             </Stack>
 
             <Typography variant="subtitle1" sx={{ mb: 1 }}>インポート</Typography>
