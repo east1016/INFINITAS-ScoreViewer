@@ -14,7 +14,7 @@ import FilterPanel from '../components/FilterPanel';
 import { useAppContext } from '../context/AppContext';
 
 import { difficultyKey } from '../constants/difficultyConstrains';
-import { notesOverride, levelOverride } from '../constants/chartInfoConstrains';
+import { notesOverride, levelOverride, inInfOverride } from '../constants/chartInfoConstrains';
 import { clearColorMap, scoreColorMapLight } from '../constants/colorConstrains';
 import { simpleClearName } from '../constants/clearConstrains';
 import { defaultMisscount } from '../constants/defaultValues';
@@ -216,7 +216,9 @@ const SongTablePage: React.FC = () => {
         for (const id of Object.keys(titleRes)) {
           const c = chartJson[id];
           if (!c) continue;
-          if (!(c.in_ac || c.in_inf)) continue;
+          // in_inf のオーバーライドを適用
+          const inInf = inInfOverride[id] ?? c.in_inf;
+          if (!(c.in_ac || inInf)) continue;
 
           for (const diff of difficultyKey) {
             const diffIndex = difficultyKey.indexOf(diff);
