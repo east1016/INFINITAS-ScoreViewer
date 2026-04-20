@@ -17,8 +17,9 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [mode, setMode] = useState<'SP' | 'DP'>('SP');
   const [filters, setFilters] = useState<FilterState>({
-    cleartype: [1, 2, 3, 4, 5, 6, 7],
+    cleartype: [1, 3, 4, 5, 6, 7],
     difficultyPattern: [0, 1, 2, 3, 4],
+    grade: [5, 6, 7, 8],  // F, E, D, C, B, A, AA, AAA, MAX-
     level: 12,
   });
 

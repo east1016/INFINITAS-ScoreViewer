@@ -6,4 +6,5 @@ export type FilterState = {
   difficultyPattern?: number[];
   label?: number[];
   level?: number;
+  grade?: number[];  // 0:F, 1:E, 2:D, 3:C, 4:B, 5:A, 6:AA, 7:AAA, 8:MAX-
 };

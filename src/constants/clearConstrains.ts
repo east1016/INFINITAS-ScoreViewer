@@ -57,3 +57,16 @@ export const simpleClearName: string[] =[
   "EX HARD",
   "FULLCOMBO",
 ]
+
+// Grade filter: 0:F, 1:E, 2:D, 3:C, 4:B, 5:A, 6:AA, 7:AAA, 8:MAX-
+export const simpleGradeName: string[] = [
+  "F",
+  "E",
+  "D",
+  "C",
+  "B",
+  "A",
+  "AA",
+  "AAA",
+  "MAX-",
+]
