@@ -14,6 +14,7 @@ import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import RadarRoundedIcon from '@mui/icons-material/RadarRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import TableRowsIcon from '@mui/icons-material/TableRows';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 
 import { useAppContext } from './context/AppContext';
 
@@ -29,6 +30,7 @@ import SettingsPage from './pages/SettingsPage';
 import EditSongSelectPage from './pages/ManualEdit/EditSongSelectPage';
 import EditDataPage from './pages/ManualEdit/EditDataPage';
 import SongTablePage from './pages/SongTablePage';
+import RivalComparePage from './pages/RivalComparePage';
 import Index from './pages/Index';
 
 type VisibleMode = 'SP' | 'DP' | 'both';
@@ -47,6 +49,7 @@ const AppShell: React.FC = () => {
     { text: 'スコア手動登録', path: '/edit', mode: 'both', icon: <EditNoteRoundedIcon />, hidden: true },
     { text: '更新差分', path: '/diff', mode: 'both', icon: <DifferenceRoundedIcon /> },
     { text: '楽曲一覧', path: '/songtable', mode: 'both', icon: <TableRowsIcon /> },
+    { text: 'ライバル比較', path: '/rival', mode: 'both', icon: <CompareArrowsIcon /> },
     { text: 'SP難易度表', path: '/tierlist', mode: 'SP', icon: <GridViewRoundedIcon /> },
     { text: 'DP非公式難易度表', path: '/dp', mode: 'DP', icon: <GridViewRoundedIcon /> },
     { text: 'CPI', path: '/cpi', mode: 'SP', icon: <GridViewRoundedIcon /> },
@@ -249,6 +252,7 @@ const AppShell: React.FC = () => {
           />
           <Route path="/radar" element={<RadarPage />} />
           <Route path="/songtable" element={<SongTablePage/>} />
+          <Route path="/rival" element={<RivalComparePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/edit" element={<EditSongSelectPage />} />
           <Route path="/edit/:songIdRaw/:difficultyRaw" element={<EditDataPage />} />
