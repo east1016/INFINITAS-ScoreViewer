@@ -313,7 +313,7 @@ const SongTablePage: React.FC = () => {
         const version = songInfo[s.id]?.version;
         const label = konamiInfInfo[s.id]?.label;
 
-        return isMatchSong(filters, lamp, s.difficulty, konami, chart, unlocked, version, label);
+        return isMatchSong(filters, lamp, s.difficulty, konami, chart, unlocked, version, label, s.rate);
       });
   }, [songs, selectedLevel, filters, clearData, chartInfo, konamiInfInfo, unlockedData, songInfo]);
 

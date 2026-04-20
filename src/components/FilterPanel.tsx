@@ -5,7 +5,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { FilterState } from '../types/Types';
-import { simpleClearName } from '../constants/clearConstrains';
+import { simpleClearName, simpleGradeName } from '../constants/clearConstrains';
 import { difficultyDetailKeys } from '../constants/difficultyConstrains';
 
 type Props = {
@@ -65,7 +65,7 @@ const FilterPanel = ({ filters, onChange, showLevelFilter = true }: Props) => {
 
       <Grid container spacing={2}>
         {/* クリアランプ */}
-        <Grid item xs={12} sm={showLevelFilter ? 12 : 6}>
+        <Grid item xs={12} sm={showLevelFilter ? 6 : 6}>
           <FormControl fullWidth size={isXs ? 'small' : 'medium'}>
             <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>クリアランプ</InputLabel>
             <Select
@@ -87,8 +87,31 @@ const FilterPanel = ({ filters, onChange, showLevelFilter = true }: Props) => {
           </FormControl>
         </Grid>
 
+        {/* Grade */}
+        <Grid item xs={12} sm={showLevelFilter ? 6 : 6}>
+          <FormControl fullWidth size={isXs ? 'small' : 'medium'}>
+            <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>Grade</InputLabel>
+            <Select
+              multiple
+              value={filters?.grade || []}
+              onChange={(e) => onChange({ ...filters, grade: e.target.value as number[] })}
+              renderValue={(selected) => (selected as number[]).map((v) => simpleGradeName[v]).join(', ')}
+              size={isXs ? 'small' : 'medium'}
+              MenuProps={menuProps}
+              sx={selectBaseSx}
+            >
+              {simpleGradeName.map((label, index) => (
+                <MenuItem key={index} value={index}>
+                  <Checkbox checked={filters?.grade?.includes(index) || false} />
+                  <ListItemText primaryTypographyProps={{ fontSize: isXs ? 13 : 14 }} primary={label} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
         {/* 譜面難易度  */}
-        <Grid item xs={12} sm={showLevelFilter ? 12 : 6}>
+        <Grid item xs={12} sm={showLevelFilter ? 6 : 6}>
           <FormControl fullWidth size={isXs ? 'small' : 'medium'}>
             <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>譜面難易度</InputLabel>
             <Select
