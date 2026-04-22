@@ -415,6 +415,7 @@ const DiffPage = () => {
                       <TableCell sx={{ textAlign: 'center' }}>Before</TableCell>
                       <TableCell sx={{ width: 20, px: 0 }} />
                       <TableCell sx={{ textAlign: 'center' }} onClick={() => handleSort('score', 'grade')}>After</TableCell>
+                      <TableCell sx={{ textAlign: 'right', cursor: 'pointer' }} onClick={() => handleSort('score', 'score')}>Score(%)</TableCell>
                       <TableCell sx={{ textAlign: 'center' }} onClick={() => handleSort('score', 'diff')}>Diff</TableCell>
                     </TableRow>
                   </TableHead>
@@ -491,6 +492,7 @@ const DiffPage = () => {
                               return <>{grade} ({detailGrade})</>;
                             })()}
                           </TableCell>
+                          <TableCell sx={{ textAlign: 'right' }}>{row.afterScore} ({isInvalid ? '-' : (row.afterRate * 100).toFixed(2)}%)</TableCell>
                           <TableCell sx={{ textAlign: 'center' }}>+{row.diff}</TableCell>
                         </TableRow>
 
@@ -553,6 +555,7 @@ const DiffPage = () => {
                                   })()}
                                 </>
                               )}
+                              <Box>Score: {row.afterScore} ({isInvalid ? '-' : (row.afterRate * 100).toFixed(2)}%)</Box>
                               <Box>Diff: +{row.diff}</Box>
                             </Box>
                           </TableCell>
