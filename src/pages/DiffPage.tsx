@@ -50,7 +50,7 @@ const DiffPage = () => {
   const [diff, setDiff] = useState<any>({});
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const [excludeNewSongs, setExcludeNewSongs] = useState(false);
+  const [excludeNewSongs, setExcludeNewSongs] = useState(true);
   const [isShared, setIsShared] = useState(false);
   const [isUrldataValid, setIsUrldataValid] = useState(true);
   const [bpiInfo, setBpiInfo] = useState<any>({});
