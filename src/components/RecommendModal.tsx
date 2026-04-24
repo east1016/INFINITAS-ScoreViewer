@@ -189,7 +189,7 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
             onChange={(_, v) => v && setLevel(v)}
             size="small"
           >
-            {[12, 11, 10, 9, 8, 7].map(lv => (
+            {[12, 11, 10, 9, 8].map(lv => (
               <ToggleButton key={lv} value={lv}>☆{lv}</ToggleButton>
             ))}
           </ToggleButtonGroup>
