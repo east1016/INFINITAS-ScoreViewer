@@ -53,7 +53,10 @@ type SortKey = 'lv' | 'title' | 'myScore' | 'rivalScore' | 'scoreDiff' | 'myLamp
 type SortDir = 'asc' | 'desc';
 
 // Reflux TSVをパースしてライバルデータを取得
-const parseRivalTsv = (text: string): Record<string, Record<string, { score: number; lamp: number; bp: number }>> => {
+const parseRivalTsv = (
+  text: string,
+  normalizedTitleToId: Record<string, string>
+): Record<string, Record<string, { score: number; lamp: number; bp: number }>> => {
   const rows = text.split('\n').map(line => line.split('\t'));
   const headers = rows[0];
   const data: Record<string, Record<string, { score: number; lamp: number; bp: number }>> = {};
@@ -66,6 +69,11 @@ const parseRivalTsv = (text: string): Record<string, Record<string, { score: num
     const title = rowObj['title'];
     if (!title) continue;
 
+    // 曲名を正規化してIDを取得
+    const normalizedTitle = normalizeTitle(title);
+    const id = normalizedTitleToId[normalizedTitle];
+    if (!id) continue; // IDが見つからない場合はスキップ
+
     for (const mode of ['SP', 'DP']) {
       for (let j = 0; j < difficultyKey.length; j++) {
         const diff = difficultyKey[j];
@@ -75,7 +83,7 @@ const parseRivalTsv = (text: string): Record<string, Record<string, { score: num
         const lamp = clearMapReflux[rowObj[`${prefix} Lamp`]] ?? 0;
 
         if (score > 0 || lamp > 0) {
-          const key = `${mode}_${title}`;
+          const key = `${mode}_${id}`;
           if (!data[key]) data[key] = {};
           data[key][diff] = { score, lamp, bp };
         }
@@ -151,13 +159,13 @@ const RivalComparePage: React.FC = () => {
         throw new Error('Reflux TSVとして認識できません');
       }
 
-      const parsed = parseRivalTsv(text);
+      const parsed = parseRivalTsv(text, normalizedTitleToId);
       setRivalData(parsed);
       setRivalLoaded(true);
     } catch (e: any) {
       alert(`読み込み失敗: ${e.message}`);
     }
-  }, []);
+  }, [normalizedTitleToId]);
 
   // 初期データ読み込み
   useEffect(() => {
@@ -228,15 +236,15 @@ const RivalComparePage: React.FC = () => {
         const myBp = missData[key] ?? defaultMisscount;
 
         // ライバルのスコア
-        const rivalKey = `${mode}_${title}`;
+        const rivalKey = `${mode}_${id}`;
         const rivalEntry = rivalData[rivalKey]?.[diff];
         const rivalLamp = rivalEntry?.lamp ?? 0;
         const rivalScore = rivalEntry?.score ?? 0;
         const rivalRate = getPercentage(rivalScore, notes);
         const rivalBp = rivalEntry?.bp ?? defaultMisscount;
 
-        // 両方ともスコアがない場合はスキップ
-        if (myScore === 0 && rivalScore === 0) continue;
+        // どちらかが未プレイの場合はスキップ
+        if (myScore === 0 || rivalScore === 0) continue;
 
         const scoreDiff = myScore - rivalScore;
         const lampDiff = myLamp - rivalLamp;
@@ -396,11 +404,6 @@ const RivalComparePage: React.FC = () => {
                 </Typography>
                 <Typography>
                   引き分け: <Box component="span" sx={{ fontWeight: 700 }}>{stats.draw}</Box>
-                </Typography>
-                <Typography>
-                  スコア差分合計: <Box component="span" sx={{ color: getScoreDiffColor(stats.totalDiff), fontWeight: 700 }}>
-                    {stats.totalDiff > 0 ? '+' : ''}{stats.totalDiff}
-                  </Box>
                 </Typography>
               </Box>
 
