@@ -36,9 +36,10 @@ import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
 import { notesOverride, levelOverride, chartOverrideData } from '../constants/chartInfoConstrains';
 import ChartOverrideModal from '../components/ChartOverrideModal';
 import { renderTitleWithDifficulty } from '../utils/titleUtils';
+import { fetchCustomBpi } from '../utils/customBpiClient';
 
 const urlLengthMax = 4088;
-const BPI_SERVER_URL = '';
+const isEditable = import.meta.env.DEV;
 
 const DiffPage = () => {
   const { mode, setMode } = useAppContext();
@@ -79,16 +80,8 @@ const DiffPage = () => {
       const bpiVersionIndex = parseInt(localStorage.getItem('bpiVersion') ?? '-1') ?? -1
       const bpiVersion = await resolveVersionByIndex(bpiVersionIndex);
 
-      // Fetch custom BPI data
-      let customBpi: any = { SP: {}, DP: {} };
-      try {
-        const res = await fetch(`${BPI_SERVER_URL}/api/bpi`);
-        if (res.ok) {
-          customBpi = await res.json();
-        }
-      } catch {
-        // Server not running, use empty data
-      }
+      // Fetch custom BPI data (dev: BPI server, prod: bundled JSON)
+      const customBpi = await fetchCustomBpi();
 
       const [
           titleRes,
@@ -439,7 +432,7 @@ const DiffPage = () => {
                           <TableCell>☆{row.lv}</TableCell>
                           <TableCell>
                             {renderTitleWithDifficulty(row.title, row.difficulty, acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': '')}
-                            {isInvalid && (
+                            {isEditable && isInvalid && (
                               <Tooltip title="譜面情報を補正">
                                 <IconButton size="small" onClick={handleEditClick} sx={{ ml: 0.5 }}>
                                   <EditIcon fontSize="small" />
@@ -503,7 +496,7 @@ const DiffPage = () => {
                               <Typography variant="body2" fontWeight={700} noWrap sx={{ flex: 1 }}>
                                 {renderTitleWithDifficulty(row.title, row.difficulty, `${acInfDiffMap[Number(row.id)] ? ' (INFINITAS)': ''} ／ ☆${row.lv}`)}
                               </Typography>
-                              {isInvalid && (
+                              {isEditable && isInvalid && (
                                 <IconButton size="small" onClick={handleEditClick}>
                                   <EditIcon fontSize="small" />
                                 </IconButton>
