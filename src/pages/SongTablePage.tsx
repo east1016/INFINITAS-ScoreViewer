@@ -32,8 +32,9 @@ import BpiInputModal from '../components/BpiInputModal';
 import RecommendModal from '../components/RecommendModal';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
+import { fetchCustomBpi } from '../utils/customBpiClient';
 
-const BPI_SERVER_URL = '';
+const isEditable = import.meta.env.DEV;
 
 type SongRow = {
   id: string;
@@ -125,17 +126,9 @@ const SongTablePage: React.FC = () => {
 
   // Fetch custom BPI data
   const fetchCustomBpiData = useCallback(async () => {
-    try {
-      const res = await fetch(`${BPI_SERVER_URL}/api/bpi`);
-      if (res.ok) {
-        const data = await res.json();
-        setCustomBpiData(data);
-        return data;
-      }
-    } catch {
-      // Server not running, use empty data
-    }
-    return { SP: {}, DP: {} };
+    const data = await fetchCustomBpi();
+    setCustomBpiData(data);
+    return data;
   }, []);
 
   // Load BPI versions on mount
@@ -617,7 +610,7 @@ const SongTablePage: React.FC = () => {
                       }
                       <TableCell>{s.score} ({(s.rate * 100).toFixed(2)}%)</TableCell>
                       <TableCell>{s.bp == defaultMisscount ? '-' : s.bp}</TableCell>
-                      {selectedLevel >= 11 && (
+                      {isEditable && selectedLevel >= 11 && (
                         <TableCell sx={{ p: 0.5 }}>
                           <IconButton
                             size="small"
@@ -639,7 +632,7 @@ const SongTablePage: React.FC = () => {
                           <Typography variant="body2" fontWeight={700} noWrap sx={{ flex: 1 }}>
                             {renderTitleWithDifficulty(s.title, s.difficulty, acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : undefined)}
                           </Typography>
-                          {selectedLevel >= 11 && (
+                          {isEditable && selectedLevel >= 11 && (
                             <IconButton
                               size="small"
                               onClick={() => handleOpenBpiModal(s)}
