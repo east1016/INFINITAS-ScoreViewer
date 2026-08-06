@@ -6,6 +6,7 @@ import {
   Snackbar, Alert
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import CalculateIcon from '@mui/icons-material/Calculate';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Page, PageHeader } from '../components/Page';
@@ -29,6 +30,7 @@ import LampAchieveProgress from '../components/LampAchieveProgress';
 import GradeAchieveProgress from '../components/GradeAchieveProgress';
 import { getLampAchiveCount, getGradeAchiveCount } from '../utils/lampUtils';
 import BpiInputModal from '../components/BpiInputModal';
+import BpiCalcModal from '../components/BpiCalcModal';
 import RecommendModal from '../components/RecommendModal';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
@@ -78,6 +80,10 @@ const SongTablePage: React.FC = () => {
   const [customBpiData, setCustomBpiData] = useState<any>({});
   const [bpiModalOpen, setBpiModalOpen] = useState(false);
   const [selectedSongForBpi, setSelectedSongForBpi] = useState<SongRow | null>(null);
+
+  // BPI calc modal
+  const [bpiCalcModalOpen, setBpiCalcModalOpen] = useState(false);
+  const [selectedSongForCalc, setSelectedSongForCalc] = useState<SongRow | null>(null);
 
   // Recommend modal
   const [recommendModalOpen, setRecommendModalOpen] = useState(false);
@@ -532,6 +538,7 @@ const SongTablePage: React.FC = () => {
                 {selectedLevel >= 11 && <col style={{ width: 80 }} />}
                 <col style={{ width: 140 }} />
                 <col style={{ width: 80 }} />
+                {selectedLevel >= 11 && <col style={{ width: 44 }} />}
                 {selectedLevel >= 11 && <col style={{ width: 50 }} />}
               </colgroup>
               {/* PC/Tablet: 通常ヘッダ */}
@@ -560,6 +567,7 @@ const SongTablePage: React.FC = () => {
                   <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'bp' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('bp')}>
                     BP {sortConfig.key === 'bp' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
+                  {selectedLevel >= 11 && <TableCell sx={{ p: 0 }} />}
                   {selectedLevel >= 11 && <TableCell></TableCell>}
                 </TableRow>
               </TableHead>
@@ -610,6 +618,17 @@ const SongTablePage: React.FC = () => {
                       }
                       <TableCell>{s.score} ({(s.rate * 100).toFixed(2)}%)</TableCell>
                       <TableCell>{s.bp == defaultMisscount ? '-' : s.bp}</TableCell>
+                      {selectedLevel >= 11 && (
+                        <TableCell sx={{ p: 0.5 }}>
+                          <IconButton
+                            size="small"
+                            onClick={() => { setSelectedSongForCalc(s); setBpiCalcModalOpen(true); }}
+                            title="BPIを計算"
+                          >
+                            <CalculateIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      )}
                       {isEditable && selectedLevel >= 11 && (
                         <TableCell sx={{ p: 0.5 }}>
                           <IconButton
@@ -730,6 +749,20 @@ const SongTablePage: React.FC = () => {
         officialData={selectedSongForBpi ? bpiInfo?.[mode]?.[selectedSongForBpi.id]?.[selectedSongForBpi.difficulty] : null}
         bpiVersionName={versions[selectedVersion]}
         onSave={handleBpiSave}
+      />
+
+      <BpiCalcModal
+        open={bpiCalcModalOpen}
+        onClose={() => setBpiCalcModalOpen(false)}
+        songInfo={selectedSongForCalc ? {
+          title: selectedSongForCalc.title,
+          difficulty: selectedSongForCalc.difficulty,
+          notes: selectedSongForCalc.notes,
+          mode: mode,
+        } : null}
+        officialData={selectedSongForCalc ? bpiInfo?.[mode]?.[selectedSongForCalc.id]?.[selectedSongForCalc.difficulty] ?? null : null}
+        customData={selectedSongForCalc ? customBpiData?.[mode]?.[`${selectedSongForCalc.id}_${selectedSongForCalc.difficulty}`] ?? null : null}
+        currentScore={selectedSongForCalc?.score ?? 0}
       />
 
       <RecommendModal
