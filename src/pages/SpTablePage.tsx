@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   Container, Typography, Grid, Paper, Box, CircularProgress, Backdrop,
-  ToggleButtonGroup, ToggleButton
+  ToggleButtonGroup, ToggleButton, Button, Snackbar, Alert
 } from '@mui/material';
 import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
@@ -15,6 +15,7 @@ import { defaultMisscount } from '../constants/defaultValues';
 import { getLampAchiveCount } from '../utils/lampUtils';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 import { renderTitleWithDifficulty } from '../utils/titleUtils';
+import { compressDiffData, decompressDiffData } from '../utils/encodeUtils';
 
 type Level = '11' | '12';
 type DifficultyType = 'normal' | 'hard';
@@ -33,6 +34,10 @@ const SpTablePage = () => {
   const [chartInfo, setChartInfo] = useState<any>({});
   const [songInfo, setSongInfo] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [isShared, setIsShared] = useState(false);
+  const [snack, setSnack] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+    open: false, message: '', severity: 'success',
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,11 +59,30 @@ const SpTablePage = () => {
         setSongInfo(songInfoJson);
         setChartInfo(chartJson);
 
-        const local = JSON.parse(localStorage.getItem('data') || '{}');
-        const { clear, misscount, unlocked } = convertDataToIdDiffKey(local, mode);
-        setClearData(clear);
-        setMissData(misscount);
-        setUnlockedData(unlocked);
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedData = urlParams.get('data');
+        if (sharedData) {
+          try {
+            const restored = decompressDiffData(sharedData);
+            const { clear, misscount, unlocked } = convertDataToIdDiffKey({ SP: restored }, 'SP');
+            setClearData(clear);
+            setMissData(misscount);
+            setUnlockedData(unlocked);
+            setIsShared(true);
+          } catch {
+            const local = JSON.parse(localStorage.getItem('data') || '{}');
+            const { clear, misscount, unlocked } = convertDataToIdDiffKey(local, mode);
+            setClearData(clear);
+            setMissData(misscount);
+            setUnlockedData(unlocked);
+          }
+        } else {
+          const local = JSON.parse(localStorage.getItem('data') || '{}');
+          const { clear, misscount, unlocked } = convertDataToIdDiffKey(local, mode);
+          setClearData(clear);
+          setMissData(misscount);
+          setUnlockedData(unlocked);
+        }
       } finally {
         setLoading(false);
       }
@@ -66,6 +90,30 @@ const SpTablePage = () => {
 
     fetchData();
   }, [mode, level]);
+
+  const handleCopyToClipboard = useCallback(async () => {
+    const local = JSON.parse(localStorage.getItem('data') || '{}');
+    const spData = local?.SP ?? {};
+    // ☆12の曲IDに絞り、cleartype と misscount のみ抽出してURLサイズを削減
+    const sp12SongIds = new Set(songs.map(s => String(s.id)));
+    const filtered: any = {};
+    for (const songId of sp12SongIds) {
+      if (!spData[songId]) continue;
+      filtered[songId] = {};
+      for (const diff of Object.keys(spData[songId])) {
+        const { cleartype, misscount } = spData[songId][diff];
+        filtered[songId][diff] = { cleartype, misscount };
+      }
+    }
+    const encoded = compressDiffData(filtered);
+    const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setSnack({ open: true, message: 'URLをコピーしました', severity: 'success' });
+    } catch {
+      setSnack({ open: true, message: 'コピーに失敗しました', severity: 'error' });
+    }
+  }, [songs]);
 
   const filteredSongs = useMemo(() => songs.filter(song => {
     const key = `${song.id}_${song.difficulty}`;
@@ -106,9 +154,19 @@ const SpTablePage = () => {
     return { xs: 12, sm: 14, md: 14 };
   };
 
+  const headerActions = !isShared ? (
+    <Button
+      variant="contained"
+      onClick={handleCopyToClipboard}
+      sx={{ fontWeight: 700 }}
+    >
+      ☆12HARD難易度表の共有
+    </Button>
+  ) : null;
+
   return (
     <Page>
-      <PageHeader compact title="SP難易度表" />
+      <PageHeader compact title="SP難易度表" actions={headerActions} />
       <SectionCard>
         <Container maxWidth="xl" sx={{ mt: 4 }}>
           <Backdrop open={loading} sx={{ zIndex: 9999, color: '#fff' }}>
@@ -116,6 +174,11 @@ const SpTablePage = () => {
           </Backdrop>
 
           <LampAchieveProgress stats={stats} totalCount={totalCount} />
+          {isShared && (
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              共有データを表示中
+            </Typography>
+          )}
           <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} />
 
           {/* 切り替えボタン */}
@@ -222,6 +285,16 @@ const SpTablePage = () => {
 
         </Container>
       </SectionCard>
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack(s => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={snack.severity} onClose={() => setSnack(s => ({ ...s, open: false }))}>
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Page>
   );
 };
