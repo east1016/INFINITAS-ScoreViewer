@@ -96,8 +96,8 @@ const SongTablePage: React.FC = () => {
   });
 
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDir }>({
-    key: 'grade',
-    direction: 'desc',
+    key: 'bpi',
+    direction: 'asc',
   });
   const [displayLimit, setDisplayLimit] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);

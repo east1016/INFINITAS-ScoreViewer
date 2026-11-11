@@ -179,7 +179,7 @@ const SpTablePage = () => {
               共有データを表示中
             </Typography>
           )}
-          <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} />
+          <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} showGradeFilter={false} />
 
           {/* 切り替えボタン */}
           <Box
@@ -210,7 +210,7 @@ const SpTablePage = () => {
               }}
             >
               <ToggleButton value="12">☆12</ToggleButton>
-              <ToggleButton value="11">☆11</ToggleButton>
+              <ToggleButton value="11" disabled={isShared}>☆11</ToggleButton>
             </ToggleButtonGroup>
 
             <ToggleButtonGroup
