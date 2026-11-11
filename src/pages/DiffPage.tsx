@@ -119,6 +119,7 @@ const DiffPage = () => {
         setDiff(inflatedData.diff);
         setUser(inflatedData.user);
         setIsShared(true);
+        setExcludeNewSongs(false);
       } else {
         const storedDiff = JSON.parse(localStorage.getItem('diff') || '{}');
         const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
