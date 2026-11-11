@@ -12,9 +12,10 @@ type Props = {
   filters: FilterState;
   onChange: (filters: FilterState) => void;
   showLevelFilter?: boolean;
+  showGradeFilter?: boolean;
 };
 
-const FilterPanel = ({ filters, onChange, showLevelFilter = true }: Props) => {
+const FilterPanel = ({ filters, onChange, showLevelFilter = true, showGradeFilter = true }: Props) => {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -88,7 +89,7 @@ const FilterPanel = ({ filters, onChange, showLevelFilter = true }: Props) => {
         </Grid>
 
         {/* Grade */}
-        <Grid item xs={12} sm={showLevelFilter ? 6 : 6}>
+        {showGradeFilter && <Grid item xs={12} sm={showLevelFilter ? 6 : 6}>
           <FormControl fullWidth size={isXs ? 'small' : 'medium'}>
             <InputLabel sx={{ fontSize: isXs ? 12 : 14 }}>Grade</InputLabel>
             <Select
@@ -108,7 +109,7 @@ const FilterPanel = ({ filters, onChange, showLevelFilter = true }: Props) => {
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        </Grid>}
 
         {/* 譜面難易度  */}
         <Grid item xs={12} sm={showLevelFilter ? 6 : 6}>
