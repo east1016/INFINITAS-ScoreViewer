@@ -107,7 +107,7 @@ const EditDataPage = () => {
       const oldData = JSON.parse(localStorage.getItem('data') || '{}');
       const oldTimestamps = JSON.parse(localStorage.getItem('timestamps') || '{}');
       const oldDiff = JSON.parse(localStorage.getItem('diff') || '{}');
-      const margedData = mergeWithJSONData(oldData, newData, oldTimestamps, newTimestamp, oldDiff, true);
+      const margedData = mergeWithJSONData(oldData, newData, oldTimestamps, newTimestamp, oldDiff);
       localStorage.setItem('data', JSON.stringify(margedData.data));
       localStorage.setItem('diff', JSON.stringify(margedData.diffs));
       localStorage.setItem('timestamps', JSON.stringify(margedData.timestamps));

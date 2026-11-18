@@ -16,59 +16,8 @@ export const replaceCharacters: ReplaceEntry[] = [
     }
 ]
 
-// 読み込みエラー対応
+// 公式CSV表記（ダブルクォートなし）→ textage正規化キー（ダブルクォートあり）
 export const replaceTitle: ReplaceEntry[] = [
-    // Reflux
-    {
-        from: '共犯へヴンズコード',
-        to: '共犯ヘヴンズコード'
-    },
-    {
-        from: 'Ignis†Ir?',
-        to: 'Ignis†Irae'
-    },
-    {
-        from: 'V?ID',
-        to: 'VOID'
-    },
-    {
-        from: 'ACT?',
-        to: 'ACTO'
-    },
-    {
-        from: 'Raspberry Potion (feat.あれたん? & ぎゃるのしん☆)',
-        to: 'RaspberryPotion(feat.あれたん&ぎゃるのしん)'
-    },
-    {
-        from: '♥LOVE² シュガ→♥',
-        to: 'LOVE2シュガ→'
-    },
-    // daken counter
-    {
-        from: 'uan',
-        to: 'uen'
-    },
-    {
-        from: 'Dans la nuit de leternite',
-        to: 'Dans la nuit de l\'éternité'
-    },
-    {
-        from: 'Let\'s bounce !!',
-        to: 'Let\'s Bounce !!'
-    },
-    {
-        from: 'Psychedelic intelligence',
-        to: 'Psychedelic Intelligence'
-    },
-    {
-        from: 'ウツミウツシ',
-        to: 'ウツシミウツシ'
-    },
-    {
-        from: 'Destiny Lovers',
-        to: 'Destiny lovers'
-    },
-    // 公式CSV表記（ダブルクォートなし）→ textage正規化キー（ダブルクォートあり）
     {
         from: 'Anisakis -somatic mutation typeForza-',
         to: 'Anisakis -somatic mutation type"Forza"-'

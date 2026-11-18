@@ -9,27 +9,6 @@ export const clearMapOfficial: Record<string, number> = {
   "FULLCOMBO CLEAR": 7
 };
 
-export const clearMapIDC: Record<string, number> = {
-  "NO PLAY": 0,
-  "FAILED": 1,
-  "A-CLEAR": 2,
-  "E-CLEAR": 3,
-  "CLEAR": 4,
-  "H-CLEAR": 5,
-  "EXH-CLEAR": 6,
-  "F-COMBO": 7
-};
-
-export const clearMapReflux: Record<string, number> = {
-  "NP": 0,
-  "F": 1,
-  "AC": 2,
-  "EC": 3,
-  "NC": 4,
-  "HC": 5,
-  "EX": 6,
-  "FC": 7
-};
 
 export const achiveTargetClearMap: Record<string, number> ={
   "EASY": 3,

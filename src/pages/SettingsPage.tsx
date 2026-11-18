@@ -215,8 +215,7 @@ const SettingsPage: React.FC = () => {
         remote.data || {},
         local.timestamps || {},
         remote.timestamps || {},
-        local.diff || {},
-        false
+        local.diff || {}
       );
 
       const mergedLocal = {
@@ -454,8 +453,7 @@ const SettingsPage: React.FC = () => {
           local.data || {},
           remote.timestamps || {},
           local.timestamps || {},
-          remote.diff || {},
-          false
+          remote.diff || {}
         );
         merged = {
           user: local.user ?? remote.user ?? null,
@@ -501,8 +499,7 @@ const SettingsPage: React.FC = () => {
         remote.data || {},
         local.timestamps || {},
         remote.timestamps || {},
-        local.diff || {},
-        false
+        local.diff || {}
       );
       const mergedLocal = {
         user: local.user ?? remote.user ?? null,

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Container, Typography, Button, Box, FormControl, InputLabel, Select, MenuItem,
-  SelectChangeEvent, Alert, Dialog, DialogTitle, DialogContent, DialogActions
+  Container, Typography, Button, Box,
+  Alert, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { parseOfficialCsv, parseRefluxTsv, parseIDCCsv, parseInbCsv, mergeWithCSVEntries } from '../utils/scoreDataUtils';
+import { parseOfficialCsv, mergeWithCSVEntries } from '../utils/scoreDataUtils';
 import { getCurrentFormattedDate } from '../utils/dateUtils';
 import { useAppContext } from '../context/AppContext';
 import LinkComponent from '../components/LinkComponent';
@@ -13,10 +13,8 @@ import SectionCard from '../components/SectionCard';
 
 const CsvLoaderPage = () => {
   const navigate = useNavigate();
-  const { mode, setMode } = useAppContext();
-  const [format, setFormat] = useState<'official' | 'reflux' | 'idc' | 'inb'>('official');
+  const { mode } = useAppContext();
   const [error, setError] = useState<string | null>(null);
-  const [warnings, setWarnings] = useState<string[]>([]);
   const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
   const [reportDialogOpen, setReportDialogOpen] = useState<boolean>(false);
   const [failedTitles, setFailedTitles] = useState<string[]>([]);
@@ -26,43 +24,20 @@ const CsvLoaderPage = () => {
     if (!file) return;
 
     setError(null);
-    setWarnings([]);
     setFailedTitles([]);
 
     try {
-      if (!file.name.endsWith('.csv') && !file.name.endsWith('.tsv')) {
-        throw new Error('拡張子がcsvまたはtsvではありません');
+      if (!file.name.endsWith('.csv')) {
+        throw new Error('拡張子がcsvではありません');
       }
 
-      // ファイルの読み込み
       const text = await readFileAsText(file);
-      let result;
-      let isReflux = false;
-
-      if (format === 'official') {
-        if (!text.includes('タイトル') || !text.includes('スコア')) {
-          throw new Error('公式CSVとして認識できません');
-        }
-        result = await parseOfficialCsv(text, mode);
-      } else if (format === 'idc') {
-        if (!text.includes('LV') || !text.includes('Score')) {
-          throw new Error('INFINITAS打鍵カウンタCSVとして認識できません');
-        }
-        result = await parseIDCCsv(text);
-      }else if (format === 'inb') {
-        if (!text.includes('曲名') || !text.includes('スコア')) {
-          throw new Error('INFINITASリザルト手帳CSVとして認識できません');
-        }
-        result = await parseInbCsv(text, mode);
-      } else {
-        if (!text.includes('Type') || !text.includes('Label')) {
-          throw new Error('Reflux TSVとして認識できません');
-        }
-        result = await parseRefluxTsv(text);
-        isReflux = true;
+      if (!text.includes('タイトル') || !text.includes('スコア')) {
+        throw new Error('公式CSVとして認識できません');
       }
 
-      const { data, diffs, timestamps, failedTitles } = await mergeWithCSVEntries(result, isReflux, format === 'official');
+      const result = await parseOfficialCsv(text, mode);
+      const { data, diffs, timestamps, failedTitles } = await mergeWithCSVEntries(result);
 
       if (failedTitles.length > 0) {
         setFailedTitles(failedTitles);
@@ -83,40 +58,19 @@ const CsvLoaderPage = () => {
     }
   };
 
-  // ファイルのエンコーディングに応じてテキストを読み込む
   const readFileAsText = async (file: File): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-
-    let text = '';
-
-    // 'official' の場合、UTF-8 with BOMを処理
-    if (format === 'official') {
-      const decoder = new TextDecoder('utf-8', { fatal: true });
-      text = decoder.decode(uint8Array);
-      // BOMを取り除く
-      if (text.charCodeAt(0) === 0xFEFF) {
-        text = text.substring(1);
-      }
+    const decoder = new TextDecoder('utf-8', { fatal: true });
+    let text = decoder.decode(uint8Array);
+    if (text.charCodeAt(0) === 0xFEFF) {
+      text = text.substring(1);
     }
-
-    // 'idc' の場合、Shift JISを処理
-    else if (format === 'idc') {
-      const decoder = new TextDecoder('shift-jis', { fatal: true });
-      text = decoder.decode(uint8Array);
-    }
-
-    // 'reflux' の場合、UTF-8をそのまま処理
-    else if (format === 'reflux' || format === 'inb') {
-      const decoder = new TextDecoder('utf-8', { fatal: true });
-      text = decoder.decode(uint8Array);
-    }
-
     return text;
   };
 
   const handleReport = () => {
-    const message = encodeURIComponent(`@ci_public\n以下の曲のIDが取得できませんでした:\n${failedTitles.join('\n')}\n\nformat=${format}\n`);
+    const message = encodeURIComponent(`@ci_public\n以下の曲のIDが取得できませんでした:\n${failedTitles.join('\n')}\n`);
     const url = `https://x.com/intent/tweet?hashtags=inf_sv_error&text=${message}`;
     window.open(url, '_blank');
   };
@@ -128,109 +82,27 @@ const CsvLoaderPage = () => {
 
   return (
     <Page>
-      <PageHeader compact title="CSV/TSV読み込み" />
+      <PageHeader compact title="CSV読み込み" />
       <SectionCard>
         <Container sx={{ mt: 4 }}>
-
           <Box sx={{ mb: 2 }}>
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel id="format-label">形式</InputLabel>
-              <Select
-                labelId="format-label"
-                value={format}
-                label="形式"
-                onChange={(e: SelectChangeEvent) => setFormat(e.target.value as any)}
-              >
-                <MenuItem value="official">公式CSV</MenuItem>
-                <MenuItem value="reflux">Reflux TSV</MenuItem>
-                <MenuItem value="idc">INFINITAS打鍵カウンタ CSV</MenuItem>
-                <MenuItem value="inb">INFINITASリザルト手帳 CSV</MenuItem>
-              </Select>
-            </FormControl>
-
-            {format === 'official' && (
-              <>
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel id="mode-label">モード</InputLabel>
-                  <Select
-                    labelId="mode-label"
-                    value={mode}
-                    label="モード"
-                    onChange={(e: SelectChangeEvent) => setMode(e.target.value as any)}
-                  >
-                    <MenuItem value="SP">SP</MenuItem>
-                    <MenuItem value="DP">DP</MenuItem>
-                  </Select>
-                </FormControl>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  beatmania IIDXの公式HP(<LinkComponent url="https://p.eagate.573.jp/game/2dx/">https://p.eagate.573.jp/game/2dx/</LinkComponent>)からダウンロードできるスコアデータCSVです。
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  文字コードはUTF-8 with BOMを想定しております。CSVファイルの手動修正を行う場合は文字コードにご注意ください。CSVのダウンロードにはbeatmania IIDX プレミアムコース登録が必要となります。
-                </Typography>
-                <Alert severity="warning">
-                  統計の充実のため、公式HPからダウンロードしたCSVは各本家サイトでもスコアデータの登録を行うことを推奨します。
-                </Alert>
-              </>
-            )}
-
-            {format === 'idc' && (
-              <>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  INFINITAS打鍵カウンタ（<LinkComponent url="https://github.com/dj-kata/inf_daken_counter_obsw">https://github.com/dj-kata/inf_daken_counter_obsw</LinkComponent>）で出力できるCSVです。
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  文字コードはShift JISを想定しております。CSVファイルの手動修正を行う場合は文字コードにご注意ください。
-                </Typography>
-              </>
-            )}
-
-            {format === 'inb' && (
-              <>
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel id="mode-label">モード</InputLabel>
-                  <Select
-                    labelId="mode-label"
-                    value={mode}
-                    label="モード"
-                    onChange={(e: SelectChangeEvent) => setMode(e.target.value as any)}
-                  >
-                    <MenuItem value="SP">SP</MenuItem>
-                    <MenuItem value="DP">DP</MenuItem>
-                  </Select>
-                </FormControl>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  INFINITASリザルト手帳（<LinkComponent url="https://github.com/kaktuswald/inf-notebook/wiki">https://github.com/kaktuswald/inf-notebook/wiki</LinkComponent>）で出力できるSP.csvまたはDP.csvを想定しています。
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  文字コードはUTF-8を想定しております。CSVファイルの手動修正を行う場合は文字コードにご注意ください。
-                </Typography>
-              </>
-            )}
-
-            {format === 'reflux' && (
-              <>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  Reflux（<LinkComponent url="https://github.com/olji/Reflux">https://github.com/olji/Reflux</LinkComponent>）で出力できるTSVです。
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  文字コードはUTF-8を想定しております。TSVファイルの手動修正を行う場合は文字コードにご注意ください。
-                </Typography>
-              </>
-            )}
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              beatmania IIDXの公式HP（<LinkComponent url="https://p.eagate.573.jp/game/2dx/">https://p.eagate.573.jp/game/2dx/</LinkComponent>）からダウンロードできるスコアデータCSVです。
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              文字コードはUTF-8 with BOMを想定しております。CSVファイルの手動修正を行う場合は文字コードにご注意ください。CSVのダウンロードにはbeatmania IIDX プレミアムコース登録が必要となります。
+            </Typography>
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              統計の充実のため、公式HPからダウンロードしたCSVは各本家サイトでもスコアデータの登録を行うことを推奨します。
+            </Alert>
           </Box>
 
           <Button variant="contained" component="label">
             ファイルを選択
-            <input type="file" hidden onChange={handleFileUpload} />
+            <input type="file" hidden accept=".csv" onChange={handleFileUpload} />
           </Button>
 
           {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-          {warnings.length > 0 && (
-            <Alert severity="warning" sx={{ mt: 2 }}>
-              {warnings.map((w, i) => <div key={i}>{w}</div>)}
-            </Alert>
-          )}
 
           <Dialog open={successDialogOpen} onClose={handleSuccessDialogClose}>
             <DialogTitle>読み込み成功</DialogTitle>
