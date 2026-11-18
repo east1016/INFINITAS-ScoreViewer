@@ -51,10 +51,13 @@ type SongRow = {
   rate: number,
   bpi: number,
   customBpi: number,  // カスタムBPI値（なければNaN）
-  bp: number
+  bp: number,
+  lastplay: string,
+  scoreupdated: string,
+  playcount: number,
 };
 
-type SortKey = 'lv' | 'title' | 'cleartype' | 'grade' | 'score' | 'bp' | 'bpi';
+type SortKey = 'lv' | 'title' | 'cleartype' | 'grade' | 'score' | 'bp' | 'bpi' | 'lastplay' | 'scoreupdated' | 'playcount';
 type SortDir = 'asc' | 'desc';
 
 const SongTablePage: React.FC = () => {
@@ -102,29 +105,26 @@ const SongTablePage: React.FC = () => {
   const [displayLimit, setDisplayLimit] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
+  const defaultSortDir = (key: SortKey): SortDir =>
+    key === 'bp' ? 'asc' :
+    key === 'lv' ? 'desc' :
+    key === 'score' ? 'desc' :
+    key === 'grade' ? 'desc' :
+    key === 'lastplay' ? 'desc' :
+    key === 'scoreupdated' ? 'desc' :
+    key === 'playcount' ? 'desc' : 'asc';
+
   const handleSort = (key: SortKey) => {
     setSortConfig((prev) =>
       prev.key === key
         ? { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' }
-        : {
-          key,
-          direction:
-            key === 'bp' ? 'asc' :
-              key === 'lv' ? 'desc' :
-                key === 'score' ? 'desc' :
-                  key === 'grade' ? 'desc' : 'asc',
-        }
+        : { key, direction: defaultSortDir(key) }
     );
   };
   const handleSortKeyChange = (key: SortKey) => {
     setSortConfig((prev) => ({
       key,
-      direction:
-        key === 'bp' ? 'asc' :
-          key === 'lv' ? 'desc' :
-            key === 'score' ? 'desc' :
-              key === 'grade' ? 'desc' :
-                prev.direction,
+      direction: prev.key === key ? prev.direction : defaultSortDir(key),
     }));
   };
   const toggleSortDir = () =>
@@ -205,7 +205,8 @@ const SongTablePage: React.FC = () => {
         setBpiInfo(bpiInfoRes);
 
         const local = JSON.parse(localStorage.getItem('data') || '{}');
-        const { clear: clearRes, score: scoreRes, misscount: missRes, unlocked: unlockedRes } = convertDataToIdDiffKey(local, mode);
+        const timestamps = JSON.parse(localStorage.getItem('timestamps') || '{}');
+        const { clear: clearRes, score: scoreRes, misscount: missRes, unlocked: unlockedRes, playcount: playcountRes } = convertDataToIdDiffKey(local, mode);
         setClearData(clearRes);
         setScoreData(scoreRes ?? {});
         setMissData(missRes);
@@ -252,6 +253,7 @@ const SongTablePage: React.FC = () => {
               customBpiValue = calculateBpi(customBpiEntry.wr, customBpiEntry.avg, notes, score, -1) ?? NaN;
             }
 
+            const ts = timestamps?.[mode]?.[id]?.[diff];
             list.push({
               id,
               difficulty: diff,
@@ -265,7 +267,10 @@ const SongTablePage: React.FC = () => {
               rate,
               bp,
               bpi,
-              customBpi: customBpiValue
+              customBpi: customBpiValue,
+              lastplay: ts?.lastplay ?? '',
+              scoreupdated: ts?.scoreupdated ?? '',
+              playcount: playcountRes[key] ?? 0,
             });
           }
         }
@@ -344,6 +349,13 @@ const SongTablePage: React.FC = () => {
 
     const cmpNum = (a: number, b: number) => (dir === 'asc' ? a - b : b - a);
     const cmpStr = (a: string, b: string) => (dir === 'asc' ? a.localeCompare(b) : b.localeCompare(a));
+    // 未プレイ（空文字）は常に末尾
+    const cmpDate = (a: string, b: string) => {
+      if (!a && !b) return 0;
+      if (!a) return 1;
+      if (!b) return -1;
+      return dir === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
+    };
 
     return arr.sort((a, b) => {
       switch (sortConfig.key) {
@@ -351,13 +363,13 @@ const SongTablePage: React.FC = () => {
           return cmpNum(a.level, b.level);
         case 'title':
           return cmpStr(a.title, b.title);
-        case 'cleartype': 
+        case 'cleartype':
           return cmpNum(a.lamp, b.lamp);
-        case 'grade': 
+        case 'grade':
           return cmpNum(a.rate, b.rate);
         case 'score':
           return cmpNum(a.score, b.score);
-        case 'bp': 
+        case 'bp':
           return cmpNum(a.bp, b.bp);
         case 'bpi': {
           // 公式BPIを優先、なければcustomBpiを使用
@@ -370,6 +382,12 @@ const SongTablePage: React.FC = () => {
           if (bIsNaN) return -1;
           return cmpNum(aVal, bVal);
         }
+        case 'lastplay':
+          return cmpDate(a.lastplay, b.lastplay);
+        case 'scoreupdated':
+          return cmpDate(a.scoreupdated, b.scoreupdated);
+        case 'playcount':
+          return cmpNum(a.playcount, b.playcount);
         default:
           return 0;
       }
@@ -520,6 +538,9 @@ const SongTablePage: React.FC = () => {
                   }
                   <MenuItem value="score">Score</MenuItem>
                   <MenuItem value="bp">BP</MenuItem>
+                  <MenuItem value="playcount">Plays</MenuItem>
+                  <MenuItem value="lastplay">最終プレイ</MenuItem>
+                  <MenuItem value="scoreupdated">スコア更新</MenuItem>
                 </Select>
               </FormControl>
               <Button variant="outlined" size="small" onClick={toggleSortDir}>
@@ -532,12 +553,15 @@ const SongTablePage: React.FC = () => {
             <Table size="small" sx={{ minWidth: 700, tableLayout: 'fixed', '& td, & th': { fontSize: { xs: 12, sm: 14 } } }}>
               <colgroup>
                 <col style={{ width: 70 }} />
-                <col style={{ width: '30%' }} />
+                <col style={{ width: '25%' }} />
                 <col style={{ width: 110 }} />
                 <col style={{ width: 110 }} />
                 {selectedLevel >= 11 && <col style={{ width: 80 }} />}
                 <col style={{ width: 140 }} />
-                <col style={{ width: 80 }} />
+                <col style={{ width: 60 }} />
+                <col style={{ width: 60 }} />
+                <col style={{ width: 130 }} />
+                <col style={{ width: 130 }} />
                 {selectedLevel >= 11 && <col style={{ width: 44 }} />}
                 {selectedLevel >= 11 && <col style={{ width: 50 }} />}
               </colgroup>
@@ -566,6 +590,15 @@ const SongTablePage: React.FC = () => {
                   </TableCell>
                   <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'bp' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('bp')}>
                     BP {sortConfig.key === 'bp' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                  </TableCell>
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'playcount' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('playcount')}>
+                    Plays {sortConfig.key === 'playcount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                  </TableCell>
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'lastplay' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('lastplay')}>
+                    最終プレイ {sortConfig.key === 'lastplay' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                  </TableCell>
+                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'scoreupdated' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('scoreupdated')}>
+                    スコア更新 {sortConfig.key === 'scoreupdated' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableCell>
                   {selectedLevel >= 11 && <TableCell sx={{ p: 0 }} />}
                   {selectedLevel >= 11 && <TableCell></TableCell>}
@@ -618,6 +651,9 @@ const SongTablePage: React.FC = () => {
                       }
                       <TableCell>{s.score} ({(s.rate * 100).toFixed(2)}%)</TableCell>
                       <TableCell>{s.bp == defaultMisscount ? '-' : s.bp}</TableCell>
+                      <TableCell>{s.playcount > 0 ? s.playcount : '-'}</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap', fontSize: 11 }}>{s.lastplay || '-'}</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap', fontSize: 11 }}>{s.scoreupdated || '-'}</TableCell>
                       {selectedLevel >= 11 && (
                         <TableCell sx={{ p: 0.5 }}>
                           <IconButton
@@ -715,6 +751,16 @@ const SongTablePage: React.FC = () => {
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <span>{s.bp == defaultMisscount ? '-' : s.bp}</span>
                           </Box>
+                          {s.playcount > 0 && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                              <span>{s.playcount}回</span>
+                            </Box>
+                          )}
+                          {s.lastplay && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                              <span>最終: {s.lastplay}</span>
+                            </Box>
+                          )}
                         </Box>
                       </TableCell>
                     </TableRow>

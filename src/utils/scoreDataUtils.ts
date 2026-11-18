@@ -22,6 +22,8 @@ export async function parseOfficialCsv(text: string, mode: 'SP' | 'DP'): Promise
       const miss = missRaw && missRaw !== '---' ? parseInt(missRaw) : defaultMisscount;
       const clear = clearMapOfficial[(row[`${key} クリアタイプ`] || '').trim()] ?? 0;
       const lastplay = row[`${key} 最終プレー日時`] || '';
+      const scoreupdatedRaw = row[`${key} 最終スコア更新時刻`] || '';
+      const playcount = parseInt(row[`${key} プレー回数`] || '0');
       if (clear != 0) {
         if (!data[mode]) data[mode] = {};
         if (!data[mode][title]) data[mode][title] = {};
@@ -32,7 +34,9 @@ export async function parseOfficialCsv(text: string, mode: 'SP' | 'DP'): Promise
           misscount: isNaN(miss) ? defaultMisscount : miss,
           cleartype: clear,
           unlocked: false,
-          lastplay: lastplay !== '---' ? lastplay : ''
+          lastplay: lastplay !== '---' ? lastplay : '',
+          scoreupdated: scoreupdatedRaw !== '---' ? scoreupdatedRaw : '',
+          playcount: isNaN(playcount) ? 0 : playcount,
         };
       }
     }
@@ -161,13 +165,17 @@ const mergeScore = (entry: any, oldData: any, oldTS: any, isReflux: boolean, las
   let diff: { [key: string]: any } = {};
   let timestamp: { [key: string]: any } = {};
 
+  // 公式CSVが持つ正確な最終スコア更新時刻を優先、なければlastplayで代替
+  const scoreupdatedFromEntry = entry.scoreupdated || '';
+
   if (Object.keys(oldData).length > 0 && Object.keys(oldTS).length > 0) {
     // 既プレイ楽曲
     updated = {
       score: oldData.score,
       cleartype: oldData.cleartype,
       misscount: oldData.misscount,
-      unlocked: isReflux ? entry.unlocked : oldData.unlocked
+      unlocked: isReflux ? entry.unlocked : oldData.unlocked,
+      playcount: entry.playcount ?? oldData.playcount,
     };
     timestamp = {
       lastplay: lastplay,
@@ -181,7 +189,10 @@ const mergeScore = (entry: any, oldData: any, oldTS: any, isReflux: boolean, las
         old: oldData.score,
         new: entry.score
       };
-      timestamp['scoreupdated'] = lastplay;
+      timestamp['scoreupdated'] = scoreupdatedFromEntry || lastplay;
+    } else if (scoreupdatedFromEntry) {
+      // スコアが同じでも公式CSVの正確な日時で上書き
+      timestamp['scoreupdated'] = scoreupdatedFromEntry;
     }
     if (entry.cleartype > oldData.cleartype) {
       updated['cleartype'] = entry.cleartype;
@@ -205,7 +216,8 @@ const mergeScore = (entry: any, oldData: any, oldTS: any, isReflux: boolean, las
       score: entry.score,
       cleartype: entry.cleartype,
       misscount: entry.misscount,
-      unlocked: entry.unlocked
+      unlocked: entry.unlocked,
+      playcount: entry.playcount ?? 0,
     };
     let fixedLastPlay = lastplay;
     if (entry.score === 0 && entry.cleartype === 0 && entry.misscount === defaultMisscount) {
@@ -228,7 +240,7 @@ const mergeScore = (entry: any, oldData: any, oldTS: any, isReflux: boolean, las
     }
     timestamp = {
       lastplay: fixedLastPlay,
-      scoreupdated: fixedLastPlay,
+      scoreupdated: scoreupdatedFromEntry || fixedLastPlay,
       cleartypeupdated: fixedLastPlay,
       misscountupdated: fixedLastPlay
     }
@@ -356,16 +368,18 @@ export const convertDataToIdDiffKey = (data: any, mode: 'SP' | 'DP') => {
   const clear: { [key: string]: number } = {};
   const misscount: { [key: string]: number } = {};
   const unlocked: { [key: string]: boolean } = {};
+  const playcount: { [key: string]: number } = {};
   for (const id in data[mode]) {
     for (const diff in data[mode][id]) {
       score[`${id}_${diff}`] = data[mode][id][diff].score;
       clear[`${id}_${diff}`] = data[mode][id][diff].cleartype;
       misscount[`${id}_${diff}`] = data[mode][id][diff].misscount;
       unlocked[`${id}_${diff}`] = data[mode][id][diff].unlocked;
+      playcount[`${id}_${diff}`] = data[mode][id][diff].playcount ?? 0;
     }
   }
 
-  return { score, clear, misscount, unlocked }
+  return { score, clear, misscount, unlocked, playcount }
 }
 
 // クリアタイプの数値を公式CSVの文字列に変換
