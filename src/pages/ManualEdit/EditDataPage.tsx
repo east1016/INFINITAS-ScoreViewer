@@ -24,7 +24,6 @@ const EditDataPage = () => {
 
   const [songId, setsongId] = useState<number>(0);
   const [difficulty, setDifficulty] = useState<string>('');
-  const [user, setUser] = useState<any>({});
   const [forceUpdate, setForceUpdate] = useState<boolean>(false);
   const [titleMap, setTitleMap] = useState<any>({});
   const [score, setScore] = useState<number>(0);
@@ -47,7 +46,6 @@ const EditDataPage = () => {
     fetchData();
     // localStrage読み込み
     const dataRes = JSON.parse(localStorage.getItem('data') || '{}');
-    setUser(JSON.parse(localStorage.getItem('user') || '{}'));
 
     const songIdRes = Number(songIdRaw) || -1;
     const difficultyRes = difficultyKey[Number(difficultyRaw) ?? 3] || 'A';
@@ -111,7 +109,7 @@ const EditDataPage = () => {
       localStorage.setItem('data', JSON.stringify(margedData.data));
       localStorage.setItem('diff', JSON.stringify(margedData.diffs));
       localStorage.setItem('timestamps', JSON.stringify(margedData.timestamps));
-      localStorage.setItem('user', JSON.stringify({ djname: user.djName, lastupdated: getCurrentFormattedDate() }));
+      localStorage.setItem('user', JSON.stringify({ lastupdated: getCurrentFormattedDate() }));
     }
     setSnack({ open: true, message: '楽曲情報を保存しました。', severity: 'success' });
   };

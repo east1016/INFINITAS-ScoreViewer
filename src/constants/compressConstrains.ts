@@ -5,7 +5,6 @@ export const replaceKeyMap: { [key: string]: string } = {
   "misscount": "m",
   "cleartype": "c",
   "user": "u",
-  "djname": "j",
   "lastupdated": "l",
   "SP": "s",
   "DP": "d",

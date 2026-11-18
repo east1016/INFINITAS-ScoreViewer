@@ -311,7 +311,7 @@ const DiffPage = () => {
   // PageHeader のタイトル（スマホで日付を改行）
   const headerTitle = isUrldataValid ? (
     <>
-      {user.djname ? `${user.djname}さんの` : ''}更新差分
+      更新差分
       {user.lastupdated && (
         <Box component="span" sx={{ display: { xs: 'block', sm: 'inline' } }}>
           {' '}({user.lastupdated})
