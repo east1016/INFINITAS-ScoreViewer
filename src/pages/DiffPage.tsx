@@ -305,6 +305,8 @@ const DiffPage = () => {
   }, [diff, chartInfo, titleMap, excludeNewSongs, bpiInfo, customBpiData]);
 
   const hasUpdates = processed.clearUpdates[mode].length > 0 || processed.scoreUpdates[mode].length > 0 || processed.missUpdates[mode].length > 0;
+  const totalUpdates = processed.clearUpdatesCount[mode] + processed.scoreUpdatesCount[mode] + processed.missUpdatesCount[mode];
+  const tooManyUpdates = totalUpdates > 1000;
 
   if (loading) return <CircularProgress />;
 
@@ -347,8 +349,15 @@ const DiffPage = () => {
             />
           )}
 
+          {/* 更新件数が多すぎる場合 */}
+          {tooManyUpdates && (
+            <Typography variant="h6" sx={{ my: 2 }}>
+              更新件数が多すぎるため表示できません（{totalUpdates}件）。CSVを再読み込みしてください。
+            </Typography>
+          )}
+
           {/* ランプ更新 */}
-          {processed.clearUpdates[mode].length > 0 && (
+          {!tooManyUpdates && processed.clearUpdates[mode].length > 0 && (
             <>
               <Typography variant="h6" sx={{ mb: 1 }}>ランプ更新</Typography>
               <TableContainer component={Paper} sx={{ mb: 2, overflowX: 'auto' }}>
@@ -396,7 +405,7 @@ const DiffPage = () => {
           )}
 
           {/* スコア更新 */}
-          {processed.scoreUpdates[mode].length > 0 && (
+          {!tooManyUpdates && processed.scoreUpdates[mode].length > 0 && (
             <>
               <Typography variant="h6" sx={{ mb: 1 }}>スコア更新</Typography>
               <TableContainer component={Paper} sx={{ mb: 2, overflowX: 'auto' }}>
@@ -563,7 +572,7 @@ const DiffPage = () => {
           )}
 
           {/* BP更新 */}
-          {processed.missUpdates[mode].length > 0 && (
+          {!tooManyUpdates && processed.missUpdates[mode].length > 0 && (
             <>
               <Typography variant="h6" sx={{ mb: 1 }}>BP更新</Typography>
               <TableContainer component={Paper} sx={{ mb: 0, overflowX: 'auto' }}>
@@ -608,7 +617,7 @@ const DiffPage = () => {
           )}
 
           {isShared && !isUrldataValid && <Typography variant="h6">共有データが破損しているため表示できませんでした。</Typography>}
-          {!hasUpdates && isUrldataValid && <Typography variant="h6">更新がありません</Typography>}
+          {!tooManyUpdates && !hasUpdates && isUrldataValid && <Typography variant="h6">更新がありません</Typography>}
         </Box>
       </SectionCard>
 
