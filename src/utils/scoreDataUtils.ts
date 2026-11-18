@@ -14,13 +14,14 @@ export async function parseOfficialCsv(text: string, mode: 'SP' | 'DP'): Promise
   rows.forEach(row => {
     const title = row['タイトル'];
     if (!title) return;
-    const lastplay = row['最終プレー日時'];
 
     for (let i = 0; i < difficultyDetailKeys.length; i++) {
       const key = difficultyDetailKeys[i];
       const score = parseInt(row[`${key} スコア`] || '0');
-      const miss = row[`${key} ミスカウント`] ? parseInt(row[`${key} ミスカウント`]) : defaultMisscount;
+      const missRaw = row[`${key} ミスカウント`];
+      const miss = missRaw && missRaw !== '---' ? parseInt(missRaw) : defaultMisscount;
       const clear = clearMapOfficial[(row[`${key} クリアタイプ`] || '').trim()] ?? 0;
+      const lastplay = row[`${key} 最終プレー日時`] || '';
       if (clear != 0) {
         if (!data[mode]) data[mode] = {};
         if (!data[mode][title]) data[mode][title] = {};
@@ -31,7 +32,7 @@ export async function parseOfficialCsv(text: string, mode: 'SP' | 'DP'): Promise
           misscount: isNaN(miss) ? defaultMisscount : miss,
           cleartype: clear,
           unlocked: false,
-          lastplay: lastplay
+          lastplay: lastplay !== '---' ? lastplay : ''
         };
       }
     }

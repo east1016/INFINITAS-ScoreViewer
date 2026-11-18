@@ -14,7 +14,7 @@ import SectionCard from '../components/SectionCard';
 const CsvLoaderPage = () => {
   const navigate = useNavigate();
   const { mode, setMode } = useAppContext();
-  const [format] = useState<'official' | 'reflux' | 'idc' | 'inb'>('reflux');
+  const [format, setFormat] = useState<'official' | 'reflux' | 'idc' | 'inb'>('official');
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [successDialogOpen, setSuccessDialogOpen] = useState<boolean>(false);
@@ -62,7 +62,7 @@ const CsvLoaderPage = () => {
         isReflux = true;
       }
 
-      const { data, diffs, timestamps, failedTitles } = await mergeWithCSVEntries(result, isReflux, format !== 'official');
+      const { data, diffs, timestamps, failedTitles } = await mergeWithCSVEntries(result, isReflux, format === 'official');
 
       if (failedTitles.length > 0) {
         setFailedTitles(failedTitles);
@@ -133,14 +133,18 @@ const CsvLoaderPage = () => {
         <Container sx={{ mt: 4 }}>
 
           <Box sx={{ mb: 2 }}>
-            <FormControl fullWidth sx={{ mb: 2 }} disabled>
+            <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel id="format-label">形式</InputLabel>
               <Select
                 labelId="format-label"
                 value={format}
                 label="形式"
+                onChange={(e: SelectChangeEvent) => setFormat(e.target.value as any)}
               >
+                <MenuItem value="official">公式CSV</MenuItem>
                 <MenuItem value="reflux">Reflux TSV</MenuItem>
+                <MenuItem value="idc">INFINITAS打鍵カウンタ CSV</MenuItem>
+                <MenuItem value="inb">INFINITASリザルト手帳 CSV</MenuItem>
               </Select>
             </FormControl>
 

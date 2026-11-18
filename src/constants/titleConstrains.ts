@@ -67,6 +67,27 @@ export const replaceTitle: ReplaceEntry[] = [
     {
         from: 'Destiny Lovers',
         to: 'Destiny lovers'
+    },
+    // 公式CSV表記（ダブルクォートなし）→ textage正規化キー（ダブルクォートあり）
+    {
+        from: 'Anisakis -somatic mutation typeForza-',
+        to: 'Anisakis -somatic mutation type"Forza"-'
+    },
+    {
+        from: 'JOURNEY TO FANTASICA (IIDX LIMITED )',
+        to: 'JOURNEY TO "FANTASICA" (IIDX LIMITED)'
+    },
+    {
+        from: 'satellite020712 from CODED ARMS',
+        to: 'satellite020712 from "CODED ARMS"'
+    },
+    {
+        from: "You'll say Now!",
+        to: 'You\'ll say "Now!"'
+    },
+    {
+        from: '水上の提督(Short mix from 幻想水滸伝V)',
+        to: '水上の提督(Short mix from "幻想水滸伝V")'
     }
 ]
 
