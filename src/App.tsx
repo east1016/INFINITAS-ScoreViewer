@@ -126,9 +126,6 @@ const AppShell: React.FC = () => {
               borderBottom: theme => `1px solid ${theme.palette.divider}`,
             }}
           >
-            <Typography variant="subtitle2" sx={{ opacity: .8, mb: .5 }}>
-              モード
-            </Typography>
             <Box
               sx={{
                 bgcolor: 'background.paper',

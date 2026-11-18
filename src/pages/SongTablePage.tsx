@@ -538,7 +538,6 @@ const SongTablePage: React.FC = () => {
                   }
                   <MenuItem value="score">Score</MenuItem>
                   <MenuItem value="bp">BP</MenuItem>
-                  <MenuItem value="playcount">Plays</MenuItem>
                   <MenuItem value="lastplay">最終プレイ</MenuItem>
                   <MenuItem value="scoreupdated">スコア更新</MenuItem>
                 </Select>
@@ -550,58 +549,58 @@ const SongTablePage: React.FC = () => {
           )}
 
           <TableContainer sx={{ mb: 3 }}>
-            <Table size="small" sx={{ minWidth: 700, tableLayout: 'fixed', '& td, & th': { fontSize: { xs: 12, sm: 14 } } }}>
+            <Table size="small" sx={{ minWidth: selectedLevel >= 11 ? 1067 : 935, tableLayout: 'fixed', '& td, & th': { fontSize: { xs: 11.5, sm: 13 }, whiteSpace: 'nowrap' } }}>
               <colgroup>
-                <col style={{ width: 70 }} />
-                <col style={{ width: '25%' }} />
-                <col style={{ width: 110 }} />
-                <col style={{ width: 110 }} />
-                {selectedLevel >= 11 && <col style={{ width: 80 }} />}
-                <col style={{ width: 140 }} />
-                <col style={{ width: 60 }} />
-                <col style={{ width: 60 }} />
-                <col style={{ width: 130 }} />
-                <col style={{ width: 130 }} />
-                {selectedLevel >= 11 && <col style={{ width: 44 }} />}
-                {selectedLevel >= 11 && <col style={{ width: 50 }} />}
+                <col />
+                <col style={{ width: 108 }} />
+                <col style={{ width: 118 }} />
+                {selectedLevel >= 11 && <col style={{ width: 72 }} />}
+                <col style={{ width: 136 }} />
+                <col style={{ width: 44 }} />
+                <col style={{ width: 88 }} />
+                <col style={{ width: 88 }} />
+                {selectedLevel >= 11 && <col style={{ width: 36 }} />}
+                {selectedLevel >= 11 && <col style={{ width: 36 }} />}
               </colgroup>
               {/* PC/Tablet: 通常ヘッダ */}
               <TableHead sx={{ display: { xs: 'none', sm: 'table-header-group' } }}>
                 <TableRow>
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'lv' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('lv')}>
-                    ☆ {sortConfig.key === 'lv' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'title' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('title')}>
-                    Title {sortConfig.key === 'title' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
-                  <TableCell sx={{ cursor: 'pointer', textAlign: 'center', bgcolor: sortConfig.key === 'cleartype' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('cleartype')}>
-                    Lamp {sortConfig.key === 'cleartype' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'grade' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('grade')}>
-                    Grade {sortConfig.key === 'grade' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
-                  {selectedLevel >= 11 &&
-                    <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'bpi' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('bpi')}>
-                      BPI {sortConfig.key === 'bpi' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                    </TableCell>
-                  }
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'score' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('score')}>
-                    Score {sortConfig.key === 'score' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'bp' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('bp')}>
-                    BP {sortConfig.key === 'bp' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'playcount' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('playcount')}>
-                    Plays {sortConfig.key === 'playcount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'lastplay' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('lastplay')}>
-                    最終プレイ {sortConfig.key === 'lastplay' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
-                  <TableCell sx={{ cursor: 'pointer', bgcolor: sortConfig.key === 'scoreupdated' ? 'action.selected' : 'inherit' }} onClick={() => handleSort('scoreupdated')}>
-                    スコア更新 {sortConfig.key === 'scoreupdated' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
-                  </TableCell>
+                  {(
+                    [
+                      { key: 'title', label: 'Title', extra: { overflow: 'hidden', minWidth: 120, textAlign: 'left' } },
+                      { key: 'cleartype', label: 'Lamp' },
+                      { key: 'grade', label: 'Grade' },
+                      ...(selectedLevel >= 11 ? [{ key: 'bpi', label: 'BPI' }] : []),
+                      { key: 'score', label: 'Score' },
+                      { key: 'bp', label: 'BP' },
+                      { key: 'lastplay', label: 'Last' },
+                      { key: 'scoreupdated', label: 'Update' },
+                    ] as { key: SortKey; label: string; extra?: object }[]
+                  ).map(({ key, label, extra }) => {
+                    const active = sortConfig.key === key;
+                    return (
+                      <TableCell
+                        key={key}
+                        onClick={() => handleSort(key)}
+                        sx={{
+                          cursor: 'pointer',
+                          userSelect: 'none',
+                          textAlign: 'center',
+                          fontWeight: active ? 700 : 400,
+                          color: active ? 'primary.main' : 'text.secondary',
+                          borderBottom: active ? '2px solid' : '1px solid',
+                          borderBottomColor: active ? 'primary.main' : 'divider',
+                          '&:hover': { bgcolor: 'action.hover', color: 'text.primary' },
+                          whiteSpace: 'nowrap',
+                          ...extra,
+                        }}
+                      >
+                        {label} {active && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                      </TableCell>
+                    );
+                  })}
                   {selectedLevel >= 11 && <TableCell sx={{ p: 0 }} />}
-                  {selectedLevel >= 11 && <TableCell></TableCell>}
+                  {selectedLevel >= 11 && <TableCell />}
                 </TableRow>
               </TableHead>
 
@@ -612,9 +611,10 @@ const SongTablePage: React.FC = () => {
                       sx={{ display: { xs: 'none', sm: 'table-row' } }}
                       hover
                     >
-                      <TableCell>⭐︎{s.level}</TableCell>
-                      <TableCell>
-                        {renderTitleWithDifficulty(s.title, s.difficulty, acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : undefined)}
+                      <TableCell sx={{ overflow: 'hidden', minWidth: 120 }}>
+                        <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {renderTitleWithDifficulty(s.title, s.difficulty, acInfDiffMap[Number(s.id)] ? ' (INFINITAS)' : undefined)}
+                        </Box>
                       </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
                         <Box sx={{ px: 1, borderRadius: 1, display: 'inline-block', backgroundColor: clearColorMap[s.lamp], textAlign: 'center', minWidth: 80 }}>
@@ -651,9 +651,8 @@ const SongTablePage: React.FC = () => {
                       }
                       <TableCell>{s.score} ({(s.rate * 100).toFixed(2)}%)</TableCell>
                       <TableCell>{s.bp == defaultMisscount ? '-' : s.bp}</TableCell>
-                      <TableCell>{s.playcount > 0 ? s.playcount : '-'}</TableCell>
-                      <TableCell sx={{ whiteSpace: 'nowrap', fontSize: 11 }}>{s.lastplay || '-'}</TableCell>
-                      <TableCell sx={{ whiteSpace: 'nowrap', fontSize: 11 }}>{s.scoreupdated || '-'}</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap', fontSize: 11 }}>{s.lastplay ? s.lastplay.slice(0, 10) : '-'}</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap', fontSize: 11 }}>{s.scoreupdated ? s.scoreupdated.slice(0, 10) : '-'}</TableCell>
                       {selectedLevel >= 11 && (
                         <TableCell sx={{ p: 0.5 }}>
                           <IconButton
@@ -751,11 +750,6 @@ const SongTablePage: React.FC = () => {
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <span>{s.bp == defaultMisscount ? '-' : s.bp}</span>
                           </Box>
-                          {s.playcount > 0 && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                              <span>{s.playcount}回</span>
-                            </Box>
-                          )}
                           {s.lastplay && (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                               <span>最終: {s.lastplay}</span>
