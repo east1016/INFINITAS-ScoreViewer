@@ -207,7 +207,7 @@ const CpiPage = () => {
           */}
 
           <LampAchieveProgress stats={stats} totalCount={totalCount} />
-          <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} />
+          <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} showGradeFilter={false} />
 
           <Box
             sx={{
