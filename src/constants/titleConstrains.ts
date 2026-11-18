@@ -54,7 +54,7 @@ export const acInfDiffMap:  { [key: number]: any } = {
             'DPA'
         ]
     },
-    1646: { // ミッドナイト堕天使
+    1648: { // ミッドナイト堕天使
         acID: 1656,
         changedChart: [
             'SPA',

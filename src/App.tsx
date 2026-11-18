@@ -7,7 +7,6 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
 import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import DifferenceRoundedIcon from '@mui/icons-material/DifferenceRounded';
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
@@ -17,7 +16,6 @@ import TableRowsIcon from '@mui/icons-material/TableRows';
 
 import { useAppContext } from './context/AppContext';
 
-import CsvLoaderPage from './pages/CsvLoaderPage';
 import DiffPage from './pages/DiffPage';
 import SpTablePage from './pages/SpTablePage';
 import DpTablePage from './pages/DpTablePage';
@@ -42,7 +40,6 @@ const AppShell: React.FC = () => {
 
   const menuItems: Array<{ text: string; path: string; mode: VisibleMode; icon: React.ReactNode; hidden?: boolean }> = [
     { text: 'Top', path: '/', mode: 'both', icon: <HomeRoundedIcon /> },
-    { text: 'スコアCSV読み込み', path: '/register', mode: 'both', icon: <UploadRoundedIcon /> },
     { text: 'スコア手動登録', path: '/edit', mode: 'both', icon: <EditNoteRoundedIcon />, hidden: true },
     { text: '更新差分', path: '/diff', mode: 'both', icon: <DifferenceRoundedIcon /> },
     { text: '楽曲一覧', path: '/songtable', mode: 'both', icon: <TableRowsIcon /> },
@@ -196,51 +193,26 @@ const AppShell: React.FC = () => {
         </Box>
       </Drawer>
 
-      <Container maxWidth={false} sx={{ mt: 2, mb: 6, px: { xs: 1, sm: 2, md: 3 } }}>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/register" element={<CsvLoaderPage />} />
-          <Route path="/diff" element={<DiffPage />} />
-          <Route
-            path="/tierlist"
-            element={
-              mode === 'SP'
-                ? <SpTablePage />
-                : <Typography>このページはSPモードでのみ利用可能です。</Typography>
-            }
-          />
-          <Route
-            path="/dp"
-            element={
-              mode === 'DP'
-                ? <DpTablePage />
-                : <Typography>このページはDPモードでのみ利用可能です。</Typography>
-            }
-          />
-          <Route
-            path="/cpi"
-            element={
-              mode === 'SP'
-                ? <CpiPage />
-                : <Typography>このページはSPモードでのみ利用可能です。</Typography>
-            }
-          />
-          <Route path="/bpi" element={<BpiPage />} />
-          <Route
-            path="/ereter"
-            element={
-              mode === 'DP'
-                ? <EreterPage />
-                : <Typography>このページはDPモードでのみ利用可能です。</Typography>
-            }
-          />
-          <Route path="/radar" element={<RadarPage />} />
-          <Route path="/songtable" element={<SongTablePage/>} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/edit" element={<EditSongSelectPage />} />
-          <Route path="/edit/:songIdRaw/:difficultyRaw" element={<EditDataPage />} />
-        </Routes>
-      </Container>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="*" element={
+          <Container maxWidth={false} sx={{ mt: 2, mb: 6, px: { xs: 1, sm: 2, md: 3 } }}>
+            <Routes>
+              <Route path="/diff" element={<DiffPage />} />
+              <Route path="/tierlist" element={mode === 'SP' ? <SpTablePage /> : <Typography>このページはSPモードでのみ利用可能です。</Typography>} />
+              <Route path="/dp" element={mode === 'DP' ? <DpTablePage /> : <Typography>このページはDPモードでのみ利用可能です。</Typography>} />
+              <Route path="/cpi" element={mode === 'SP' ? <CpiPage /> : <Typography>このページはSPモードでのみ利用可能です。</Typography>} />
+              <Route path="/bpi" element={<BpiPage />} />
+              <Route path="/ereter" element={mode === 'DP' ? <EreterPage /> : <Typography>このページはDPモードでのみ利用可能です。</Typography>} />
+              <Route path="/radar" element={<RadarPage />} />
+              <Route path="/songtable" element={<SongTablePage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/edit" element={<EditSongSelectPage />} />
+              <Route path="/edit/:songIdRaw/:difficultyRaw" element={<EditDataPage />} />
+            </Routes>
+          </Container>
+        } />
+      </Routes>
     </>
   );
 };

@@ -1,5 +1,5 @@
 // src/pages/Index.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -12,19 +12,79 @@ import {
   Link as MuiLink,
   Stack,
   Divider,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
 import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
 import NoAccountsIcon from '@mui/icons-material/NoAccounts';
 import LaunchRoundedIcon from '@mui/icons-material/LaunchRounded';
-import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 import ReportRoundedIcon from '@mui/icons-material/ReportRounded';
-import { InfoRounded } from '@mui/icons-material';
 import { CheckCircleRounded } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { parseOfficialCsv, mergeWithCSVEntries } from '../utils/scoreDataUtils';
+import { getCurrentFormattedDate } from '../utils/dateUtils';
+import { useAppContext } from '../context/AppContext';
 
 const Index: React.FC = () => {
+  const navigate = useNavigate();
+  const { mode } = useAppContext();
+  const [error, setError] = useState<string | null>(null);
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [failedTitles, setFailedTitles] = useState<string[]>([]);
+
+  const readFileAsText = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const decoder = new TextDecoder('utf-8', { fatal: true });
+    let text = decoder.decode(uint8Array);
+    if (text.charCodeAt(0) === 0xFEFF) text = text.substring(1);
+    return text;
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setFailedTitles([]);
+    try {
+      if (!file.name.endsWith('.csv')) throw new Error('拡張子がcsvではありません');
+      const text = await readFileAsText(file);
+      if (!text.includes('タイトル') || !text.includes('スコア')) throw new Error('公式CSVとして認識できません');
+      const result = await parseOfficialCsv(text, mode);
+      const { data, diffs, timestamps, failedTitles: failed } = await mergeWithCSVEntries(result);
+      localStorage.setItem('data', JSON.stringify(data));
+      localStorage.setItem('diff', JSON.stringify(diffs));
+      localStorage.setItem('timestamps', JSON.stringify(timestamps));
+      const lastUpdated = getCurrentFormattedDate();
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}') || {};
+      localStorage.setItem('user', JSON.stringify({ ...storedUser, lastupdated: lastUpdated }));
+      if (failed.length > 0) {
+        setFailedTitles(failed);
+        setReportDialogOpen(true);
+      } else {
+        setSuccessDialogOpen(true);
+      }
+    } catch (e: any) {
+      setError(`読み込み失敗: ${e}`);
+    }
+    event.target.value = '';
+  };
+
+  const handleReport = () => {
+    const message = encodeURIComponent(`@ci_public\n以下の曲のIDが取得できませんでした:\n${failedTitles.join('\n')}\n`);
+    window.open(`https://x.com/intent/tweet?hashtags=inf_sv_error&text=${message}`, '_blank');
+  };
+
+  const handleSuccessClose = () => {
+    setSuccessDialogOpen(false);
+    navigate('/diff');
+  };
+
   return (
     <Box sx={{ bgcolor: 'background.default', color: 'text.primary' }}>
       {/* Hero */}
@@ -58,14 +118,14 @@ const Index: React.FC = () => {
 
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4 }}>
                 <Button
-                  component={RouterLink}
-                  to="/register"
+                  component="label"
                   size="large"
                   variant="contained"
-                  endIcon={<ArrowForwardRoundedIcon />}
+                  endIcon={<CloudUploadRoundedIcon />}
                   sx={{ px: 3, py: 1.2, borderRadius: 3, fontWeight: 700 }}
                 >
-                  利用する（CSV読み込みへ）
+                  CSVを読み込む
+                  <input type="file" hidden accept=".csv" onChange={handleFileUpload} />
                 </Button>
                 <Button
                   href="https://github.com/chinimuruhi/INFINITAS-ScoreViewer"
@@ -79,6 +139,8 @@ const Index: React.FC = () => {
                   GitHub
                 </Button>
               </Stack>
+
+              {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
             </Grid>
 
             <Grid item xs={12} md={5}>
@@ -158,132 +220,27 @@ const Index: React.FC = () => {
         </Grid>
       </Container>
 
-      {/* 対応フォーマット / 指標 */}
+      {/* 対応している指標 */}
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ borderRadius: 3, height: '100%' }}>
-              <CardContent>
-                <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
-                  <CloudUploadRoundedIcon color="primary" />
-                  <Typography variant="h6" fontWeight={800}>対応しているデータ形式</Typography>
-                </Stack>
-                <Stack spacing={1} sx={{ pl: 0.5 }}>
-                  <ItemLink href="https://github.com/olji/Reflux">Reflux TSV</ItemLink>
-                  <ItemLink href="https://github.com/dj-kata/inf_daken_counter_obsw">INFINITAS打鍵カウンタ CSV</ItemLink>
-                  <ItemLink href="https://github.com/kaktuswald/inf-notebook/wiki">INFINITASリザルト手帳 CSV</ItemLink>
-                  <ItemLink href="https://p.eagate.573.jp/game/2dx/">KONAMI 公式スコアCSV</ItemLink>
-                  <Typography variant="body2">サイトでの手動入力</Typography>
-                </Stack>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ pl: 0.5, mb: 1 }}>
-                  <InfoRounded color="primary" />
-                  <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                    複数の形式のデータを読み込み、最も良い結果を残すことが可能です。
-                  </Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Card variant="outlined" sx={{ borderRadius: 3, height: '100%' }}>
-              <CardContent>
-                <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
-                  <InsightsRoundedIcon color="primary" />
-                  <Typography variant="h6" fontWeight={800}>対応している指標</Typography>
-                </Stack>
-                <Stack spacing={1} sx={{ pl: 0.5 }}>
-                  <ItemLink href="https://iidx-sp12.github.io/">SP⭐︎12 難易度表</ItemLink>
-                  <ItemLink href="https://docs.google.com/spreadsheets/d/1e7gdUmBk3zUGSxVGC--8p6w2TIWMLBcLzOcmWoeOx6Y/edit?gid=649088745#gid=649088745">
-                    SP⭐︎11 難易度表
-                  </ItemLink>
-                  <ItemLink href="https://cpi.makecir.com/">Clear Power Indicator(CPI)</ItemLink>
-                  <ItemLink href="https://bpi.poyashi.me/">Beat Power Indicator(BPI)</ItemLink>
-                  <ItemLink href="https://bm2dx.com/IIDX/notes_radar/">ノーツレーダー</ItemLink>
-                  <ItemLink href="https://zasa.sakura.ne.jp/dp/">DP非公式難易度表</ItemLink>
-                  <ItemLink href="http://ereter.net/iidxsongs/analytics/combined/">ereter's dp laboratory</ItemLink>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* 利用する */}
-        <Card
-          elevation={0}
-          sx={{
-            mt: 6,
-            borderRadius: 4,
-            px: { xs: 3, md: 6 },
-            py: { xs: 4, md: 5 },
-            background:
-              'linear-gradient(135deg, rgba(99,102,241,.1), rgba(56,189,248,.08))',
-            border: theme => `1px solid ${theme.palette.divider}`,
-          }}
-        >
-          <Stack spacing={1.5}>
-            <Typography variant="h5" fontWeight={800}>利用する</Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9 }}>
-              ユーザ登録不要で機能を利用可能です。データは端末のブラウザ(LocalStorage)に保存されます。
-              キャッシュ削除等で消える可能性があるため、設定画面から定期的なバックアップを推奨します。
-            </Typography>
-            <Box>
-              <Button
-                component={RouterLink}
-                to="/register"
-                size="large"
-                variant="contained"
-                endIcon={<ArrowForwardRoundedIcon />}
-                sx={{ px: 3, py: 1.2, borderRadius: 3, fontWeight: 700, mt: 1 }}
-              >
-                利用する（CSV読み込みへ）
-              </Button>
-            </Box>
-          </Stack>
+        <Card variant="outlined" sx={{ borderRadius: 3 }}>
+          <CardContent>
+            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1 }}>
+              <InsightsRoundedIcon color="primary" />
+              <Typography variant="h6" fontWeight={800}>対応している指標</Typography>
+            </Stack>
+            <Stack spacing={1} sx={{ pl: 0.5 }}>
+              <ItemLink href="https://iidx-sp12.github.io/">SP⭐︎12 難易度表</ItemLink>
+              <ItemLink href="https://docs.google.com/spreadsheets/d/1e7gdUmBk3zUGSxVGC--8p6w2TIWMLBcLzOcmWoeOx6Y/edit?gid=649088745#gid=649088745">
+                SP⭐︎11 難易度表
+              </ItemLink>
+              <ItemLink href="https://cpi.makecir.com/">Clear Power Indicator(CPI)</ItemLink>
+              <ItemLink href="https://bpi.poyashi.me/">Beat Power Indicator(BPI)</ItemLink>
+              <ItemLink href="https://zasa.sakura.ne.jp/dp/">DP非公式難易度表</ItemLink>
+              <ItemLink href="http://ereter.net/iidxsongs/analytics/combined/">ereter's dp laboratory</ItemLink>
+            </Stack>
+          </CardContent>
         </Card>
       </Container>
-
-      {/* 更新履歴 */}
-      <Box sx={{ py: 6, bgcolor: 'background.paper', borderTop: theme => `1px solid ${theme.palette.divider}` }}>
-        <Container maxWidth="lg">
-          <Stack direction="row" spacing={1.2} alignItems="center" sx={{ mb: 2 }}>
-            <HistoryRoundedIcon color="primary" />
-            <Typography variant="h6" fontWeight={800}>更新履歴</Typography>
-          </Stack>
-          <Card variant="outlined" sx={{ borderRadius: 3 }}>
-            <CardContent>
-              <Stack spacing={1}>
-                <Typography variant="subtitle2" color="text.secondary">2025/10/20</Typography>
-                <Typography variant="body1">リザルト手帳CSVに対応</Typography>
-              </Stack>
-              <Stack spacing={1}>
-                <Typography variant="subtitle2" color="text.secondary">2025/10/2</Typography>
-                <Typography variant="body1">BPI定義データの設定を追加</Typography>
-              </Stack>
-              <Stack spacing={1}>
-                <Typography variant="subtitle2" color="text.secondary">2025/9/23</Typography>
-                <Typography variant="body1">譜面難易度のフィルタを追加（提供：leno3s様）</Typography>
-              </Stack>
-              <Stack spacing={1}>
-                <Typography variant="subtitle2" color="text.secondary">2025/8/17</Typography>
-                <Typography variant="body1">Google Driveへのエクスポート / インポート機能の追加</Typography>
-              </Stack>
-              <Stack spacing={1}>
-                <Typography variant="subtitle2" color="text.secondary">2025/8/15</Typography>
-                <Typography variant="body1">楽曲一覧ページの追加、その他軽微な修正</Typography>
-              </Stack>
-              <Stack spacing={1}>
-                <Typography variant="subtitle2" color="text.secondary">2025/8/13</Typography>
-                <Typography variant="body1">ノーツレーダー計算不具合修正、ACとINFで譜面が異なる楽曲対応、その他軽微な修正</Typography>
-              </Stack>
-              <Stack spacing={1}>
-                <Typography variant="subtitle2" color="text.secondary">2025/8/12</Typography>
-                <Typography variant="body1">サイト公開</Typography>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Container>
-      </Box>
 
       {/* お問い合わせ / 注意事項 */}
       <Container maxWidth="lg" sx={{ py: 0 }}>
@@ -329,6 +286,39 @@ const Index: React.FC = () => {
           © {new Date().getFullYear()} chinimuruhi
         </Typography>
       </Container>
+
+      {/* Dialogs */}
+      <Dialog open={successDialogOpen} onClose={handleSuccessClose}>
+        <DialogTitle>読み込み成功</DialogTitle>
+        <DialogContent>データの読み込みに成功しました。</DialogContent>
+        <DialogActions>
+          <Button onClick={handleSuccessClose}>OK</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={reportDialogOpen} onClose={() => setReportDialogOpen(false)}>
+        <DialogTitle>読み込み成功</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" gutterBottom>
+            以下の楽曲が読み込めませんでした。修正のため、報告いただけますと幸いです。
+          </Typography>
+          <Box>
+            {failedTitles.map((title, i) => <div key={i}>{title}</div>)}
+          </Box>
+          <Alert severity="warning">
+            <Typography variant="body2" gutterBottom>
+              新曲の読み込みの対応についてはtextage様に追加されてから最大一週間程度かかります。
+            </Typography>
+            <Typography variant="body2">
+              当サイトの楽曲リストは毎週水曜午前10時に更新を行っておりますので、更新後再度読み込みをお願いいたします。
+            </Typography>
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleReport}>報告する</Button>
+          <Button onClick={() => { setReportDialogOpen(false); navigate('/diff'); }}>OK</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
