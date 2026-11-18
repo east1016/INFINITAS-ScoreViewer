@@ -3,8 +3,6 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   Box,
   Typography,
-  Checkbox,
-  FormControlLabel,
   Paper,
   Table,
   TableBody,
@@ -51,7 +49,6 @@ const DiffPage = () => {
   const [diff, setDiff] = useState<any>({});
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState(true);
-  const [excludeNewSongs, setExcludeNewSongs] = useState(true);
   const [isShared, setIsShared] = useState(false);
   const [isUrldataValid, setIsUrldataValid] = useState(true);
   const [bpiInfo, setBpiInfo] = useState<any>({});
@@ -119,7 +116,6 @@ const DiffPage = () => {
         setDiff(inflatedData.diff);
         setUser(inflatedData.user);
         setIsShared(true);
-        setExcludeNewSongs(false);
       } else {
         const storedDiff = JSON.parse(localStorage.getItem('diff') || '{}');
         const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -233,7 +229,6 @@ const DiffPage = () => {
 
             if (entry?.cleartype?.new !== entry?.cleartype?.old && entry?.cleartype?.new > 1) {
               clearUpdatesCount[m]++;
-              if (excludeNewSongs && entry?.cleartype?.old === 0) continue;
               clearUpdates[m].push({
                 id, title, difficulty, lv,
                 before: entry.cleartype.old,
@@ -245,7 +240,6 @@ const DiffPage = () => {
 
             if (entry?.score?.new !== entry?.score?.old) {
               scoreUpdatesCount[m]++;
-              if (excludeNewSongs && entry?.cleartype?.old === 0) continue;
               const pBefore = getPercentage(entry.score.old, notes);
               const pAfter = getPercentage(entry.score.new, notes);
 
@@ -275,7 +269,6 @@ const DiffPage = () => {
 
             if (entry?.misscount?.new !== entry?.misscount?.old) {
               missUpdatesCount[m]++;
-              if (excludeNewSongs && entry?.misscount?.old === defaultMisscount) continue;
               missUpdates[m].push({
                 id, title, difficulty, lv,
                 afterMisscount: entry.misscount.new === defaultMisscount ? '-' : entry.misscount.new,
@@ -302,7 +295,7 @@ const DiffPage = () => {
       },
       clearUpdatesCount, scoreUpdatesCount, missUpdatesCount, isContainBpi
     };
-  }, [diff, chartInfo, titleMap, excludeNewSongs, bpiInfo, customBpiData]);
+  }, [diff, chartInfo, titleMap, bpiInfo, customBpiData]);
 
   const hasUpdates = processed.clearUpdates[mode].length > 0 || processed.scoreUpdates[mode].length > 0 || processed.missUpdates[mode].length > 0;
   const totalUpdates = processed.clearUpdatesCount[mode] + processed.scoreUpdatesCount[mode] + processed.missUpdatesCount[mode];
@@ -341,14 +334,6 @@ const DiffPage = () => {
       <PageHeader compact title={headerTitle} actions={headerActions} />
       <SectionCard dense>
         <Box sx={{ p: { xs: 1.5, sm: 2 } }}>
-          {isUrldataValid && (
-            <FormControlLabel
-              control={<Checkbox checked={excludeNewSongs} onChange={(e) => setExcludeNewSongs(e.target.checked)} />}
-              label="初プレー楽曲を除外する"
-              sx={{ my: 1.5, '& .MuiFormControlLabel-label': { fontSize: { xs: 13, sm: 14 } } }}
-            />
-          )}
-
           {/* 更新件数が多すぎる場合 */}
           {tooManyUpdates && (
             <Typography variant="h6" sx={{ my: 2 }}>
