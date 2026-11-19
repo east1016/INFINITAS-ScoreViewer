@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   Container, CssBaseline, AppBar, Toolbar, Typography, IconButton,
   Drawer, List, ListItemButton, ListItemText, ListItemIcon, ToggleButton,
-  ToggleButtonGroup, Box, Divider
+  ToggleButtonGroup, Box, Divider, CircularProgress
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
@@ -16,18 +16,18 @@ import TableRowsIcon from '@mui/icons-material/TableRows';
 
 import { useAppContext } from './context/AppContext';
 
-import DiffPage from './pages/DiffPage';
-import SpTablePage from './pages/SpTablePage';
-import DpTablePage from './pages/DpTablePage';
-import CpiPage from './pages/CpiPage';
-import BpiPage from './pages/BpiPage';
-import EreterPage from './pages/EreterPage';
-import RadarPage from './pages/RadarPage';
-import SettingsPage from './pages/SettingsPage';
-import EditSongSelectPage from './pages/ManualEdit/EditSongSelectPage';
-import EditDataPage from './pages/ManualEdit/EditDataPage';
-import SongTablePage from './pages/SongTablePage';
-import Index from './pages/Index';
+const DiffPage = lazy(() => import('./pages/DiffPage'));
+const SpTablePage = lazy(() => import('./pages/SpTablePage'));
+const DpTablePage = lazy(() => import('./pages/DpTablePage'));
+const CpiPage = lazy(() => import('./pages/CpiPage'));
+const BpiPage = lazy(() => import('./pages/BpiPage'));
+const EreterPage = lazy(() => import('./pages/EreterPage'));
+const RadarPage = lazy(() => import('./pages/RadarPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const EditSongSelectPage = lazy(() => import('./pages/ManualEdit/EditSongSelectPage'));
+const EditDataPage = lazy(() => import('./pages/ManualEdit/EditDataPage'));
+const SongTablePage = lazy(() => import('./pages/SongTablePage'));
+const Index = lazy(() => import('./pages/Index'));
 
 type VisibleMode = 'SP' | 'DP' | 'both';
 
@@ -190,26 +190,28 @@ const AppShell: React.FC = () => {
         </Box>
       </Drawer>
 
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="*" element={
-          <Container maxWidth={false} sx={{ mt: 2, mb: 6, px: { xs: 1, sm: 2, md: 3 } }}>
-            <Routes>
-              <Route path="/diff" element={<DiffPage />} />
-              <Route path="/tierlist" element={mode === 'SP' ? <SpTablePage /> : <Typography>このページはSPモードでのみ利用可能です。</Typography>} />
-              <Route path="/dp" element={mode === 'DP' ? <DpTablePage /> : <Typography>このページはDPモードでのみ利用可能です。</Typography>} />
-              <Route path="/cpi" element={mode === 'SP' ? <CpiPage /> : <Typography>このページはSPモードでのみ利用可能です。</Typography>} />
-              <Route path="/bpi" element={<BpiPage />} />
-              <Route path="/ereter" element={mode === 'DP' ? <EreterPage /> : <Typography>このページはDPモードでのみ利用可能です。</Typography>} />
-              <Route path="/radar" element={<RadarPage />} />
-              <Route path="/songtable" element={<SongTablePage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/edit" element={<EditSongSelectPage />} />
-              <Route path="/edit/:songIdRaw/:difficultyRaw" element={<EditDataPage />} />
-            </Routes>
-          </Container>
-        } />
-      </Routes>
+      <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}><CircularProgress /></Box>}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="*" element={
+            <Container maxWidth={false} sx={{ mt: 2, mb: 6, px: { xs: 1, sm: 2, md: 3 } }}>
+              <Routes>
+                <Route path="/diff" element={<DiffPage />} />
+                <Route path="/tierlist" element={mode === 'SP' ? <SpTablePage /> : <Typography>このページはSPモードでのみ利用可能です。</Typography>} />
+                <Route path="/dp" element={mode === 'DP' ? <DpTablePage /> : <Typography>このページはDPモードでのみ利用可能です。</Typography>} />
+                <Route path="/cpi" element={mode === 'SP' ? <CpiPage /> : <Typography>このページはSPモードでのみ利用可能です。</Typography>} />
+                <Route path="/bpi" element={<BpiPage />} />
+                <Route path="/ereter" element={mode === 'DP' ? <EreterPage /> : <Typography>このページはDPモードでのみ利用可能です。</Typography>} />
+                <Route path="/radar" element={<RadarPage />} />
+                <Route path="/songtable" element={<SongTablePage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/edit" element={<EditSongSelectPage />} />
+                <Route path="/edit/:songIdRaw/:difficultyRaw" element={<EditDataPage />} />
+              </Routes>
+            </Container>
+          } />
+        </Routes>
+      </Suspense>
     </>
   );
 };
