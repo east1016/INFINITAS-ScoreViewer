@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Container, Typography, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { ungzip } from 'pako';
+import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../../utils/fetchWithFallback';
 import { useAppContext } from '../../context/AppContext';
 import { generateSearchText } from '../../utils/titleUtils';
 import { difficultyKey } from '../../constants/difficultyConstrains';
@@ -20,12 +20,8 @@ const EditSongSelectPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const titleRes = await fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json');
-        const titles = await titleRes.json();
-
-        const chartRes = await fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz');
-        const chartBuffer = await chartRes.arrayBuffer();
-        const chartJson = JSON.parse(ungzip(new Uint8Array(chartBuffer), { to: 'string' }));
+        const titles = await fetchJsonWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json');
+        const chartJson = await fetchGzipJsonWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz');
 
         const songList = [];
 

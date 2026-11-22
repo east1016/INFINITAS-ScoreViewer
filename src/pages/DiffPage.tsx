@@ -20,7 +20,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { ungzip } from 'pako';
+import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 import { compressDiffData, decompressDiffData } from '../utils/encodeUtils';
 import { useAppContext } from '../context/AppContext';
 import { clearColorMap, scoreColorMapLight } from '../constants/colorConstrains';
@@ -82,17 +82,17 @@ const DiffPage = () => {
 
       const [
           titleRes,
-          chartGz,
+          chartInfo,
           bpiSpInfo,
           bpiDpInfo,
         ] = await Promise.all([
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json').then((res) => res.json()),
-          fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz').then((res) => res.arrayBuffer()),
-          fetch(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/sp_dict.json`).then((res) => res.json()),
-          fetch(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/dp_dict.json`).then((res) => res.json()),
+          fetchJsonWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
+          fetchGzipJsonWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
+          fetchJsonWithFallback(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/sp_dict.json`),
+          fetchJsonWithFallback(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/dp_dict.json`),
         ]);
       setTitleMap(titleRes);
-      setChartInfo(JSON.parse(new TextDecoder().decode(ungzip(chartGz))));
+      setChartInfo(chartInfo);
       setBpiInfo({
         'SP': bpiSpInfo,
         'DP': bpiDpInfo

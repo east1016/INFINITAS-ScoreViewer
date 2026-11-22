@@ -194,6 +194,16 @@
 		"genre": "MEDIUM WAVE",
 		"version": 10
 	},
+	"103098": {
+		"artist": "The 4th feat.TORIENA",
+		"genre": "HYPER CANDY RAVE",
+		"version": 33
+	},
+	"103099": {
+		"artist": "kors k Remixed by 青龍",
+		"genre": "HYPER DANCE SPEED",
+		"version": 33
+	},
 	"1031": {
 		"artist": "SLAKE",
 		"genre": "TECHNO",
@@ -209,10 +219,25 @@
 		"genre": "BLUE CORE",
 		"version": 33
 	},
+	"103386": {
+		"artist": "BEMANI Sound Team \"HuΣeR\" feat.ゆきまめ",
+		"genre": "幻想音樂",
+		"version": 33
+	},
 	"1034": {
 		"artist": "RAM",
 		"genre": "RAVE",
 		"version": 10
+	},
+	"103419": {
+		"artist": "STEVIE(Trymatic)/Nana Takahashi Prod. by L.E.D.",
+		"genre": "DEATH TEKNO",
+		"version": 34
+	},
+	"103424": {
+		"artist": "U1 overground",
+		"genre": "ORBITALIC MOON REQUIEM",
+		"version": 34
 	},
 	"1035": {
 		"artist": "ELE BLOCK",
@@ -779,6 +804,11 @@
 		"genre": "HYPER J-POP SIX",
 		"version": 12
 	},
+	"121": {
+		"artist": "Oyubi",
+		"genre": "JUKE/FOOTWORK",
+		"version": -1
+	},
 	"1210": {
 		"artist": "AKIRA YAMAOKA",
 		"genre": "E-ROCK",
@@ -829,6 +859,11 @@
 		"genre": "TRANCE",
 		"version": 12
 	},
+	"122": {
+		"artist": "ARM(IOSYS) feat.Nicole Curry",
+		"genre": "UK HARDCORE",
+		"version": -1
+	},
 	"1220": {
 		"artist": "Risk Junk feat.Erika Mochizuki",
 		"genre": "HAPPY EXTREME",
@@ -873,6 +908,11 @@
 		"artist": "Sota Fujimori",
 		"genre": "SYNTHESIZED TECHNO",
 		"version": 12
+	},
+	"123": {
+		"artist": "m1dy",
+		"genre": "TOKYO STYLE SPEEDCORE",
+		"version": -1
 	},
 	"1230": {
 		"artist": "dj REMO-CON",
@@ -924,6 +964,11 @@
 		"genre": "BIG BEAT",
 		"version": 12
 	},
+	"124": {
+		"artist": "BEMANI Sound Team \"Coyaan\"",
+		"genre": "丼ベース",
+		"version": -1
+	},
 	"1240": {
 		"artist": "kors k",
 		"genre": "MAKINA",
@@ -974,6 +1019,11 @@
 		"genre": "DISCO",
 		"version": 12
 	},
+	"125": {
+		"artist": "Ryu☆ feat.Mayumi Morinaga",
+		"genre": "BUBBLEGUM DANCE",
+		"version": -1
+	},
 	"1250": {
 		"artist": "Tatsh",
 		"genre": "MEDIEVAL CHOIR",
@@ -1019,6 +1069,11 @@
 		"genre": "HUMAN SEQUENCER",
 		"version": 12
 	},
+	"126": {
+		"artist": "DC Mizey",
+		"genre": "HYBRID RAVE",
+		"version": -1
+	},
 	"1261": {
 		"artist": "ウッチーズ",
 		"genre": "J-POP REMIX",
@@ -1029,10 +1084,30 @@
 		"genre": "UK PROGRESSIVE",
 		"version": 12
 	},
+	"127": {
+		"artist": "lapix",
+		"genre": "ABSTRACT NEUROFUNK",
+		"version": -1
+	},
+	"128": {
+		"artist": "NATSUMI",
+		"genre": "JUNGLE TERROR",
+		"version": -1
+	},
+	"129": {
+		"artist": "L.E.D.-G",
+		"genre": "HARDCORE",
+		"version": -1
+	},
 	"13": {
 		"artist": "QUADRA",
 		"genre": "DRUMN BASS",
 		"version": 0
+	},
+	"130": {
+		"artist": "RYOQUCHA",
+		"genre": "HiTECH",
+		"version": -1
 	},
 	"1301": {
 		"artist": "TЁЯRA",
@@ -1079,6 +1154,11 @@
 		"genre": "TRANCE",
 		"version": 13
 	},
+	"131": {
+		"artist": "MYUKKE.",
+		"genre": "NU DISCO HOUSE",
+		"version": -1
+	},
 	"1310": {
 		"artist": "佐々木博史",
 		"genre": "PROGRESSIVE",
@@ -1123,6 +1203,11 @@
 		"artist": "K-MASERA",
 		"genre": "80's TECHNO",
 		"version": 13
+	},
+	"132": {
+		"artist": "Se-U-Ra",
+		"genre": "CELTIC ELECTRO TECH",
+		"version": -1
 	},
 	"1320": {
 		"artist": "玄武",
@@ -2905,7 +2990,7 @@
 		"version": 18
 	},
 	"1853": {
-		"artist": "DJ Mass MAD Izm* VS. DJ Yoshitaka",
+		"artist": "DJ Mass MAD Izm* VS.DJ Yoshitaka",
 		"genre": "TECH-BREAKBEATS",
 		"version": 18
 	},
@@ -4384,6 +4469,41 @@
 		"genre": "MIAMI BASS",
 		"version": 2
 	},
+	"2193": {
+		"artist": "森羅万象",
+		"genre": "DANCE POP",
+		"version": 33
+	},
+	"2194": {
+		"artist": "OSTER project feat. 花たん",
+		"genre": "TRIUMPHAL ANTHEM",
+		"version": 33
+	},
+	"2195": {
+		"artist": "SOUND HOLIC feat. STEVIE(44MAGNUM)",
+		"genre": "CYBER ROCK",
+		"version": 33
+	},
+	"2196": {
+		"artist": "DÉ DÉ MOUSE",
+		"genre": "Nu-NRG / FUTUREDISCO",
+		"version": 33
+	},
+	"2197": {
+		"artist": "nora2r feat. Liqo & DD\"ナカタ\"Metal",
+		"genre": "HYBRID METALCORE",
+		"version": 33
+	},
+	"2198": {
+		"artist": "BlackY feat. Risa Yuzuki",
+		"genre": "LIGHTNING Hi-TECH",
+		"version": 33
+	},
+	"2199": {
+		"artist": "暁Records",
+		"genre": "JAPANESE ALTERNATIVE ROCK",
+		"version": 33
+	},
 	"22": {
 		"artist": "SLAKE",
 		"genre": "BIG BEAT",
@@ -5369,10 +5489,25 @@
 		"genre": "BEMANIZED ROCKCORE",
 		"version": 26
 	},
+	"2398": {
+		"artist": "SOUND HOLIC feat. Nana Takahashi",
+		"genre": "PARADISE POP",
+		"version": 33
+	},
+	"2399": {
+		"artist": "Sparkle Sound Systems",
+		"genre": "SPARKLE SHOWER",
+		"version": 33
+	},
 	"24": {
 		"artist": "TAKA",
 		"genre": "DIGI-ROCK",
 		"version": 0
+	},
+	"2400": {
+		"artist": "俺たち度胸兄弟",
+		"genre": "OVERTURE",
+		"version": 33
 	},
 	"2401": {
 		"artist": "ni-21",
@@ -6319,10 +6454,40 @@
 		"genre": "STYLISH CROSSOVER",
 		"version": 25
 	},
+	"2595": {
+		"artist": "KE!JU",
+		"genre": "JUDGEMENT SYMPHONIC SPEEDCORE",
+		"version": 33
+	},
+	"2596": {
+		"artist": "めめめ",
+		"genre": "DTM SPEEDRUN",
+		"version": 33
+	},
+	"2597": {
+		"artist": "TAN1CHU",
+		"genre": "HAM PARADOX",
+		"version": 33
+	},
+	"2598": {
+		"artist": "BEMANI Sound Team \"akYm\" feat.maimie",
+		"genre": "POP ROCK",
+		"version": 33
+	},
+	"2599": {
+		"artist": "dj MAX STEROID",
+		"genre": "NU SKOOL BREAKS",
+		"version": 33
+	},
 	"26": {
 		"artist": "Jam Master'73",
 		"genre": "REGGAE",
 		"version": 0
+	},
+	"2600": {
+		"artist": "秀よし君",
+		"genre": "太閤ヒップホップ",
+		"version": 33
 	},
 	"2601": {
 		"artist": "DJ NAGAI",
@@ -7804,10 +7969,20 @@
 		"genre": "HAPPY BISTRO CORE",
 		"version": 28
 	},
+	"2899": {
+		"artist": "ryo (supercell) / かぐや(cv.夏吉ゆうこ) & 月見ヤチヨ(cv.早見沙織) from 超かぐや姫!",
+		"genre": "アニメ",
+		"version": 34
+	},
 	"29": {
 		"artist": "tigerYAMATO",
 		"genre": "EURO BEAT",
 		"version": 0
+	},
+	"2900": {
+		"artist": "ryo (supercell)",
+		"genre": "アニメ／ボーカロイド／J-POP",
+		"version": 34
 	},
 	"2901": {
 		"artist": "xi",
@@ -8853,6 +9028,11 @@
 		"artist": "TaQ",
 		"genre": "DRUM'N'BASS",
 		"version": 3
+	},
+	"3100": {
+		"artist": "Ryu☆ Remixed by Mamonis",
+		"genre": "HYPER BUCHIAGE TRANCE",
+		"version": 33
 	},
 	"3101": {
 		"artist": "COR!S",
@@ -10359,10 +10539,360 @@
 		"genre": "HARD MIXTURE",
 		"version": 33
 	},
+	"3378": {
+		"artist": "OSTER project",
+		"genre": "BOLLYWOOD CORE",
+		"version": 33
+	},
+	"3379": {
+		"artist": "cosMo@暴走P & L.E.D.-G",
+		"genre": "Hi-ROM COM",
+		"version": 33
+	},
+	"3380": {
+		"artist": "Remixed by Pizuya's Cell",
+		"genre": "IIDX EDITION",
+		"version": 33
+	},
+	"3381": {
+		"artist": "ピノキオピー",
+		"genre": "ボカロ",
+		"version": 33
+	},
+	"3382": {
+		"artist": "Nhato",
+		"genre": "TRANCECORE",
+		"version": 33
+	},
+	"3383": {
+		"artist": "星野音楽工房",
+		"genre": "MELODIOUS TECH",
+		"version": 33
+	},
+	"3384": {
+		"artist": "Dustup VS MAX MAXIMIZER",
+		"genre": "HARD PSY/SPEEDCORE",
+		"version": 33
+	},
+	"3385": {
+		"artist": "NU-KO",
+		"genre": "HAPPY LOVEGAZER",
+		"version": 33
+	},
+	"3386": {
+		"artist": "BEMANI Sound Team \"HuΣeR\" feat.ゆきまめ",
+		"genre": "幻想音樂",
+		"version": 33
+	},
+	"3387": {
+		"artist": "red glasses vs Ujico*",
+		"genre": "FM JAZZY TECH",
+		"version": 33
+	},
+	"3388": {
+		"artist": "Plantica",
+		"genre": "POP",
+		"version": 33
+	},
+	"3389": {
+		"artist": "Nhato",
+		"genre": "CELTIC CORE",
+		"version": 33
+	},
+	"3390": {
+		"artist": "Dirty Androids",
+		"genre": "UPTEMPO ELECTRO FUNK",
+		"version": 33
+	},
+	"3391": {
+		"artist": "Tom-H@ck feat.Nadia",
+		"genre": "DIGITAL ROCK",
+		"version": 33
+	},
+	"3392": {
+		"artist": "Qlarabelle",
+		"genre": "SYMPHONIC HARD TECHNO",
+		"version": 33
+	},
+	"3393": {
+		"artist": "TORIENA",
+		"genre": "HAPPY HARDCORE",
+		"version": 33
+	},
+	"3394": {
+		"artist": "RoughSketch",
+		"genre": "HARDCORE",
+		"version": 33
+	},
+	"3395": {
+		"artist": "Maozon",
+		"genre": "CYBER LIQUIDFUNK",
+		"version": 33
+	},
+	"3396": {
+		"artist": "lapix",
+		"genre": "AQUA FRONTIER",
+		"version": 33
+	},
+	"3397": {
+		"artist": "KARUT",
+		"genre": "SPED UP TECHNO",
+		"version": 33
+	},
+	"3398": {
+		"artist": "D.J.Amuro",
+		"genre": "TECH SPEED",
+		"version": 33
+	},
+	"3399": {
+		"artist": "hololive IDOL PROJECT",
+		"genre": "J-POP",
+		"version": 33
+	},
 	"34": {
 		"artist": "nite system",
 		"genre": "HOUSE",
 		"version": 0
+	},
+	"3401": {
+		"artist": "めめめ",
+		"genre": "HARD DANCE",
+		"version": 34
+	},
+	"3402": {
+		"artist": "Yuta Imai",
+		"genre": "EUPHORIC HARDSTYLE",
+		"version": 34
+	},
+	"3403": {
+		"artist": "BlackY",
+		"genre": "ENERGETIC JAPANESQUE",
+		"version": 34
+	},
+	"3404": {
+		"artist": "REMO-CON",
+		"genre": "HYPERTRANCE",
+		"version": 34
+	},
+	"3405": {
+		"artist": "Hylen feat. DJ 14 (SCRATCHING)",
+		"genre": "DJENTLE ZAAGBREAKSTEP",
+		"version": 34
+	},
+	"3406": {
+		"artist": "Zekk",
+		"genre": "BREAKCORE",
+		"version": 34
+	},
+	"3407": {
+		"artist": "EmoCosine",
+		"genre": "JERSEY FUTURE CORE",
+		"version": 34
+	},
+	"3408": {
+		"artist": "Sota Fujimori",
+		"genre": "TECH CORE",
+		"version": 34
+	},
+	"3409": {
+		"artist": "YUC'e",
+		"genre": "IVORY BASS",
+		"version": 34
+	},
+	"3410": {
+		"artist": "nora2r",
+		"genre": "HARDCORE",
+		"version": 34
+	},
+	"3411": {
+		"artist": "魂音泉",
+		"genre": "HIPHOP",
+		"version": 34
+	},
+	"3412": {
+		"artist": "影虎。",
+		"genre": "ORIENTAL HARDPSY",
+		"version": 34
+	},
+	"3413": {
+		"artist": "KARUT",
+		"genre": "HYBRID BREAKS",
+		"version": 34
+	},
+	"3414": {
+		"artist": "Taishi",
+		"genre": "TRANCE",
+		"version": 34
+	},
+	"3415": {
+		"artist": "Dubscribe",
+		"genre": "DUBSTEP",
+		"version": 34
+	},
+	"3416": {
+		"artist": "Xceon",
+		"genre": "HYPER ENKA POP",
+		"version": 34
+	},
+	"3417": {
+		"artist": "HuΣeR",
+		"genre": "STYLISH FUTURE",
+		"version": 34
+	},
+	"3418": {
+		"artist": "Nhato",
+		"genre": "TECH TRANCE",
+		"version": 34
+	},
+	"3419": {
+		"artist": "STEVIE(Trymatic)/Nana Takahashi Prod. by L.E.D.",
+		"genre": "DEATH TEKNO",
+		"version": 34
+	},
+	"3420": {
+		"artist": "Yvya",
+		"genre": "PROGRESSIVE METAL",
+		"version": 34
+	},
+	"3421": {
+		"artist": "RoughSkreamZ feat. Fra",
+		"genre": "DJENT/UK INDUSTRIAL/RAP",
+		"version": 34
+	},
+	"3422": {
+		"artist": "xi feat. Risa Yuzuki",
+		"genre": "JAPANESE PIANO ROCK",
+		"version": 34
+	},
+	"3423": {
+		"artist": "めと(Metomate)",
+		"genre": "EPHEMERAL ROCK",
+		"version": 34
+	},
+	"3424": {
+		"artist": "U1 overground",
+		"genre": "ORBITALIC MOON REQUIEM",
+		"version": 34
+	},
+	"3425": {
+		"artist": "satella",
+		"genre": "ORIENTAL",
+		"version": 34
+	},
+	"3426": {
+		"artist": "雨良 Amala feat.初音ミク、重音テト",
+		"genre": "エレクトロ",
+		"version": 34
+	},
+	"3427": {
+		"artist": "irucaice feat. あやぽんず＊(森羅万象)",
+		"genre": "和風歌謡電子恋歌",
+		"version": 34
+	},
+	"3428": {
+		"artist": "ナユタン星人",
+		"genre": "ボカロ",
+		"version": 34
+	},
+	"3429": {
+		"artist": "デラむぅとのらつーあーる",
+		"genre": "ぽっぷむぅ～じっく",
+		"version": 34
+	},
+	"3430": {
+		"artist": "Remixed by L.E.D.-G feat. 佐伯伊織",
+		"genre": "IIDX EDITION",
+		"version": 34
+	},
+	"3431": {
+		"artist": "HIMEHINA",
+		"genre": "J-POP",
+		"version": 34
+	},
+	"3432": {
+		"artist": "dj TAKA",
+		"genre": "TECH SPEED",
+		"version": 34
+	},
+	"3433": {
+		"artist": "DECO*27",
+		"genre": "J-POP・VOCALOID",
+		"version": 34
+	},
+	"3434": {
+		"artist": "劇団レコード feat.T4K",
+		"genre": "BATTLE SWORD",
+		"version": 34
+	},
+	"3435": {
+		"artist": "hololive IDOL PROJECT",
+		"genre": "J-POP",
+		"version": 34
+	},
+	"3436": {
+		"artist": "dj TAKA",
+		"genre": "dj TAKA",
+		"version": 34
+	},
+	"3437": {
+		"artist": "猫叉Master",
+		"genre": "クロモフロック",
+		"version": 34
+	},
+	"3438": {
+		"artist": "Sota Fujimori",
+		"genre": "DREAM TRANCE",
+		"version": 34
+	},
+	"3439": {
+		"artist": "teranoid",
+		"genre": "NUSTYLE GABBA",
+		"version": 34
+	},
+	"3440": {
+		"artist": "Ryu☆",
+		"genre": "HAPPY HARDCORE",
+		"version": 34
+	},
+	"3441": {
+		"artist": "Prim / Remixed by RoughSketch",
+		"genre": "Hi-リミックスコア",
+		"version": 34
+	},
+	"3442": {
+		"artist": "DJ YOSHITAKA with beatnation",
+		"genre": "RECKLESS RAVE",
+		"version": 34
+	},
+	"3443": {
+		"artist": "ハレトキドキ",
+		"genre": "DIGITAL J-POP2",
+		"version": 34
+	},
+	"3444": {
+		"artist": "DJ RENA",
+		"genre": "JUNGLE, DRUM N BASS",
+		"version": 34
+	},
+	"3445": {
+		"artist": "まろん feat. ななひら",
+		"genre": "和風歌謡硬核音楽",
+		"version": 34
+	},
+	"3446": {
+		"artist": "五条式改",
+		"genre": "サイバーガガク",
+		"version": 34
+	},
+	"3447": {
+		"artist": "TAN1CHU",
+		"genre": "REIWA ROTTERDAM TECHNO",
+		"version": 34
+	},
+	"3448": {
+		"artist": "猫叉Master feat.Kanae Asaba",
+		"genre": "ECHO SONG",
+		"version": 34
 	},
 	"35": {
 		"artist": "SPIRITUAL RIDE",
@@ -10406,8 +10936,8 @@
 	},
 	"3905": {
 		"artist": "L.E.D.",
-		"genre": "LIQUID FUNK",
-		"version": -1
+		"genre": "DRUM & BASS",
+		"version": 33
 	},
 	"3906": {
 		"artist": "NISH",
@@ -11177,7 +11707,7 @@
 	"4072": {
 		"artist": "HHH",
 		"genre": "HEAT UP",
-		"version": -1
+		"version": 33
 	},
 	"4073": {
 		"artist": "kors k",
@@ -11950,7 +12480,7 @@
 		"version": 6
 	},
 	"64": {
-		"artist": "cosMo＠暴走P",
+		"artist": "cosMo@暴走P",
 		"genre": "CHIPTUNE FUSION",
 		"version": -1
 	},
@@ -12509,6 +13039,11 @@
 		"genre": "JAZZ FUNK",
 		"version": 8
 	},
+	"84": {
+		"artist": "SOUND HOLIC feat. Nana Takahashi",
+		"genre": "GIRL'S EUROBEAT",
+		"version": -1
+	},
 	"840": {
 		"artist": "Aya",
 		"genre": "NU-FUSION",
@@ -12559,6 +13094,11 @@
 		"genre": "POPS",
 		"version": 8
 	},
+	"85": {
+		"artist": "DJ Totoriott",
+		"genre": "WONDER QUEST",
+		"version": -1
+	},
 	"850": {
 		"artist": "Mr.T",
 		"genre": "ELECTROSHOCK",
@@ -12589,10 +13129,35 @@
 		"genre": "GOA TRANCE",
 		"version": 8
 	},
+	"86": {
+		"artist": "KOTONOHOUSE",
+		"genre": "HYBRED RHYTHM BASS",
+		"version": -1
+	},
+	"87": {
+		"artist": "Dirty Androids",
+		"genre": "FUTURE BASS",
+		"version": -1
+	},
+	"88": {
+		"artist": "NU-KO",
+		"genre": "わんわんコア",
+		"version": -1
+	},
+	"89": {
+		"artist": "kors k",
+		"genre": "チッピンレイヴ",
+		"version": -1
+	},
 	"9": {
 		"artist": "QUADRA",
 		"genre": "AMBIENT",
 		"version": 0
+	},
+	"90": {
+		"artist": "kors k",
+		"genre": "TRANCECORE",
+		"version": -1
 	},
 	"901": {
 		"artist": "dj TAKA Remixed by Ryu☆",
@@ -12638,6 +13203,11 @@
 		"artist": "SPARKER",
 		"genre": "ROCOCO TEK",
 		"version": 9
+	},
+	"91": {
+		"artist": "kors k Lovers DJ Yoshitaka",
+		"genre": "ELECTRO POP",
+		"version": -1
 	},
 	"910": {
 		"artist": "Db.saka feat. Piasa",
@@ -12689,6 +13259,11 @@
 		"genre": "POPS",
 		"version": 9
 	},
+	"92": {
+		"artist": "kors k feat.吉河順央",
+		"genre": "BEAT ROCK",
+		"version": -1
+	},
 	"920": {
 		"artist": "NAOKI feat.PAULA TERRY",
 		"genre": "EUROBEAT",
@@ -12739,6 +13314,11 @@
 		"genre": "FORKTRONICA",
 		"version": 9
 	},
+	"93": {
+		"artist": "Another Infinity feat. Mayumi Morinaga",
+		"genre": "MIRACLE DANCE POP",
+		"version": -1
+	},
 	"930": {
 		"artist": "小坂りゆ",
 		"genre": "J-HAPPY HARDCORE",
@@ -12783,6 +13363,11 @@
 		"artist": "PINK PONG",
 		"genre": "TRANCE",
 		"version": 9
+	},
+	"94": {
+		"artist": "tūmahaB",
+		"genre": "TRANCE CORE",
+		"version": -1
 	},
 	"940": {
 		"artist": "NAOKI underground",
@@ -12834,6 +13419,11 @@
 		"genre": "TRANCE",
 		"version": 9
 	},
+	"95": {
+		"artist": "Ryu☆",
+		"genre": "HAPPY HARDCORE",
+		"version": -1
+	},
 	"950": {
 		"artist": "jun",
 		"genre": "HAPPY HARDCORE",
@@ -12883,6 +13473,11 @@
 		"artist": "dj nagureo Remixed by Mr.T",
 		"genre": "EPIC HOUSE",
 		"version": 9
+	},
+	"96": {
+		"artist": "Ryu☆ feat.青龍",
+		"genre": "DANCE SPEED",
+		"version": -1
 	},
 	"960": {
 		"artist": "SADA",

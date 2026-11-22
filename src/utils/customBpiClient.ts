@@ -5,6 +5,7 @@ export const fetchCustomBpi = async (): Promise<{ SP: Record<string, any>; DP: R
     try {
       const res = await fetch('/api/bpi');
       if (res.ok) return await res.json();
+      // 500等のHTTPエラーもstaticにフォールバック
     } catch {
       // BPI server not running — fall through to static
     }

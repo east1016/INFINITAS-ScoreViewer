@@ -103,6 +103,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 8,
+		"id": 3376,
+		"n_value": 8
+	},
+	{
+		"difficulty": "A",
 		"h_value": 7,
 		"id": 2594,
 		"n_value": 6
@@ -136,6 +142,12 @@
 		"h_value": 6.5,
 		"id": 2590,
 		"n_value": 6
+	},
+	{
+		"difficulty": "A",
+		"h_value": 4,
+		"id": 2596,
+		"n_value": 4
 	},
 	{
 		"difficulty": "A",
@@ -187,6 +199,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 3,
+		"id": 3351,
+		"n_value": 3
+	},
+	{
+		"difficulty": "A",
 		"h_value": 3.5,
 		"id": 3003,
 		"n_value": 3.5
@@ -229,9 +247,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 3,
 		"id": 3345,
-		"n_value": -1
+		"n_value": 3
 	},
 	{
 		"difficulty": "A",
@@ -243,7 +261,7 @@
 		"difficulty": "A",
 		"h_value": 2,
 		"id": 2823,
-		"n_value": 3
+		"n_value": 2
 	},
 	{
 		"difficulty": "A",
@@ -256,6 +274,12 @@
 		"h_value": 9,
 		"id": 2965,
 		"n_value": 9
+	},
+	{
+		"difficulty": "A",
+		"h_value": 7,
+		"id": 3387,
+		"n_value": 6
 	},
 	{
 		"difficulty": "A",
@@ -360,6 +384,12 @@
 		"n_value": 4.5
 	},
 	{
+		"difficulty": "L",
+		"h_value": -1,
+		"id": 2703,
+		"n_value": -1
+	},
+	{
 		"difficulty": "A",
 		"h_value": 4,
 		"id": 1405,
@@ -403,9 +433,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 4,
 		"id": 3343,
-		"n_value": -1
+		"n_value": 4
 	},
 	{
 		"difficulty": "L",
@@ -430,6 +460,12 @@
 		"h_value": 5,
 		"id": 2249,
 		"n_value": 5
+	},
+	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 3404,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",
@@ -466,6 +502,12 @@
 		"h_value": 4,
 		"id": 609,
 		"n_value": 2
+	},
+	{
+		"difficulty": "L",
+		"h_value": 8,
+		"id": 2603,
+		"n_value": 7.5
 	},
 	{
 		"difficulty": "A",
@@ -571,6 +613,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": -1,
+		"id": 3405,
+		"n_value": -1
+	},
+	{
+		"difficulty": "A",
 		"h_value": 8,
 		"id": 2555,
 		"n_value": 7
@@ -580,6 +628,12 @@
 		"h_value": 10,
 		"id": 2555,
 		"n_value": 10
+	},
+	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 3406,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",
@@ -597,7 +651,7 @@
 		"difficulty": "A",
 		"h_value": 4,
 		"id": 3206,
-		"n_value": 5
+		"n_value": 4
 	},
 	{
 		"difficulty": "A",
@@ -631,14 +685,32 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 5,
+		"id": 3397,
+		"n_value": 4
+	},
+	{
+		"difficulty": "A",
+		"h_value": 4,
 		"id": 3307,
-		"n_value": -1
+		"n_value": 3
 	},
 	{
 		"difficulty": "A",
 		"h_value": 4,
 		"id": 3248,
+		"n_value": 4
+	},
+	{
+		"difficulty": "L",
+		"h_value": 9,
+		"id": 1512,
+		"n_value": 10
+	},
+	{
+		"difficulty": "A",
+		"h_value": 6,
+		"id": 3396,
 		"n_value": 4
 	},
 	{
@@ -709,6 +781,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 4,
+		"id": 3389,
+		"n_value": 4
+	},
+	{
+		"difficulty": "A",
 		"h_value": 7.5,
 		"id": 2311,
 		"n_value": 7
@@ -742,6 +820,12 @@
 		"h_value": 9,
 		"id": 2079,
 		"n_value": 9
+	},
+	{
+		"difficulty": "L",
+		"h_value": 4.5,
+		"id": 2608,
+		"n_value": 3.5
 	},
 	{
 		"difficulty": "A",
@@ -781,7 +865,7 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": 3,
+		"h_value": 4,
 		"id": 2668,
 		"n_value": 3
 	},
@@ -883,6 +967,18 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 8.5,
+		"id": 3368,
+		"n_value": 9
+	},
+	{
+		"difficulty": "A",
+		"h_value": 9,
+		"id": 3363,
+		"n_value": 9
+	},
+	{
+		"difficulty": "A",
 		"h_value": 6,
 		"id": 3298,
 		"n_value": 6
@@ -892,6 +988,12 @@
 		"h_value": 7,
 		"id": 2260,
 		"n_value": 4.5
+	},
+	{
+		"difficulty": "L",
+		"h_value": 8,
+		"id": 2260,
+		"n_value": 8
 	},
 	{
 		"difficulty": "A",
@@ -925,9 +1027,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 4,
 		"id": 3309,
-		"n_value": -1
+		"n_value": 4
 	},
 	{
 		"difficulty": "A",
@@ -972,6 +1074,12 @@
 		"n_value": 5
 	},
 	{
+		"difficulty": "L",
+		"h_value": 8,
+		"id": 2690,
+		"n_value": 7
+	},
+	{
 		"difficulty": "A",
 		"h_value": 4,
 		"id": 3112,
@@ -991,9 +1099,21 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": -1,
+		"id": 3439,
+		"n_value": -1
+	},
+	{
+		"difficulty": "A",
 		"h_value": 7.5,
 		"id": 2910,
 		"n_value": 5.5
+	},
+	{
+		"difficulty": "A",
+		"h_value": 4,
+		"id": 103099,
+		"n_value": 4
 	},
 	{
 		"difficulty": "A",
@@ -1117,6 +1237,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 7.5,
+		"id": 3377,
+		"n_value": 7
+	},
+	{
+		"difficulty": "A",
 		"h_value": 4,
 		"id": 3215,
 		"n_value": 4
@@ -1126,6 +1252,12 @@
 		"h_value": 3,
 		"id": 2366,
 		"n_value": 3
+	},
+	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 3436,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",
@@ -1144,6 +1276,12 @@
 		"h_value": 8,
 		"id": 2139,
 		"n_value": 8
+	},
+	{
+		"difficulty": "A",
+		"h_value": 5,
+		"id": 3367,
+		"n_value": 3
 	},
 	{
 		"difficulty": "A",
@@ -1197,13 +1335,19 @@
 		"difficulty": "L",
 		"h_value": 7,
 		"id": 1219,
-		"n_value": 6.5
+		"n_value": 7
 	},
 	{
 		"difficulty": "A",
 		"h_value": 6.5,
 		"id": 2765,
 		"n_value": 5.5
+	},
+	{
+		"difficulty": "L",
+		"h_value": 5,
+		"id": 3156,
+		"n_value": 5
 	},
 	{
 		"difficulty": "A",
@@ -1255,6 +1399,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 9,
+		"id": 2399,
+		"n_value": 8
+	},
+	{
+		"difficulty": "A",
 		"h_value": 6.5,
 		"id": 2046,
 		"n_value": 6
@@ -1297,6 +1447,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 3,
+		"id": 3354,
+		"n_value": 2
+	},
+	{
+		"difficulty": "A",
 		"h_value": 5,
 		"id": 2350,
 		"n_value": 4
@@ -1321,7 +1477,7 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": 2,
+		"h_value": 3,
 		"id": 1426,
 		"n_value": 2
 	},
@@ -1405,15 +1561,21 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 3,
+		"id": 3395,
+		"n_value": 3
+	},
+	{
+		"difficulty": "A",
+		"h_value": 2,
 		"id": 3349,
-		"n_value": -1
+		"n_value": 2
 	},
 	{
 		"difficulty": "L",
-		"h_value": -1,
+		"h_value": 10,
 		"id": 3349,
-		"n_value": -1
+		"n_value": 9
 	},
 	{
 		"difficulty": "L",
@@ -1435,7 +1597,7 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": 8,
+		"h_value": 7.5,
 		"id": 2898,
 		"n_value": 7
 	},
@@ -1483,9 +1645,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 8.5,
 		"id": 3312,
-		"n_value": -1
+		"n_value": 8.5
 	},
 	{
 		"difficulty": "A",
@@ -1543,9 +1705,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 8,
 		"id": 3313,
-		"n_value": -1
+		"n_value": 8
 	},
 	{
 		"difficulty": "A",
@@ -1563,6 +1725,12 @@
 		"difficulty": "A",
 		"h_value": 5,
 		"id": 3257,
+		"n_value": 4
+	},
+	{
+		"difficulty": "A",
+		"h_value": 4,
+		"id": 2197,
 		"n_value": 4
 	},
 	{
@@ -1681,6 +1849,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 7,
+		"id": 3392,
+		"n_value": 7
+	},
+	{
+		"difficulty": "A",
 		"h_value": 4,
 		"id": 3062,
 		"n_value": 3
@@ -1726,6 +1900,12 @@
 		"h_value": 5,
 		"id": 2414,
 		"n_value": 5
+	},
+	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 3412,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",
@@ -1783,6 +1963,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 7,
+		"id": 3375,
+		"n_value": 7
+	},
+	{
+		"difficulty": "A",
 		"h_value": 3,
 		"id": 2556,
 		"n_value": 3
@@ -1812,6 +1998,12 @@
 		"n_value": 6
 	},
 	{
+		"difficulty": "L",
+		"h_value": 4,
+		"id": 3284,
+		"n_value": 4
+	},
+	{
 		"difficulty": "A",
 		"h_value": 3.5,
 		"id": 836,
@@ -1819,9 +2011,9 @@
 	},
 	{
 		"difficulty": "L",
-		"h_value": -1,
+		"h_value": 8,
 		"id": 2812,
-		"n_value": -1
+		"n_value": 7
 	},
 	{
 		"difficulty": "A",
@@ -1903,15 +2095,21 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
-		"id": 3317,
-		"n_value": -1
+		"h_value": 3,
+		"id": 2477,
+		"n_value": 4
 	},
 	{
 		"difficulty": "A",
 		"h_value": 3,
-		"id": 2477,
-		"n_value": 4
+		"id": 3317,
+		"n_value": 3
+	},
+	{
+		"difficulty": "L",
+		"h_value": 10,
+		"id": 1745,
+		"n_value": 10
 	},
 	{
 		"difficulty": "A",
@@ -1975,9 +2173,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 5.5,
 		"id": 3318,
-		"n_value": -1
+		"n_value": 5
 	},
 	{
 		"difficulty": "A",
@@ -2004,10 +2202,22 @@
 		"n_value": 4
 	},
 	{
+		"difficulty": "L",
+		"h_value": 6,
+		"id": 1046,
+		"n_value": 6
+	},
+	{
 		"difficulty": "A",
 		"h_value": 1,
 		"id": 1535,
 		"n_value": 1
+	},
+	{
+		"difficulty": "A",
+		"h_value": 5,
+		"id": 3356,
+		"n_value": 3
 	},
 	{
 		"difficulty": "A",
@@ -2026,6 +2236,12 @@
 		"h_value": 5,
 		"id": 2687,
 		"n_value": 5
+	},
+	{
+		"difficulty": "A",
+		"h_value": 8.5,
+		"id": 3384,
+		"n_value": 7.5
 	},
 	{
 		"difficulty": "A",
@@ -2191,6 +2407,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 7,
+		"id": 2597,
+		"n_value": 7
+	},
+	{
+		"difficulty": "A",
 		"h_value": 7.5,
 		"id": 1951,
 		"n_value": 5.5
@@ -2257,9 +2479,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 4,
 		"id": 3321,
-		"n_value": -1
+		"n_value": 4
 	},
 	{
 		"difficulty": "A",
@@ -2316,6 +2538,12 @@
 		"n_value": 5.5
 	},
 	{
+		"difficulty": "L",
+		"h_value": 7,
+		"id": 3122,
+		"n_value": 6
+	},
+	{
 		"difficulty": "A",
 		"h_value": 10,
 		"id": 3269,
@@ -2326,6 +2554,18 @@
 		"h_value": 3,
 		"id": 2480,
 		"n_value": 2
+	},
+	{
+		"difficulty": "A",
+		"h_value": 10,
+		"id": 3398,
+		"n_value": 10
+	},
+	{
+		"difficulty": "L",
+		"h_value": 5,
+		"id": 2360,
+		"n_value": 5
 	},
 	{
 		"difficulty": "A",
@@ -2382,10 +2622,22 @@
 		"n_value": 6.5
 	},
 	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 103419,
+		"n_value": -1
+	},
+	{
 		"difficulty": "L",
 		"h_value": 5,
 		"id": 1638,
 		"n_value": 4
+	},
+	{
+		"difficulty": "L",
+		"h_value": 10,
+		"id": 1849,
+		"n_value": 10
 	},
 	{
 		"difficulty": "A",
@@ -2491,6 +2743,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 4,
+		"id": 2198,
+		"n_value": 4
+	},
+	{
+		"difficulty": "A",
 		"h_value": 3,
 		"id": 2259,
 		"n_value": 3
@@ -2515,7 +2773,7 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": 9.5,
+		"h_value": 8.5,
 		"id": 2056,
 		"n_value": 8.5
 	},
@@ -2536,6 +2794,12 @@
 		"h_value": 3.5,
 		"id": 2430,
 		"n_value": 3.5
+	},
+	{
+		"difficulty": "L",
+		"h_value": -1,
+		"id": 2430,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",
@@ -2629,9 +2893,27 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 6.5,
+		"id": 3374,
+		"n_value": 6
+	},
+	{
+		"difficulty": "L",
+		"h_value": 7.5,
+		"id": 2631,
+		"n_value": 7.5
+	},
+	{
+		"difficulty": "A",
 		"h_value": 3,
 		"id": 536,
 		"n_value": 3
+	},
+	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 3446,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",
@@ -2839,6 +3121,12 @@
 	},
 	{
 		"difficulty": "L",
+		"h_value": 7.5,
+		"id": 2030,
+		"n_value": 7.5
+	},
+	{
+		"difficulty": "L",
 		"h_value": 7,
 		"id": 2381,
 		"n_value": 7
@@ -2853,7 +3141,7 @@
 		"difficulty": "A",
 		"h_value": 3,
 		"id": 2222,
-		"n_value": 3.5
+		"n_value": 3
 	},
 	{
 		"difficulty": "A",
@@ -2869,9 +3157,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 6,
 		"id": 3325,
-		"n_value": -1
+		"n_value": 6
 	},
 	{
 		"difficulty": "A",
@@ -2892,6 +3180,12 @@
 		"n_value": 7
 	},
 	{
+		"difficulty": "L",
+		"h_value": 8.5,
+		"id": 2744,
+		"n_value": 8.5
+	},
+	{
 		"difficulty": "A",
 		"h_value": 10,
 		"id": 1601,
@@ -2905,7 +3199,7 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": 4,
+		"h_value": 3,
 		"id": 2368,
 		"n_value": 3
 	},
@@ -2920,6 +3214,12 @@
 		"h_value": 4.5,
 		"id": 2059,
 		"n_value": 4.5
+	},
+	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 3420,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",
@@ -2941,15 +3241,21 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 8,
 		"id": 3326,
-		"n_value": -1
+		"n_value": 8
 	},
 	{
 		"difficulty": "A",
 		"h_value": 4,
 		"id": 2457,
 		"n_value": 4
+	},
+	{
+		"difficulty": "A",
+		"h_value": 9,
+		"id": 3366,
+		"n_value": 8
 	},
 	{
 		"difficulty": "A",
@@ -3079,6 +3385,12 @@
 	},
 	{
 		"difficulty": "L",
+		"h_value": 4,
+		"id": 3327,
+		"n_value": 3
+	},
+	{
+		"difficulty": "L",
 		"h_value": 8,
 		"id": 1940,
 		"n_value": 7
@@ -3115,6 +3427,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": 7,
+		"id": 3362,
+		"n_value": 4
+	},
+	{
+		"difficulty": "A",
 		"h_value": 4,
 		"id": 2033,
 		"n_value": 3
@@ -3139,6 +3457,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": -1,
+		"id": 3441,
+		"n_value": -1
+	},
+	{
+		"difficulty": "A",
 		"h_value": 6,
 		"id": 1950,
 		"n_value": 4
@@ -3157,6 +3481,12 @@
 	},
 	{
 		"difficulty": "A",
+		"h_value": -1,
+		"id": 3425,
+		"n_value": -1
+	},
+	{
+		"difficulty": "A",
 		"h_value": 4,
 		"id": 2390,
 		"n_value": 3
@@ -3169,9 +3499,15 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": 2.5,
+		"h_value": 3.5,
 		"id": 852,
 		"n_value": 2.5
+	},
+	{
+		"difficulty": "A",
+		"h_value": 9,
+		"id": 2400,
+		"n_value": 9
 	},
 	{
 		"difficulty": "L",
@@ -3181,9 +3517,9 @@
 	},
 	{
 		"difficulty": "L",
-		"h_value": -1,
+		"h_value": 9,
 		"id": 3029,
-		"n_value": -1
+		"n_value": 9
 	},
 	{
 		"difficulty": "A",
@@ -3396,6 +3732,18 @@
 		"n_value": 5
 	},
 	{
+		"difficulty": "A",
+		"h_value": 7,
+		"id": 2595,
+		"n_value": 7
+	},
+	{
+		"difficulty": "L",
+		"h_value": 6,
+		"id": 3061,
+		"n_value": 6
+	},
+	{
 		"difficulty": "L",
 		"h_value": 8,
 		"id": 2226,
@@ -3406,6 +3754,12 @@
 		"h_value": 7,
 		"id": 2455,
 		"n_value": 6
+	},
+	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 103424,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",
@@ -3499,6 +3853,12 @@
 	},
 	{
 		"difficulty": "L",
+		"h_value": 6.5,
+		"id": 3133,
+		"n_value": 6
+	},
+	{
+		"difficulty": "L",
 		"h_value": 4.5,
 		"id": 2934,
 		"n_value": 3.5
@@ -3559,9 +3919,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 5,
 		"id": 3336,
-		"n_value": -1
+		"n_value": 4
 	},
 	{
 		"difficulty": "A",
@@ -3601,9 +3961,9 @@
 	},
 	{
 		"difficulty": "A",
-		"h_value": -1,
+		"h_value": 8,
 		"id": 3348,
-		"n_value": -1
+		"n_value": 8
 	},
 	{
 		"difficulty": "A",
@@ -3616,6 +3976,12 @@
 		"h_value": 2,
 		"id": 2232,
 		"n_value": 2
+	},
+	{
+		"difficulty": "A",
+		"h_value": 3,
+		"id": 3378,
+		"n_value": 3
 	},
 	{
 		"difficulty": "A",
@@ -3667,6 +4033,12 @@
 	},
 	{
 		"difficulty": "L",
+		"h_value": 7,
+		"id": 2958,
+		"n_value": 6
+	},
+	{
+		"difficulty": "L",
 		"h_value": 5.5,
 		"id": 1556,
 		"n_value": 4.5
@@ -3688,6 +4060,12 @@
 		"h_value": 4,
 		"id": 2339,
 		"n_value": 4
+	},
+	{
+		"difficulty": "A",
+		"h_value": 5,
+		"id": 3379,
+		"n_value": 5
 	},
 	{
 		"difficulty": "L",
@@ -3718,6 +4096,12 @@
 		"h_value": 9,
 		"id": 2175,
 		"n_value": 8
+	},
+	{
+		"difficulty": "A",
+		"h_value": -1,
+		"id": 3447,
+		"n_value": -1
 	},
 	{
 		"difficulty": "A",

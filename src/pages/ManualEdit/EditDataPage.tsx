@@ -11,6 +11,7 @@ import { defaultMisscount } from '../../constants/defaultValues';
 import { Page, PageHeader } from '../../components/Page';
 import SectionCard from '../../components/SectionCard';
 import { acInfDiffMap } from '../../constants/titleConstrains';
+import { fetchJsonWithFallback } from '../../utils/fetchWithFallback';
 
 
 const EditDataPage = () => {
@@ -36,8 +37,7 @@ const EditDataPage = () => {
     // 曲名取得
     const fetchData = async () => {
       try {
-        const titleRes = await fetch('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json');
-        const titles = await titleRes.json();
+        const titles = await fetchJsonWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json');
         setTitleMap(titles);
       } catch (err) {
         console.error('Error loading song data:', err);
