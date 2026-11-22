@@ -9,7 +9,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DifferenceRoundedIcon from '@mui/icons-material/DifferenceRounded';
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
-import RadarRoundedIcon from '@mui/icons-material/RadarRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import TableRowsIcon from '@mui/icons-material/TableRows';
 
@@ -21,7 +20,6 @@ import DpTablePage from './pages/DpTablePage';
 import CpiPage from './pages/CpiPage';
 import BpiPage from './pages/BpiPage';
 import EreterPage from './pages/EreterPage';
-import RadarPage from './pages/RadarPage';
 import SettingsPage from './pages/SettingsPage';
 import SongTablePage from './pages/SongTablePage';
 import Index from './pages/Index';
@@ -39,12 +37,11 @@ const AppShell: React.FC = () => {
     { text: 'Top', path: '/', mode: 'both', icon: <HomeRoundedIcon /> },
     { text: '更新差分', path: '/diff', mode: 'both', icon: <DifferenceRoundedIcon /> },
     { text: '楽曲一覧', path: '/songtable', mode: 'both', icon: <TableRowsIcon /> },
-{ text: 'SP難易度表', path: '/tierlist', mode: 'SP', icon: <GridViewRoundedIcon /> },
+    { text: 'SP難易度表', path: '/tierlist', mode: 'SP', icon: <GridViewRoundedIcon /> },
     { text: 'DP非公式難易度表', path: '/dp', mode: 'DP', icon: <GridViewRoundedIcon /> },
     { text: 'CPI', path: '/cpi', mode: 'SP', icon: <GridViewRoundedIcon /> },
     { text: 'BPI', path: '/bpi', mode: 'both', icon: <GridViewRoundedIcon /> },
     { text: 'ereter.net', path: '/ereter', mode: 'DP', icon: <GridViewRoundedIcon /> },
-    { text: 'ノーツレーダー', path: '/radar', mode: 'both', icon: <RadarRoundedIcon />, hidden: true },
     { text: '設定', path: '/settings', mode: 'both', icon: <SettingsRoundedIcon /> },
   ];
 
@@ -197,7 +194,6 @@ const AppShell: React.FC = () => {
               <Route path="/cpi" element={mode === 'SP' ? <CpiPage /> : <Typography>このページはSPモードでのみ利用可能です。</Typography>} />
               <Route path="/bpi" element={<BpiPage />} />
               <Route path="/ereter" element={mode === 'DP' ? <EreterPage /> : <Typography>このページはDPモードでのみ利用可能です。</Typography>} />
-              <Route path="/radar" element={<RadarPage />} />
               <Route path="/songtable" element={<SongTablePage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>

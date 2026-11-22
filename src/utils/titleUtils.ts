@@ -2,13 +2,12 @@ import { replaceTitle, replaceCharacters } from '../constants/titleConstrains'
 import { fetchJsonWithFallback } from './fetchWithFallback';
 import React from 'react';
 
-// 難易度ごとの色定義
 const difficultyColors: Record<string, string> = {
-  A: '#ff0000', // ANOTHER: 赤
-  L: '#a855f7', // LEGGENDARIA: 紫
-  H: '#d4a800', // HYPER: 黄色
-  N: '#0000ff', // NORMAL: 青
-  B: '#32cd32', // BEGINNER: 黄緑
+  B: '#32cd32',
+  N: '#0000ff',
+  H: '#d4a800',
+  A: '#ff0000',
+  L: '#a855f7',
 };
 
 /**

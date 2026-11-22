@@ -1,9 +1,9 @@
 export const getGrade = (percentage: number): string => {
   if (percentage < 2 / 9) return 'F';
-  if (percentage < 1 / 3) return 'E';
+  if (percentage < 3 / 9) return 'E';
   if (percentage < 4 / 9) return 'D';
   if (percentage < 5 / 9) return 'C';
-  if (percentage < 2 / 3) return 'B';
+  if (percentage < 6 / 9) return 'B';
   if (percentage < 7 / 9) return 'A';
   if (percentage < 8 / 9) return 'AA';
   return 'AAA';

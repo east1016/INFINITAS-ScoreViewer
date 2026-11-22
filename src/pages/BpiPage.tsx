@@ -28,7 +28,7 @@ const BpiPage = () => {
   const { mode, filters, setFilters } = useAppContext();
   const [gradeType, setGradeType] = useState<'aaa_bpi' | 'max_minus_bpi'>('aaa_bpi');
   const [level, setLevel] = useState<11 | 12>(12);
-  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('asc');
   const [songs, setSongs] = useState<any[]>([]);
   const [titleMap, setTitleMap] = useState<{ [key: string]: string }>({});
   const [clearData, setClearData] = useState<{ [key: string]: number }>({});
@@ -165,48 +165,6 @@ const BpiPage = () => {
     return groupByBpiRange(filteredSongs, sortOrder);
   }, [filteredSongs, sortOrder]);
 
-  const totalBpi = useMemo(() => {
-    const calculateLevelBpi = (level: number) => {
-      const filteredLevelSongs = songs.filter(song => song.level === level);
-      const n = filteredLevelSongs.length;
-      if (n === 0) return -15;
-
-      // 累乗係数 k = log2(n)
-      let k = Math.log2(n);
-      if (k === 0) k = 1;
-
-      // 各曲のBPIを計算し、累積する
-      const totalBpiValue = filteredLevelSongs.reduce((sum, song) => {
-        const key = `${song.id}_${song.difficulty}`;
-        const score = scoreData[key] ?? 0;
-
-        const notes = song.notes ?? 0;
-        const wr = song.wr ?? 0;
-        const avg = song.avg ?? 0;
-        const coef = song.coef ?? 1.175;
-
-        if (score !== 0 && score <= notes * 2) {
-          const bpi = calculateBpi(wr, avg, notes, score, coef) || -15;
-          const m = Math.pow(Math.abs(bpi), k) / n;
-          sum += bpi > 0 ? m : -m;
-        } else {
-          //未プレイと不正データの楽曲を-15で埋める
-          const bpi = -15;
-          const m = Math.pow(Math.abs(bpi), k) / n;
-          sum += bpi > 0 ? m : -m;
-        }
-        return sum;
-      }, 0);
-
-      const res = Math.round(Math.pow(Math.abs(totalBpiValue), 1 / k) * 100) / 100;
-      return totalBpiValue > 0 ? res : -res;
-    };
-
-    const selectedLevelBpi = calculateLevelBpi(level);
-
-    return selectedLevelBpi;
-  }, [songs, scoreData, level]);
-
   // 各グレードの達成率を計算する関数（難易度ごとに計算）
   const totalCount = filteredSongs.length;
   const achievementRates = useMemo(() => {
@@ -247,11 +205,6 @@ const BpiPage = () => {
           <Backdrop open={loading} sx={{ zIndex: 9999, color: '#fff' }}>
             <CircularProgress color="inherit" />
           </Backdrop>
-
-          {/* 総合BPIの表示 */}
-          <Typography variant="h6" gutterBottom>
-            {`総合BPI(☆${level}): ${totalBpi.toFixed(2)}`}
-          </Typography>
 
           <Typography variant="body2" sx={{ mb: 2 }}>
             現在の定義データは Ver.{bpiVersion} です。設定より定義データを選択できます。
@@ -353,8 +306,8 @@ const BpiPage = () => {
                 },
               }}
             >
-              <ToggleButton value="desc">降順</ToggleButton>
               <ToggleButton value="asc">昇順</ToggleButton>
+              <ToggleButton value="desc">降順</ToggleButton>
             </ToggleButtonGroup>
           </Box>
 

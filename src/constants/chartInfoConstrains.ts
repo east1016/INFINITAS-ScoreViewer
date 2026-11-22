@@ -1,12 +1,3 @@
-export const chartCategories: string[] = [
-    'NOTES',
-    'CHORD',
-    'PEAK',
-    'CHARGE',
-    'SCRATCH',
-    'SOFLAN'
-];
-
 // 外部データソースにノーツ数やレベルが未登録の譜面の補正データ
 // src/data/notesOverride.json から読み込み
 import notesOverrideData from '../data/notesOverride.json';

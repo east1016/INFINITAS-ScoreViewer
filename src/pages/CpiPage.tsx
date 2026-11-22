@@ -123,59 +123,6 @@ const CpiPage = () => {
     return getLampAchiveCount(filteredSongs, clearData);
   }, [filteredSongs, clearData]);
 
-  /*
-  const estimateCPI = useMemo(() => {
-    const targets: { cpi: number; kojinsa: number; success: boolean }[] = [];
-
-    for (const song of songs) {
-      const key = `${song.id}_${song.difficulty}`;
-      const lamp = clearData[key];
-      if (lamp === undefined || lamp === 0) continue;
-      for (const lampValueKey in cpiClearMap) {
-        const data = song[lampValueKey];
-        if (data.cpi_value < 0 || data.kojinsa_value == null) continue;
-        const keyTyped = lampValueKey as keyof typeof cpiClearMap;
-        targets.push({
-          cpi: data.cpi_value,
-          kojinsa: data.kojinsa_value,
-          success: lamp >= cpiClearMap[keyTyped],
-        });
-      }
-    }
-
-    if (targets.length === 0) return 0;
-
-    const logLikelihood = (theta: number) =>
-      targets.reduce((sum, { cpi, kojinsa, success }) => {
-        const p = 1 / (1 + Math.exp(-((1 / kojinsa) * (theta - cpi))));
-        return sum + (success ? Math.log(p) : Math.log(1 - p));
-      }, 0);
-
-    let bestTheta = 0;
-    let bestLL = -Infinity;
-
-    for (let t = 1000; t <= 3500; t += 1) {
-      const ll = logLikelihood(t);
-      if (ll > bestLL) {
-        bestLL = ll;
-        bestTheta = t;
-      }
-    }
-
-    let refinedTheta = bestTheta;
-    let refinedLL = bestLL;
-    for (let t = bestTheta - 2; t <= bestTheta + 2; t += 0.01) {
-      const ll = logLikelihood(t);
-      if (ll > refinedLL) {
-        refinedLL = ll;
-        refinedTheta = t;
-      }
-    }
-
-    return refinedTheta;
-
-  }, [songs, clearData]);
-  */
 
   const getTitleFontSize = (text: string) => {
     const len = text.length;
@@ -199,13 +146,6 @@ const CpiPage = () => {
             <CircularProgress color="inherit" />
           </Backdrop>
           
-          {/*
-          <Typography variant="h6" gutterBottom>推定CPI(β): {estimateCPI.toFixed(2)}</Typography>
-          <Typography variant="caption" color="text.secondary">
-            cpi.makecir.comとは異なる推定方法であるため、あくまで目安として使用してください。（イローテーティングではなく最尤推定法を使用）
-          </Typography>
-          */}
-
           <LampAchieveProgress stats={stats} totalCount={totalCount} />
           <FilterPanel filters={filters} onChange={setFilters} showLevelFilter={false} showGradeFilter={false} />
 
@@ -270,14 +210,13 @@ const CpiPage = () => {
                     const displayTitle = `${title} ${diffLabel}`;
 
                     return (
-                      // xs=1 → 3カラム、sm=4、md=2 は従来レイアウト維持
                       <Grid item xs={1} sm={4} md={2} key={key} sx={{ minWidth: 0 }}>
                         <Paper elevation={3} sx={{ p: { xs: 1, sm: 1.2 }, height: '100%', backgroundColor: bg }}>
                           <Typography
                             variant="body2"
                             fontWeight="bold"
                             sx={{
-                              fontSize: getTitleFontSize(displayTitle), // ← 長いときだけ小さく
+                              fontSize: getTitleFontSize(displayTitle),
                               whiteSpace: 'normal',
                               overflowWrap: 'anywhere',
                               wordBreak: 'break-word',

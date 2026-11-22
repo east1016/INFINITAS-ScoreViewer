@@ -9,15 +9,6 @@ export const clearColorMap: { [key: number]: string } = {
   7: '#FF9966'
 };
 
-export const raderCategoryColors: Record<string, string> = {
-  NOTES: '#ff69b4',
-  CHORD: '#99ff99',
-  PEAK: '#ffff66',
-  CHARGE: '#cc66ff',
-  SCRATCH: '#ff6666',
-  SOFLAN: '#99ccff'
-};
-
 export const scoreColorMap: { [key: string]: string } = {
     'A': '#20B2AA',
     'AA': '#C0C0C0',

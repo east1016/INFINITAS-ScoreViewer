@@ -16,13 +16,12 @@ export const getLampAchiveCount = (filteredSongs: any[], clearData: any) => {
   return result
 }
 
-// グレード達成数カウント（SongRow形式）
-// gradeUtils.tsの閾値に基づく
+// グレード達成数カウント
 export const achiveTargetGradeMap: Record<string, number> = {
-  "A": 2 / 3,      // 12/18 ≈ 66.67%
-  "AA": 7 / 9,     // 14/18 ≈ 77.78%
-  "AAA": 8 / 9,    // 16/18 ≈ 88.89%
-  "MAX-": 17 / 18, // ≈ 94.44%
+  "A": 6 / 9,
+  "AA": 7 / 9,
+  "AAA": 8 / 9,
+  "MAX-": 17 / 18,
 };
 
 export const getGradeAchiveCount = (filteredSongs: { rate: number }[]) => {

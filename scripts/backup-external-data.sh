@@ -16,7 +16,6 @@ mkdir -p "$BACKUP_DIR/difficulty/dp"
 mkdir -p "$BACKUP_DIR/ereter"
 mkdir -p "$BACKUP_DIR/cpi"
 mkdir -p "$BACKUP_DIR/manual"
-mkdir -p "$BACKUP_DIR/notes_radar"
 
 echo "Downloading external data for backup..."
 
@@ -67,10 +66,6 @@ curl -sS -o "$BACKUP_DIR/cpi/songs_list.json" "$BASE_URL/cpi/songs_list.json"
 echo "Downloading manual data..."
 curl -sS -o "$BACKUP_DIR/manual/replace-characters.json" "$BASE_URL/manual/replace-characters.json"
 
-# notes_radar 関連（RadarPage用）
-echo "Downloading notes_radar data..."
-curl -sS "$BASE_URL/notes_radar/sp.json.gz" 2>/dev/null | gunzip > "$BACKUP_DIR/notes_radar/sp.json" || true
-curl -sS "$BASE_URL/notes_radar/dp.json.gz" 2>/dev/null | gunzip > "$BACKUP_DIR/notes_radar/dp.json" || true
 
 echo ""
 echo "Backup completed!"
