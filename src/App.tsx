@@ -7,7 +7,6 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
 import DifferenceRoundedIcon from '@mui/icons-material/DifferenceRounded';
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import RadarRoundedIcon from '@mui/icons-material/RadarRounded';
@@ -24,8 +23,6 @@ import BpiPage from './pages/BpiPage';
 import EreterPage from './pages/EreterPage';
 import RadarPage from './pages/RadarPage';
 import SettingsPage from './pages/SettingsPage';
-import EditSongSelectPage from './pages/ManualEdit/EditSongSelectPage';
-import EditDataPage from './pages/ManualEdit/EditDataPage';
 import SongTablePage from './pages/SongTablePage';
 import Index from './pages/Index';
 
@@ -40,7 +37,6 @@ const AppShell: React.FC = () => {
 
   const menuItems: Array<{ text: string; path: string; mode: VisibleMode; icon: React.ReactNode; hidden?: boolean }> = [
     { text: 'Top', path: '/', mode: 'both', icon: <HomeRoundedIcon /> },
-    { text: 'スコア手動登録', path: '/edit', mode: 'both', icon: <EditNoteRoundedIcon />, hidden: true },
     { text: '更新差分', path: '/diff', mode: 'both', icon: <DifferenceRoundedIcon /> },
     { text: '楽曲一覧', path: '/songtable', mode: 'both', icon: <TableRowsIcon /> },
 { text: 'SP難易度表', path: '/tierlist', mode: 'SP', icon: <GridViewRoundedIcon /> },
@@ -204,8 +200,6 @@ const AppShell: React.FC = () => {
               <Route path="/radar" element={<RadarPage />} />
               <Route path="/songtable" element={<SongTablePage />} />
               <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/edit" element={<EditSongSelectPage />} />
-              <Route path="/edit/:songIdRaw/:difficultyRaw" element={<EditDataPage />} />
             </Routes>
           </Container>
         } />

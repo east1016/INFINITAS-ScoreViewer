@@ -390,7 +390,7 @@ const BpiPage = () => {
 
                   // BPI差分 = 現在のBPI - 目標BPI（その曲の難易度表BPI）
                   const bpiDiff = song.bpi - song[gradeType];
-                  const bg = song.score === 0 ? '#FFFFFF' : bpiGapColor(bpiDiff, true);
+                  const bg = song.score === 0 ? '#FFFFFF' : bpiGapColor(bpiDiff);
 
                   return (
                     <Grid item xs={1} sm={4} md={2} key={key} sx={{ minWidth: 0 }}>

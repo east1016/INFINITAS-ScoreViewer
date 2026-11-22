@@ -198,50 +198,6 @@ export async function mergeWithCSVEntries(parsed: any) {
   return { data: mergedData, diffs, timestamps: mergedTS, failedTitles };
 }
 
-// JSON変更時のLocalStorageデータとのマージ処理
-export function mergeWithJSONData(oldData: any, newData: any, oldTimestamps: any, newTimestamps: any, oldDiff: any) {
-  const mergedData = { ...oldData };
-  const mergedTS = { ...oldTimestamps };
-  const mergedDiff = { ...oldDiff };
-
-  for (const mode in newData) {
-    for (const songId in newData[mode]) {
-      if (!mergedData[mode]) mergedData[mode] = {};
-      if (!mergedData[mode][songId]) mergedData[mode][songId] = {};
-      if (!mergedTS[mode]) mergedTS[mode] = {};
-      if (!mergedTS[mode][songId]) mergedTS[mode][songId] = {};
-
-      const newEntries = newData[mode][songId];
-      for (const difficulty in newEntries) {
-        const entry = newEntries[difficulty];
-        const oldData = mergedData[mode][songId][difficulty] || {};
-        const oldTS = mergedTS[mode][songId][difficulty] || {};
-        const lastplay = newTimestamps?.[mode]?.[songId]?.[difficulty]?.lastplay
-          ? newTimestamps[mode][songId][difficulty].lastplay
-          : getCurrentFormattedTime();
-
-        const merged = mergeScore(entry, oldData, oldTS, lastplay);
-
-        mergedData[mode][songId][difficulty] = merged.updated;
-        if (entry.score !== 0 || entry.cleartype !== 0 || entry.misscount !== defaultMisscount) {
-          if (!mergedTS[mode][songId]) mergedTS[mode][songId] = {};
-          mergedTS[mode][songId][difficulty] = merged.timestamp;
-        }
-        if (Object.keys(merged.diff).length > 0) {
-          if (!mergedDiff[mode]) mergedDiff[mode] = {};
-          if (!mergedDiff[mode][songId]) mergedDiff[mode][songId] = {};
-          if (!mergedDiff[mode][songId][difficulty]) mergedDiff[mode][songId][difficulty] = {};
-          for (const diffType in merged.diff) {
-            mergedDiff[mode][songId][difficulty][diffType] = merged.diff[diffType];
-          }
-        }
-      }
-    }
-  }
-
-  return { data: mergedData, diffs: mergedDiff, timestamps: mergedTS };
-}
-
 // ${id}_${diff}形式のオブジェクトに変換
 export const convertDataToIdDiffKey = (data: any, mode: 'SP' | 'DP') => {
   const score: { [key: string]: number } = {};

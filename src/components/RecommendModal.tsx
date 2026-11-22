@@ -180,9 +180,6 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
       </DialogTitle>
       <DialogContent>
         <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            レベル
-          </Typography>
           <ToggleButtonGroup
             value={level}
             exclusive
@@ -196,9 +193,6 @@ const RecommendModal: React.FC<RecommendModalProps> = ({
         </Box>
 
         <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            目標
-          </Typography>
           <ToggleButtonGroup
             value={target}
             exclusive
