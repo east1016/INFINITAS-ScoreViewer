@@ -23,6 +23,8 @@ import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
 import { fetchJsonWithFallback, fetchGzipJsonWithFallback } from '../utils/fetchWithFallback';
 import { renderTitleWithDifficulty } from '../utils/titleUtils';
+import { difficultyKey } from '../constants/difficultyConstrains';
+import { notesOverride } from '../constants/chartInfoConstrains';
 
 // BpiPageコンポーネント
 const BpiPage = () => {
@@ -148,7 +150,11 @@ const BpiPage = () => {
         const key = `${song.id}_${song.difficulty}`;
         const score = scoreData[key] ?? 0;
 
-        const notes = song.notes ?? 0;
+        // textageのノーツ数を優先（bpim2データのノーツ数は誤りがある場合があるため）
+        const diffIndex = difficultyKey.indexOf(song.difficulty);
+        const c = chartInfo[song.id];
+        const chartNotes = c?.notes?.[mode.toLowerCase()]?.[diffIndex] ?? 0;
+        const notes = chartNotes > 0 ? chartNotes : (notesOverride[`${song.id}_${song.difficulty}`] ?? song.notes ?? 0);
 
         const gap = getGap(gradeType, notes, score);
         const bpi = isBpim2Mode
