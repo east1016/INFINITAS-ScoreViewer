@@ -14,6 +14,7 @@ import {
 import { useAppContext } from '../context/AppContext';
 import FilterPanel from '../components/FilterPanel';
 import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
+import { calculateBpim2, calculateTotalBpim2 } from '../utils/bpim2Utils';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { getPercentage, getDetailGrade, getGrade } from '../utils/gradeUtils';
 import { isMatchSong } from '../utils/filterUtils';
@@ -39,6 +40,7 @@ const BpiPage = () => {
   const [songInfo, setSongInfo] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [bpiVersion, setBpiVersion] = useState<string>('');
+  const [isBpim2Mode, setIsBpim2Mode] = useState(false);
 
 
   // データ取得
@@ -46,9 +48,18 @@ const BpiPage = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const bpiVersionIndex = parseInt(localStorage.getItem('bpiVersion') ?? '-1') ?? -1
-        const bpiVersionRes = await resolveVersionByIndex(bpiVersionIndex);
-        setBpiVersion(bpiVersionRes);
+        const bpiVersionIndex = parseInt(localStorage.getItem('bpiVersion') ?? '-1');
+        const bpim2 = bpiVersionIndex === -1;
+        setIsBpim2Mode(bpim2);
+
+        const listUrl = bpim2
+          ? 'https://chinimuruhi.github.io/IIDX-Data-Table/bpim2/sp_list.json'  // BPIM2はSP専用
+          : `https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${await resolveVersionByIndex(bpiVersionIndex)}/${mode.toLowerCase()}_list.json`;
+
+        if (!bpim2) {
+          const bpiVersionRes = await resolveVersionByIndex(bpiVersionIndex);
+          setBpiVersion(bpiVersionRes);
+        }
 
         const [
           songsRes,
@@ -57,7 +68,7 @@ const BpiPage = () => {
           chartJson,
           songInfoJson
         ] = await Promise.all([
-          fetchJsonWithFallback<any[]>(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersionRes}/${mode.toLowerCase()}_list.json`),
+          fetchJsonWithFallback<any[]>(listUrl),
           fetchJsonWithFallback<{ [key: string]: string }>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
           fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json'),
           fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
@@ -138,12 +149,11 @@ const BpiPage = () => {
         const score = scoreData[key] ?? 0;
 
         const notes = song.notes ?? 0;
-        const wr = song.wr ?? 0;
-        const avg = song.avg ?? 0;
-        const coef = song.coef ?? 1.175;
 
         const gap = getGap(gradeType, notes, score);
-        const bpi = calculateBpi(wr, avg, notes, score, coef);
+        const bpi = isBpim2Mode
+          ? (calculateBpim2(song, score) ?? 0)
+          : calculateBpi(song.wr ?? 0, song.avg ?? 0, notes, score, song.coef ?? 1.175);
         const percentage = getPercentage(score, notes);
         const bpm = song.bpm;
 
@@ -164,6 +174,17 @@ const BpiPage = () => {
   const { sortedRanges, sections } = useMemo(() => {
     return groupByBpiRange(filteredSongs, sortOrder);
   }, [filteredSongs, sortOrder]);
+
+  const totalBpim2 = useMemo(() => {
+    if (!isBpim2Mode) return null;
+    const withScore = songs.map((song) => {
+      const score = scoreData[`${song.id}_${song.difficulty}`] ?? 0;
+      return { chart: song, score: score <= (song.notes ?? 0) * 2 ? score : 0 };
+    });
+    const played = withScore.filter(({ score }) => score > 0);
+    const scope = withScore.filter(({ chart }) => chart.level === level);
+    return calculateTotalBpim2(scope, played) ?? -15;
+  }, [isBpim2Mode, songs, scoreData, level]);
 
   // 各グレードの達成率を計算する関数（難易度ごとに計算）
   const totalCount = filteredSongs.length;
@@ -206,8 +227,15 @@ const BpiPage = () => {
             <CircularProgress color="inherit" />
           </Backdrop>
 
+          {isBpim2Mode && totalBpim2 !== null && (
+            <Typography variant="h6" gutterBottom>
+              {`総合BPI(☆${level}): ${totalBpim2.toFixed(2)}`}
+            </Typography>
+          )}
           <Typography variant="body2" sx={{ mb: 2 }}>
-            現在の定義データは Ver.{bpiVersion} です。設定より定義データを選択できます。
+            {isBpim2Mode
+              ? 'BPIM2の定義データ・算出式(BPI V2)を使用しています。設定より定義データを変更できます。'
+              : `現在の定義データは Ver.${bpiVersion} です。設定より定義データを選択できます。`}
           </Typography>
 
           {/* 達成率の表示 */}

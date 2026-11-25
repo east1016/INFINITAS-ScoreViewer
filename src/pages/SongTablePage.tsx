@@ -26,6 +26,7 @@ import { isMatchSong } from '../utils/filterUtils';
 import { convertDataToIdDiffKey } from '../utils/scoreDataUtils';
 import { acInfDiffMap } from '../constants/titleConstrains';
 import { calculateBpi } from '../utils/bpiUtils';
+import { calculateBpim2 } from '../utils/bpim2Utils';
 import LampAchieveProgress from '../components/LampAchieveProgress';
 import GradeAchieveProgress from '../components/GradeAchieveProgress';
 import { getLampAchiveCount, getGradeAchiveCount } from '../utils/lampUtils';
@@ -145,12 +146,14 @@ const SongTablePage: React.FC = () => {
         const saved = localStorage.getItem('bpiVersion');
         if (saved !== null) {
           const idx = parseInt(saved, 10);
-          if (!isNaN(idx) && idx >= 0 && arr[idx]) {
+          if (!isNaN(idx) && idx === -1) {
+            setSelectedVersion(-1);
+          } else if (!isNaN(idx) && idx >= 0 && arr[idx]) {
             setSelectedVersion(idx);
           } else {
             // Default to latest (index 0)
-            setSelectedVersion(0);
-            localStorage.setItem('bpiVersion', '0');
+            setSelectedVersion(-1);
+            localStorage.setItem('bpiVersion', '-1');
           }
         } else {
           // Default to latest (index 0)
@@ -171,12 +174,19 @@ const SongTablePage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (versions.length === 0) return; // Wait for versions to load
+    if (selectedVersion !== -1 && versions.length === 0) return; // Wait for versions to load
 
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const bpiVersion = versions[selectedVersion] || versions[0];
+        const isBpim2 = selectedVersion === -1;
+        const bpiVersion = isBpim2 ? null : (versions[selectedVersion] || versions[0]);
+        const spDictUrl = isBpim2
+          ? 'https://chinimuruhi.github.io/IIDX-Data-Table/bpim2/sp_dict.json'
+          : `https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/sp_dict.json`;
+        const dpDictUrl = isBpim2
+          ? null  // BPIM2にDPデータは存在しない
+          : `https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/dp_dict.json`;
         const [
           titleRes,
           songInfoJson,
@@ -190,8 +200,8 @@ const SongTablePage: React.FC = () => {
           fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/song-info.json.gz'),
           fetchGzipJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
           fetchJsonWithFallback<any>('https://chinimuruhi.github.io/IIDX-Data-Table/konami/song_to_label.json'),
-          fetchJsonWithFallback<any>(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/sp_dict.json`),
-          fetchJsonWithFallback<any>(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/dp_dict.json`),
+          fetchJsonWithFallback<any>(spDictUrl),
+          dpDictUrl ? fetchJsonWithFallback<any>(dpDictUrl) : Promise.resolve({}),
           fetchCustomBpiData(),
         ]);
 
@@ -244,7 +254,9 @@ const SongTablePage: React.FC = () => {
             // Remote BPI (official data)
             let bpi: number = NaN;
             if (bpiInfoEntry && score) {
-              bpi = calculateBpi(bpiInfoEntry.wr, bpiInfoEntry.avg, bpiInfoEntry.notes, score, bpiInfoEntry.coef) ?? NaN;
+              bpi = isBpim2
+                ? (calculateBpim2(bpiInfoEntry, score) ?? NaN)
+                : (calculateBpi(bpiInfoEntry.wr, bpiInfoEntry.avg, bpiInfoEntry.notes, score, bpiInfoEntry.coef) ?? NaN);
             }
 
             // Custom BPI (user-defined)
@@ -421,25 +433,6 @@ const SongTablePage: React.FC = () => {
 
           <FilterPanel filters={filters} onChange={setFilters} />
 
-          {selectedLevel >= 11 && versions.length > 0 && (
-            <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-                BPI定義:
-              </Typography>
-              <FormControl size="small" sx={{ minWidth: 140 }}>
-                <Select
-                  value={selectedVersion}
-                  onChange={(e) => handleVersionChange(Number(e.target.value))}
-                >
-                  {versions.map((v, i) => (
-                    <MenuItem key={i} value={i}>
-                      {v}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          )}
 
           <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap', mb: 2 }}>
             <Box sx={{ flex: 1, minWidth: 250 }}>
@@ -639,14 +632,7 @@ const SongTablePage: React.FC = () => {
                       </TableCell>
                       {selectedLevel >= 11 &&
                         <TableCell>
-                          {!Number.isNaN(s.bpi) ? (
-                            <>
-                              {s.bpi.toFixed(2)}
-                              {!Number.isNaN(s.customBpi) && ` (${s.customBpi.toFixed(2)} *)`}
-                            </>
-                          ) : !Number.isNaN(s.customBpi) ? (
-                            `${s.customBpi.toFixed(2)} *`
-                          ) : ''}
+                          {!Number.isNaN(s.bpi) ? s.bpi.toFixed(2) : !Number.isNaN(s.customBpi) ? <span style={{ color: '#999' }}>{s.customBpi.toFixed(2)} *</span> : ''}
                         </TableCell>
                       }
                       <TableCell>{s.score} ({(s.rate * 100).toFixed(2)}%)</TableCell>
@@ -716,12 +702,7 @@ const SongTablePage: React.FC = () => {
                           {(!Number.isNaN(s.bpi) || !Number.isNaN(s.customBpi)) &&
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                               <span>
-                                BPI {!Number.isNaN(s.bpi) ? (
-                                  <>
-                                    {s.bpi.toFixed(2)}
-                                    {!Number.isNaN(s.customBpi) && ` (${s.customBpi.toFixed(2)} *)`}
-                                  </>
-                                ) : `${s.customBpi.toFixed(2)} *`}
+                                BPI {!Number.isNaN(s.bpi) ? s.bpi.toFixed(2) : <span style={{ color: '#999' }}>{s.customBpi.toFixed(2)} *</span>}
                               </span>
                             </Box>
                           }

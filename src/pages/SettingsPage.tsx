@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box,
   Button,
   Container,
   Paper,
-  Stack,
   Typography,
   Snackbar,
   Alert,
@@ -40,11 +38,13 @@ const SettingsPage: React.FC = () => {
         const saved = localStorage.getItem('bpiVersion');
         if (saved !== null) {
           const idx = parseInt(saved, 10);
-          if (!isNaN(idx) && idx >= 0 && arr[idx]) {
+          if (!isNaN(idx) && idx === -1) {
+            setSelectedVersion(-1);
+          } else if (!isNaN(idx) && idx >= 0 && arr[idx]) {
             setSelectedVersion(idx);
           } else {
-            setSelectedVersion(0);
-            localStorage.setItem('bpiVersion', '0');
+            setSelectedVersion(-1);
+            localStorage.setItem('bpiVersion', '-1');
           }
         } else {
           setSelectedVersion(0);
@@ -56,13 +56,9 @@ const SettingsPage: React.FC = () => {
       });
   }, []);
 
-  const handleSaveVersion = () => {
-    try {
-      localStorage.setItem('bpiVersion', String(selectedVersion));
-      setSnack({ open: true, message: 'バージョン設定を保存しました。', severity: 'success' });
-    } catch {
-      setSnack({ open: true, message: 'バージョン設定の保存に失敗しました。', severity: 'error' });
-    }
+  const handleVersionChange = (idx: number) => {
+    setSelectedVersion(idx);
+    localStorage.setItem('bpiVersion', String(idx));
   };
 
   const applyDelete = () => {
@@ -83,24 +79,22 @@ const SettingsPage: React.FC = () => {
 
           <Paper sx={{ p: 3, mb: 3 }}>
             <Typography variant="h6" gutterBottom>BPI定義ファイル</Typography>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-end">
-              <FormControl sx={{ flex: 1, minWidth: 240 }}>
-                <InputLabel id="bpi-version-select-label">バージョン</InputLabel>
-                <Select
-                  labelId="bpi-version-select-label"
-                  value={selectedVersion}
-                  label="バージョン"
-                  onChange={(e) => setSelectedVersion(Number(e.target.value))}
-                >
-                  {versions.map((v, i) => (
-                    <MenuItem key={i} value={i}>
-                      {v}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Button variant="contained" onClick={handleSaveVersion}>保存</Button>
-            </Stack>
+            <FormControl sx={{ minWidth: 240 }}>
+              <InputLabel id="bpi-version-select-label">バージョン</InputLabel>
+              <Select
+                labelId="bpi-version-select-label"
+                value={selectedVersion}
+                label="バージョン"
+                onChange={(e) => handleVersionChange(Number(e.target.value))}
+              >
+                <MenuItem value={-1}>BPIM2</MenuItem>
+                {versions.map((v, i) => (
+                  <MenuItem key={i} value={i}>
+                    {v}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Paper>
 
           <Paper sx={{ p: 3, mb: 3, border: '1px solid', borderColor: 'error.light' }}>

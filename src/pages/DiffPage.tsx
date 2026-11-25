@@ -31,6 +31,7 @@ import { Page, PageHeader } from '../components/Page';
 import SectionCard from '../components/SectionCard';
 import { acInfDiffMap } from '../constants/titleConstrains';
 import { resolveVersionByIndex, calculateBpi } from '../utils/bpiUtils';
+import { calculateBpim2 } from '../utils/bpim2Utils';
 import { notesOverride, levelOverride, chartOverrideData } from '../constants/chartInfoConstrains';
 import ChartOverrideModal from '../components/ChartOverrideModal';
 import { renderTitleWithDifficulty } from '../utils/titleUtils';
@@ -74,11 +75,18 @@ const DiffPage = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      const bpiVersionIndex = parseInt(localStorage.getItem('bpiVersion') ?? '-1') ?? -1
-      const bpiVersion = await resolveVersionByIndex(bpiVersionIndex);
+      const bpiVersionIndex = parseInt(localStorage.getItem('bpiVersion') ?? '-1');
+      const isBpim2 = bpiVersionIndex === -1;
 
       // Fetch custom BPI data (dev: BPI server, prod: bundled JSON)
       const customBpi = await fetchCustomBpi();
+
+      const spDictUrl = isBpim2
+        ? 'https://chinimuruhi.github.io/IIDX-Data-Table/bpim2/sp_dict.json'
+        : `https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${await resolveVersionByIndex(bpiVersionIndex)}/sp_dict.json`;
+      const dpDictUrl = isBpim2
+        ? null
+        : `https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${await resolveVersionByIndex(bpiVersionIndex)}/dp_dict.json`;
 
       const [
           titleRes,
@@ -88,8 +96,8 @@ const DiffPage = () => {
         ] = await Promise.all([
           fetchJsonWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/title.json'),
           fetchGzipJsonWithFallback('https://chinimuruhi.github.io/IIDX-Data-Table/textage/chart-info.json.gz'),
-          fetchJsonWithFallback(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/sp_dict.json`),
-          fetchJsonWithFallback(`https://chinimuruhi.github.io/IIDX-Data-Table/bpi/${bpiVersion}/dp_dict.json`),
+          fetchJsonWithFallback(spDictUrl),
+          dpDictUrl ? fetchJsonWithFallback(dpDictUrl) : Promise.resolve({}),
         ]);
       setTitleMap(titleRes);
       setChartInfo(chartInfo);
@@ -244,7 +252,12 @@ const DiffPage = () => {
 
               // Calculate official BPI
               const bpiInfoEntry = bpiInfo?.[m]?.[id]?.[difficulty];
-              const bpi = bpiInfoEntry ? calculateBpi(bpiInfoEntry.wr, bpiInfoEntry.avg, bpiInfoEntry.notes, entry.score.new, bpiInfoEntry.coef) : NaN;
+              const isBpim2calc = parseInt(localStorage.getItem('bpiVersion') ?? '-1') === -1;
+              const bpi = bpiInfoEntry
+                ? (isBpim2calc
+                    ? (calculateBpim2(bpiInfoEntry, entry.score.new) ?? NaN)
+                    : (calculateBpi(bpiInfoEntry.wr, bpiInfoEntry.avg, bpiInfoEntry.notes, entry.score.new, bpiInfoEntry.coef) ?? NaN))
+                : NaN;
               if(!Number.isNaN(bpi)){
                 isContainBpi[m] = true;
               }
@@ -436,14 +449,7 @@ const DiffPage = () => {
                           </TableCell>
                           {processed.isContainBpi[mode] && (
                             <TableCell>
-                              {!Number.isNaN(row.bpi) ? (
-                                <>
-                                  {row.bpi.toFixed(2)}
-                                  {!Number.isNaN(row.customBpi) && ` (${row.customBpi.toFixed(2)} *)`}
-                                </>
-                              ) : !Number.isNaN(row.customBpi) ? (
-                                `${row.customBpi.toFixed(2)} *`
-                              ) : ''}
+                              {!Number.isNaN(row.bpi) ? row.bpi.toFixed(2) : !Number.isNaN(row.customBpi) ? <span style={{ color: '#999' }}>{row.customBpi.toFixed(2)} *</span> : ''}
                             </TableCell>
                           )}
                           <TableCell sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}>
@@ -499,12 +505,7 @@ const DiffPage = () => {
                             <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center', color: 'text.secondary', fontSize: 11 }}>
                               {(!Number.isNaN(row.bpi) || !Number.isNaN(row.customBpi)) && (
                                 <Box>
-                                  BPI: {!Number.isNaN(row.bpi) ? (
-                                    <>
-                                      {row.bpi.toFixed(2)}
-                                      {!Number.isNaN(row.customBpi) && ` (${row.customBpi.toFixed(2)} *)`}
-                                    </>
-                                  ) : `${row.customBpi.toFixed(2)} *`}
+                                  BPI: {!Number.isNaN(row.bpi) ? row.bpi.toFixed(2) : <span style={{ color: '#999' }}>{row.customBpi.toFixed(2)} *</span>}
                                 </Box>
                               )}
                               {isInvalid ? (
